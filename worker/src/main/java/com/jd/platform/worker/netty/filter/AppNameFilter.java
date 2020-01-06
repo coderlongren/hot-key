@@ -1,5 +1,7 @@
 package com.jd.platform.worker.netty.filter;
 
+import com.jd.platform.common.model.HotKeyMsg;
+import com.jd.platform.common.model.typeenum.MessageType;
 import com.jd.platform.worker.netty.client.IClientChangeListener;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.core.annotation.Order;
@@ -20,9 +22,9 @@ public class AppNameFilter implements INettyMsgFilter {
     private IClientChangeListener clientEventListener;
 
     @Override
-    public boolean chain(String message, ChannelHandlerContext ctx) {
-        if (message.startsWith("appName")) {
-            String appName = message.split("-")[1];
+    public boolean chain(HotKeyMsg message, ChannelHandlerContext ctx) {
+        if (MessageType.APP_NAME == message.getMessageType()) {
+            String appName = message.getBody();
             if (clientEventListener != null) {
                 clientEventListener.newClient(appName, ctx.channel().id().toString(), ctx);
             }
@@ -31,6 +33,5 @@ public class AppNameFilter implements INettyMsgFilter {
 
         return true;
     }
-
 
 }

@@ -1,33 +1,23 @@
 package com.jd.platform.client.etcd;
 
 import com.ibm.etcd.api.Event;
-import com.ibm.etcd.api.KeyValue;
 import com.ibm.etcd.client.kv.KvClient;
 import com.ibm.etcd.client.kv.WatchUpdate;
 import com.jd.platform.common.configcenter.ConfigConstant;
 import com.jd.platform.common.configcenter.IConfigCenter;
-import com.jd.platform.common.rule.KeyRule;
-import com.jd.platform.common.tool.FastJsonUtils;
 import com.jd.platform.common.tool.IpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**
  * @author wuweifeng wrote on 2019-12-10
  * @version 1.0
  */
-@Component
 public class EtcdStarter {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Resource
     private IConfigCenter configCenter;
 
 
@@ -45,7 +35,6 @@ public class EtcdStarter {
     /**
      * 启动回调监听器
      */
-    @Async
     public void init() throws Exception {
         //上传自己的ip信息到配置中心
         uploadNodeInfo();
@@ -64,22 +53,6 @@ public class EtcdStarter {
 
     }
 
-    /**
-     * 每隔1分钟拉取一次，所有的app的rule
-     */
-    @Scheduled(fixedRate = 60000)
-    public void pullRules() {
-        List<KeyValue> keyValues = configCenter.getPrefix(ConfigConstant.rulePath);
-        if (CollectionUtils.isEmpty(keyValues)) {
-            logger.warn("very important warn !!! rule info is null!!!");
-            return;
-        }
-        for (KeyValue keyValue : keyValues) {
-            String appName = keyValue.getKey().toStringUtf8();
-            String ruleJson = keyValue.getValue().toStringUtf8();
-            KeyRule keyRule = FastJsonUtils.toBean(ruleJson, KeyRule.class);
-        }
-    }
 
     /**
      * 启动后，上传自己的信息到etcd

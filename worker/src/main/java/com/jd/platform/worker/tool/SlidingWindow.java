@@ -1,4 +1,4 @@
-package com.jd.platform.common.tool.sliding;
+package com.jd.platform.worker.tool;
 
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -135,7 +135,6 @@ public class SlidingWindow {
         for (int i = 1; i < windowSize; i++) {
             sum += timeSlices[(index - i + timeSliceSize) % timeSliceSize].get();
         }
-        System.out.println(sum + "---" + threshold);
 
         lastAddTimestamp = SystemClock.now();
 

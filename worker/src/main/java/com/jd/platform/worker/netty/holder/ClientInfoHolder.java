@@ -1,6 +1,8 @@
 package com.jd.platform.worker.netty.holder;
 
 import com.jd.platform.common.model.HotKeyModel;
+import com.jd.platform.common.model.HotKeyMsg;
+import com.jd.platform.common.model.typeenum.MessageType;
 import com.jd.platform.common.tool.FastJsonUtils;
 import com.jd.platform.worker.model.AppInfo;
 import com.jd.platform.worker.netty.flush.FlushUtil;
@@ -29,7 +31,7 @@ public class ClientInfoHolder {
                 Map<String, ChannelHandlerContext> map = appInfo.getMap();
                 for (ChannelHandlerContext channel : map.values()) {
                     System.out.println("flush");
-                    FlushUtil.flush(channel, FastJsonUtils.convertObjectToJSON(hotKeyModel));
+                    FlushUtil.flush(channel, new HotKeyMsg(MessageType.RESPONSE_NEW_KEY, FastJsonUtils.convertObjectToJSON(hotKeyModel)));
                 }
 
                 return;

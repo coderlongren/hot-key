@@ -1,7 +1,6 @@
 package com.jd.platform.common.model;
 
 import com.jd.platform.common.tool.IdGenerater;
-import com.jd.platform.common.tool.sliding.SystemClock;
 
 /**
  * 热key的定义
@@ -13,7 +12,7 @@ public class BaseModel {
     /**
      * 创建的时间
      */
-    private long createTime = SystemClock.now();
+    private long createTime;
     /**
      * key的名字
      */
@@ -21,7 +20,7 @@ public class BaseModel {
     /**
      * 该key出现的数量，如果一次一发那就是1，累积多次发那就是count
      */
-    private int count = 1;
+    private int count;
 
     @Override
     public String toString() {

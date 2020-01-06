@@ -20,7 +20,7 @@ public class ClientChangeListener implements IClientChangeListener {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
-     * 客户端掉线
+     * 客户端新增
      */
     @Override
     public void newClient(String appName, String channelId, ChannelHandlerContext ctx) {

@@ -1,5 +1,6 @@
 package com.jd.platform.worker.netty.flush;
 
+import com.jd.platform.common.model.HotKeyMsg;
 import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,8 @@ public class FlushUtil {
     /**
      * 往channel里输出消息
      */
-    public static void flush(ChannelHandlerContext channelHandlerContext, String msg) {
+    public static void flush(ChannelHandlerContext channelHandlerContext, HotKeyMsg msg) {
+
         if (channelHandlerContext.channel().isWritable()) {
             channelHandlerContext.channel().writeAndFlush(msg).addListener(future -> {
                 if (!future.isSuccess()) {

@@ -1,5 +1,8 @@
 package com.jd.platform.client.netty;
 
+import com.jd.platform.client.core.Context;
+import com.jd.platform.common.model.HotKeyMsg;
+import com.jd.platform.common.model.typeenum.MessageType;
 import com.jd.platform.common.tool.Constant;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -11,7 +14,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author wuweifeng wrote on 2019-11-05.
  */
-public class NettyClientHandler extends SimpleChannelInboundHandler<String> {
+public class NettyClientHandler extends SimpleChannelInboundHandler<HotKeyMsg> {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
     private volatile boolean active = false;
@@ -23,7 +26,7 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<String> {
 
             if (idleStateEvent.state() == IdleState.ALL_IDLE){
                 //向服务端发送消息
-                ctx.writeAndFlush(Constant.PING) ;
+                ctx.writeAndFlush(new HotKeyMsg(MessageType.PING, Constant.PING)) ;
             }
         }
 
@@ -31,10 +34,9 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<String> {
     }
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+    public void channelActive(ChannelHandlerContext ctx) {
         System.err.println("channelActive");
-//        ctx.writeAndFlush("appName-" + Context.appName);
-        ctx.writeAndFlush("appName-a");
+        ctx.writeAndFlush(new HotKeyMsg(MessageType.APP_NAME, Context.appName));
         active = true;
     }
 
@@ -46,9 +48,9 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<String> {
 
 
     @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, String msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, HotKeyMsg msg) throws Exception {
         System.err.println(msg);
-        if (Constant.PONG.equals(msg)) {
+        if (MessageType.PONG == msg.getMessageType()) {
             logger.info("heart beat");
             return;
         }

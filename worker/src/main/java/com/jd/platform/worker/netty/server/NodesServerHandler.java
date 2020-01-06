@@ -1,5 +1,6 @@
 package com.jd.platform.worker.netty.server;
 
+import com.jd.platform.common.model.HotKeyMsg;
 import com.jd.platform.worker.netty.client.IClientChangeListener;
 import com.jd.platform.worker.netty.filter.INettyMsgFilter;
 import io.netty.channel.ChannelHandlerContext;
@@ -15,7 +16,7 @@ import java.util.List;
  *
  * @author wuweifeng wrote on 2019-11-05.
  */
-public class NodesServerHandler extends SimpleChannelInboundHandler<String> {
+public class NodesServerHandler extends SimpleChannelInboundHandler<HotKeyMsg> {
     /**
      * 客户端状态监听器
      */
@@ -26,18 +27,17 @@ public class NodesServerHandler extends SimpleChannelInboundHandler<String> {
     private List<INettyMsgFilter> messageFilters = new ArrayList<>();
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, String message) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, HotKeyMsg message) {
         System.out.println(message);
         if (StringUtils.isEmpty(message)) {
             return;
         }
-        ctx.writeAndFlush(message);
-//        for (INettyMsgFilter messageFilter : messageFilters) {
-//            boolean doNext = messageFilter.chain(message, ctx);
-//            if (!doNext) {
-//                return;
-//            }
-//        }
+        for (INettyMsgFilter messageFilter : messageFilters) {
+            boolean doNext = messageFilter.chain(message, ctx);
+            if (!doNext) {
+                return;
+            }
+        }
     }
 
     @Override

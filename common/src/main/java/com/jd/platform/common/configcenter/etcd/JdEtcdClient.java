@@ -10,7 +10,6 @@ import com.ibm.etcd.client.lease.LeaseClient;
 import com.ibm.etcd.client.lease.PersistentLease;
 import com.ibm.etcd.client.lock.LockClient;
 import com.jd.platform.common.configcenter.IConfigCenter;
-import com.jd.platform.common.tool.sliding.SystemClock;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
@@ -86,7 +85,7 @@ public class JdEtcdClient implements IConfigCenter {
     @Override
     public long keepAlive(String key, String value, int frequencySecs, int minTtl) throws Exception {
         //minTtl秒租期，每frequencySecs秒续约一下
-        PersistentLease lease = leaseClient.maintain().leaseId(SystemClock.now()).keepAliveFreq(frequencySecs).minTtl(minTtl).start();
+        PersistentLease lease = leaseClient.maintain().leaseId(System.currentTimeMillis()).keepAliveFreq(frequencySecs).minTtl(minTtl).start();
         long newId = lease.get(3L, SECONDS);
         put(key, value, newId);
         return newId;

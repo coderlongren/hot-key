@@ -1,8 +1,7 @@
-package com.jd.platform.common.tool.sliding;
+package com.jd.platform.worker.tool;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -16,9 +15,7 @@ public class SystemClock {
 
     private final AtomicLong now;
 
-    private static class InstanceHolder {
-        private static final SystemClock INSTANCE = new SystemClock(1);
-    }
+    private static final SystemClock INSTANCE = new SystemClock(1);
 
     private SystemClock(int period) {
         this.period = period;
@@ -27,17 +24,14 @@ public class SystemClock {
     }
 
     private static SystemClock instance() {
-        return InstanceHolder.INSTANCE;
+        return INSTANCE;
     }
 
     private void scheduleClockUpdating() {
-        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable runnable) {
-                Thread thread = new Thread(runnable, "System Clock");
-                thread.setDaemon(true);
-                return thread;
-            }
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(runnable -> {
+            Thread thread = new Thread(runnable, "System Clock");
+            thread.setDaemon(true);
+            return thread;
         });
         scheduler.scheduleAtFixedRate(() -> now.set(System.currentTimeMillis()), period, period, TimeUnit.MILLISECONDS);
     }

@@ -9,4 +9,7 @@ public interface Constant {
     String PONG = "pong";
 
     int Default_Threads = Runtime.getRuntime().availableProcessors() * 2;
+
+    int MAGIC_NUMBER = 0x5555;
+    String DELIMITER = "$(* *)$";
 }

@@ -1,6 +1,8 @@
 package com.jd.platform.worker.netty.filter;
 
 import com.jd.platform.common.model.HotKeyModel;
+import com.jd.platform.common.model.HotKeyMsg;
+import com.jd.platform.common.model.typeenum.MessageType;
 import com.jd.platform.common.tool.FastJsonUtils;
 import com.jd.platform.worker.disruptor.MessageProducer;
 import com.jd.platform.worker.disruptor.hotkey.HotKeyEvent;
@@ -24,9 +26,9 @@ public class HotKeyFilter implements INettyMsgFilter, IMqMessageReceiver {
     private MessageProducer<HotKeyEvent> messageProducer;
 
     @Override
-    public boolean chain(String message, ChannelHandlerContext ctx) {
-        if (message.contains("{")) {
-            publishMsg(message);
+    public boolean chain(HotKeyMsg message, ChannelHandlerContext ctx) {
+        if (MessageType.REQUEST_NEW_KEY == message.getMessageType()) {
+            publishMsg(message.getBody());
 
             return false;
         }

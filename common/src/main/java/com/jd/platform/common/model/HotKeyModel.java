@@ -21,6 +21,16 @@ public class HotKeyModel extends BaseModel {
      */
     private boolean remove;
 
+
+    @Override
+    public String toString() {
+        return "HotKeyModel{" +
+                "appName='" + appName + '\'' +
+                ", keyType=" + keyType +
+                ", remove=" + remove +
+                '}';
+    }
+
     public boolean isRemove() {
         return remove;
     }

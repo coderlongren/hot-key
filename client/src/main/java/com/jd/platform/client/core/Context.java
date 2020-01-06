@@ -11,7 +11,7 @@ import java.util.List;
  * @version 1.0
  */
 public class Context {
-    public static String appName;
+    public static String appName = "aaa";
 
     public static List<WorkerInfo> workerInfoList = new ArrayList<>();
 

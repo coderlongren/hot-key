@@ -1,5 +1,6 @@
 package com.jd.platform.worker.netty.filter;
 
+import com.jd.platform.common.model.HotKeyMsg;
 import io.netty.channel.ChannelHandlerContext;
 
 /**
@@ -8,5 +9,5 @@ import io.netty.channel.ChannelHandlerContext;
  * @version 1.0
  */
 public interface INettyMsgFilter {
-    boolean chain(String message, ChannelHandlerContext ctx);
+    boolean chain(HotKeyMsg message, ChannelHandlerContext ctx);
 }

@@ -2,7 +2,7 @@ package com.jd.platform.worker.disruptor;
 
 import com.jd.platform.common.model.BaseModel;
 import com.jd.platform.common.tool.Constant;
-import com.jd.platform.common.tool.sliding.SystemClock;
+import com.jd.platform.worker.tool.SystemClock;
 import com.lmax.disruptor.EventHandler;
 
 /**
