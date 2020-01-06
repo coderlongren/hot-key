@@ -1,0 +1,9 @@
+netty:
+  port: ${netty-port:11111}
+  heartBeat: ${heart-beat:10}
+#etcd的地址，如有多个用逗号分隔
+etcd:
+  server: ${etcd-server:https://127.0.0.1:2379}
+spring:
+  aop:
+    proxy-target-class: true
