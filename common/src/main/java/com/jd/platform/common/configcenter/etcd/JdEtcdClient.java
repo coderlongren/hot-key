@@ -46,9 +46,16 @@ public class JdEtcdClient implements IConfigCenter {
     }
 
     @Override
-    public void putAndGrant(String key, String value, long ttl) {
+    public long putAndGrant(String key, String value, long ttl) {
         LeaseGrantResponse lease = leaseClient.grant(ttl).sync();
         put(key, value, lease.getID());
+        return lease.getID();
+    }
+
+    @Override
+    public long setLease(String key, long leaseId) {
+        kvClient.setLease(ByteString.copyFromUtf8(key), leaseId);
+        return leaseId;
     }
 
     @Override
@@ -89,6 +96,19 @@ public class JdEtcdClient implements IConfigCenter {
         long newId = lease.get(3L, SECONDS);
         put(key, value, newId);
         return newId;
+    }
+
+    @Override
+    public long buildAliveLease(int frequencySecs, int minTtl) throws Exception {
+        PersistentLease lease = leaseClient.maintain().leaseId(System.currentTimeMillis()).keepAliveFreq(frequencySecs).minTtl(minTtl).start();
+
+        return lease.get(3L, SECONDS);
+    }
+
+    @Override
+    public long buildNormalLease(long ttl) {
+        LeaseGrantResponse lease = leaseClient.grant(ttl).sync();
+        return lease.getID();
     }
 
     @Override

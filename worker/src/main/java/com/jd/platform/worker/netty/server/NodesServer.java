@@ -42,6 +42,9 @@ public class NodesServer {
             ChannelFuture future = bootstrap.bind(port).sync();
             //等待服务器监听端口关闭
             future.channel().closeFuture().sync();
+        } catch (Exception e) {
+            //do nothing
+            System.out.println("netty stop");
         } finally {
             //优雅退出，释放线程池资源
             bossGroup.shutdownGracefully();
@@ -55,7 +58,7 @@ public class NodesServer {
     private class ChildChannelHandler extends ChannelInitializer<Channel> {
 
         @Override
-        protected void initChannel(Channel ch)  {
+        protected void initChannel(Channel ch) {
             NodesServerHandler serverHandler = new NodesServerHandler();
             serverHandler.setClientEventListener(clientChangeListener);
             serverHandler.addMessageFilters(messageFilters);

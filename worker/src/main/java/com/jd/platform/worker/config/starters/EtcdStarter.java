@@ -19,10 +19,16 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
+ * worker端对etcd相关的处理
  * @author wuweifeng wrote on 2019-12-10
  * @version 1.0
  */
@@ -48,10 +54,7 @@ public class EtcdStarter {
      * 启动回调监听器
      */
     @Async
-    public void init() {
-        //上传自己的ip信息到配置中心并维持心跳
-        uploadNodeInfo();
-
+    public void watch() {
         KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.hotKeyPath + "a/");
         while (watchIterator.hasNext()) {
             WatchUpdate watchUpdate = watchIterator.next();
@@ -89,17 +92,61 @@ public class EtcdStarter {
         }
     }
 
-    /**
-     * 启动后，上传自己的信息到etcd
-     */
-    public void uploadNodeInfo() {
+    @PreDestroy
+    public void removeNodeInfo() {
         try {
+            String hostName = IpUtils.getHostName();
+            configCenter.delete(ConfigConstant.workersPath + hostName);
+        } catch (Exception e) {
+            logger.error("worker connect to etcd failure");
+        }
+    }
+
+
+    /**
+     * 启动后，上传自己的信息到etcd，并维持心跳包
+     */
+    @PostConstruct
+    public void upload() {
+        //开启上传worker信息
+        ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+        scheduledExecutorService.scheduleAtFixedRate(() -> {
+            logger.info("upload info to etcd");
+            long leaseId = createLeaseId();
+            if (leaseId != -1) {
+                String ip = IpUtils.getIp();
+                String hostName = IpUtils.getHostName();
+                configCenter.put(ConfigConstant.workersPath + hostName, ip + ":" + port, leaseId);
+
+                scheduledExecutorService.shutdown();
+            }
+
+        }, 0, 5000, TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * 通过http请求手工上传信息到etcd，适用于正常使用过程中，etcd挂掉，导致worker租期到期被删除，无法自动注册
+     */
+    public boolean handUpload() {
+        logger.info("hand upload info to etcd");
+        long leaseId = createLeaseId();
+        if (leaseId != -1) {
             String ip = IpUtils.getIp();
             String hostName = IpUtils.getHostName();
-            //每4秒续约一次。将自己的ip注册到etcd的固定目录下
-            configCenter.keepAlive(ConfigConstant.workersPath + hostName, ip + ":" + port, 4, 5);
+            configCenter.put(ConfigConstant.workersPath + hostName, ip + ":" + port, leaseId);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private long createLeaseId() {
+        try {
+            //每次续租5秒
+            return configCenter.buildAliveLease(4, 5);
         } catch (Exception e) {
-            logger.error("keep alive with etcd server error");
+            logger.error("worker connect to etcd failure");
+            return -1;
         }
     }
 

@@ -23,7 +23,12 @@ public interface IConfigCenter {
     /**
      * 存入key、value，和过期时间，单位是秒
      */
-    void putAndGrant(String key, String value, long ttl);
+    long putAndGrant(String key, String value, long ttl);
+
+    /**
+     * 给key设置新的leaseId
+     */
+    long setLease(String key, long leaseId);
 
     void delete(String key);
 
@@ -54,6 +59,16 @@ public interface IConfigCenter {
      * @return 返回leaseId
      */
     long keepAlive(String key, String value, int frequencySecs, int minTtl) throws Exception;
+
+    /**
+     * 构建一个可自动续约的lease
+     */
+    long buildAliveLease(int frequencySecs, int minTtl) throws Exception;
+
+    /**
+     * 构建一个普通lease
+     */
+    long buildNormalLease(long ttl);
 
     /**
      * 判断剩余的过期时间

@@ -30,7 +30,7 @@ public class ClientBuilder {
     /**
      * 启动监听etcd
      */
-    private void startPipeline(String etcdServer) throws InterruptedException {
+    private void startPipeline(String etcdServer) {
         //设置etcd地址
         EtcdConfigFactory.buildConfigCenter(etcdServer);
 

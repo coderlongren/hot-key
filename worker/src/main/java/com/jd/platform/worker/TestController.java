@@ -3,6 +3,7 @@ package com.jd.platform.worker;
 import com.ibm.etcd.api.KeyValue;
 import com.jd.platform.common.configcenter.ConfigConstant;
 import com.jd.platform.common.configcenter.IConfigCenter;
+import com.jd.platform.worker.config.starters.EtcdStarter;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,23 +20,38 @@ import java.util.Map;
 public class TestController {
     @Resource
     private IConfigCenter iConfigCenter;
+    @Resource
+    private EtcdStarter etcdStarter;
 
     @RequestMapping("test")
     public String aa(String key) {
-       iConfigCenter.put( ConfigConstant.hotKeyPath + "a/" + key,  "1");
-        iConfigCenter.put( ConfigConstant.hotKeyPath + "a/" + key + "1",  "1");
+        iConfigCenter.put(ConfigConstant.hotKeyPath + "a/" + key, "1");
+        iConfigCenter.put(ConfigConstant.hotKeyPath + "a/" + key + "1", "1");
         return "1";
+    }
+
+    /**
+     * 手工注册worker到etcd去
+     */
+    @RequestMapping("regist")
+    public Object regist() {
+        return etcdStarter.handUpload();
     }
 
 
     @RequestMapping("workersPath")
     public Object workersPath() {
-        List<KeyValue> list = iConfigCenter.getPrefix(ConfigConstant.workersPath);
-        Map<String, Object> map = new HashMap<>();
-        for (KeyValue keyValue : list) {
-            map.put(keyValue.getKey().toStringUtf8(), keyValue.getValue().toStringUtf8());
+        try {
+            List<KeyValue> list = iConfigCenter.getPrefix(ConfigConstant.workersPath);
+            Map<String, Object> map = new HashMap<>();
+            for (KeyValue keyValue : list) {
+                map.put(keyValue.getKey().toStringUtf8(), keyValue.getValue().toStringUtf8());
+            }
+            return map;
+        } catch (Exception e) {
+            return "exception";
         }
-        return map;
+
     }
 
     @RequestMapping("rulePath")

@@ -73,16 +73,21 @@ public class EtcdStarter {
 
     public void startWatch() {
         IConfigCenter configCenter = EtcdConfigFactory.configCenter();
-        KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.workersPath);
-        //如果有新事件，即worker的变更，就重新拉取所有的信息
-        while (watchIterator.hasNext()) {
-            logger.info("worker info changed. begin to fetch new infos");
-            WatchUpdate watchUpdate = watchIterator.next();
-            List<Event> eventList = watchUpdate.getEvents();
-            System.err.println(eventList.get(0).getKv());
-            //全量拉取worker信息
-            fetchWorkerInfo();
+        try {
+            KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.workersPath);
+            //如果有新事件，即worker的变更，就重新拉取所有的信息
+            while (watchIterator.hasNext()) {
+                logger.info("worker info changed. begin to fetch new infos");
+                WatchUpdate watchUpdate = watchIterator.next();
+                List<Event> eventList = watchUpdate.getEvents();
+                System.err.println(eventList.get(0).getKv());
+                //全量拉取worker信息
+                fetchWorkerInfo();
+            }
+        } catch (Exception e) {
+            System.err.println("watch err");
         }
+
     }
 
 }
