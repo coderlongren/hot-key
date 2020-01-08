@@ -1,15 +1,22 @@
 package com.jd.platform.client.etcd;
 
 import com.ibm.etcd.api.Event;
+import com.ibm.etcd.api.KeyValue;
 import com.ibm.etcd.client.kv.KvClient;
 import com.ibm.etcd.client.kv.WatchUpdate;
+import com.jd.platform.client.core.eventbus.EventBusCenter;
 import com.jd.platform.common.configcenter.ConfigConstant;
 import com.jd.platform.common.configcenter.IConfigCenter;
-import com.jd.platform.common.tool.IpUtils;
+import io.grpc.StatusRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author wuweifeng wrote on 2019-12-10
@@ -18,54 +25,63 @@ import java.util.List;
 public class EtcdStarter {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    private IConfigCenter configCenter;
-
-
-    //Grant：分配一个租约。
-    //Revoke：释放一个租约。
-    //TimeToLive：获取剩余TTL时间。
-    //Leases：列举所有etcd中的租约。
-    //KeepAlive：自动定时的续约某个租约。
-    //KeepAliveOnce：为某个租约续约一次。
-    //Close：貌似是关闭当前客户端建立的所有租约。
-
-    //启动后，上传自己的配置信息，如果check配置那里已经有了，就不要上传了。避免worker频繁监听
-    //监听key删除，key新增。同一个path
-    //监听rule变化，可能是etcd被控制台手工修改
     /**
-     * 启动回调监听器
+     * 拉取worker信息
      */
-    public void init() throws Exception {
-        //上传自己的ip信息到配置中心
-        uploadNodeInfo();
+    public void fetchWorkerInfo() {
+        //开启拉取etcd的worker信息，如果拉取失败，则定时继续拉取
+        ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+        scheduledExecutorService.scheduleAtFixedRate(() -> {
+            logger.info("trying to connect to etcd . emmmmmmmmmm");
+            boolean success = fetch();
+            if (success) {
+                scheduledExecutorService.shutdown();
+            }
 
-//        KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.rulePath);
-        KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.hotKeyPath + "a/");
-        while (watchIterator.hasNext()) {
-            WatchUpdate watchUpdate = watchIterator.next();
-            List<Event> eventList = watchUpdate.getEvents();
+        }, 0, 5000, TimeUnit.MILLISECONDS);
+    }
 
-            System.out.println(eventList.size());
-            System.err.println(eventList.get(0).getKv());
-            //包含put、delete
-            Event.EventType eventType = eventList.get(0).getType();
+    private boolean fetch() {
+        IConfigCenter configCenter = EtcdConfigFactory.configCenter();
+
+        try {
+            //获取所有worker的ip
+            List<KeyValue> keyValues = configCenter.getPrefix(ConfigConstant.workersPath);
+            //worker为空，可能是worker后启动。就先不管了，等待监听变化吧
+            if (CollectionUtils.isEmpty(keyValues)) {
+                logger.warn("very important warn !!! workers ip info is null!!!");
+                return false;
+            } else {
+                List<String> addresses = new ArrayList<>();
+                for (KeyValue keyValue : keyValues) {
+                    //value里放的是ip地址
+                    String ipPort = keyValue.getValue().toStringUtf8();
+                    addresses.add(ipPort);
+                }
+                logger.info("worker info list is : " + addresses);
+                //发布workinfo变更信息
+                EventBusCenter.getInstance().post(new WorkerInfoChangeEvent(addresses));
+                return true;
+            }
+        } catch (StatusRuntimeException ex) {
+            //etcd连不上
+            logger.error("etcd connected fail. Check the etcd address!!!");
+            return false;
         }
 
     }
 
-
-    /**
-     * 启动后，上传自己的信息到etcd
-     */
-    public void uploadNodeInfo() {
-        try {
-            String ip = IpUtils.getIp();
-            String hostName = IpUtils.getHostName();
-            //每4秒续约一次。将自己的ip注册到etcd的固定目录下
-            configCenter.keepAlive(ConfigConstant.workersPath + hostName, ip, 4, 5);
-        } catch (Exception e) {
-            logger.error("keep alive with etcd server error");
-            e.printStackTrace();
+    public void startWatch() {
+        IConfigCenter configCenter = EtcdConfigFactory.configCenter();
+        KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.workersPath);
+        //如果有新事件，即worker的变更，就重新拉取所有的信息
+        while (watchIterator.hasNext()) {
+            logger.info("worker info changed. begin to fetch new infos");
+            WatchUpdate watchUpdate = watchIterator.next();
+            List<Event> eventList = watchUpdate.getEvents();
+            System.err.println(eventList.get(0).getKv());
+            //全量拉取worker信息
+            fetchWorkerInfo();
         }
     }
 

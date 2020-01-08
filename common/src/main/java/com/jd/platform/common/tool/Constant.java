@@ -10,6 +10,6 @@ public interface Constant {
 
     int Default_Threads = Runtime.getRuntime().availableProcessors() * 2;
 
-    int MAGIC_NUMBER = 0x5555;
+    int MAGIC_NUMBER = 0x12fcf76;
     String DELIMITER = "$(* *)$";
 }

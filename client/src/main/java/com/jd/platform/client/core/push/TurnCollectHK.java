@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * 轮流提供读写、暂存key的操作。
  * 上报时譬如采用定时器，每隔0.5秒调度一次push方法。在上报过程中，
  * 不应阻塞写入操作。所以计划采用2个HashMap加一个atomicLong，如奇数时写入map0，为1写入map1，上传后会清空该map。
+ *
  * @author wuweifeng wrote on 2020-01-06
  * @version 1.0
  */
@@ -25,11 +26,16 @@ public class TurnCollectHK implements ICollectHK {
     public List<HotKeyModel> lockAndGetResult() {
         //自增后，对应的map就会停止被写入，等待被读取
         atomicLong.addAndGet(1);
+
+        List<HotKeyModel> list;
         if (atomicLong.get() % 2 == 0) {
-            return get(map1);
+            list = get(map1);
+            map1.clear();
         } else {
-            return get(map0);
+            list = get(map0);
+            map0.clear();
         }
+        return list;
     }
 
     private List<HotKeyModel> get(ConcurrentHashMap<String, HotKeyModel> map) {
@@ -56,10 +62,6 @@ public class TurnCollectHK implements ICollectHK {
 
     @Override
     public void finishOnce() {
-        if (atomicLong.get() % 2 == 0) {
-            map1.clear();
-        } else {
-            map0.clear();
-        }
+
     }
 }

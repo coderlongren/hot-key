@@ -1,8 +1,10 @@
 package com.jd.platform.client.netty;
 
+import com.google.common.eventbus.Subscribe;
 import com.jd.platform.client.core.Context;
 import com.jd.platform.client.core.push.HotKeyPusher;
 import com.jd.platform.client.core.push.PushSchedulerStarter;
+import com.jd.platform.client.etcd.WorkerInfoChangeEvent;
 import com.jd.platform.client.netty.encoder.MessageDecoder;
 import com.jd.platform.client.netty.encoder.MessageEncoder;
 import com.jd.platform.common.model.HotKeyMsg;
@@ -17,6 +19,8 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
 import io.netty.handler.timeout.IdleStateHandler;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -44,8 +48,8 @@ public class NettyClient {
                                     .addLast(new MessageEncoder())
                                     .addLast(new MessageDecoder())
                                     //10秒没消息时，就发心跳包过去
-                                    .addLast(new IdleStateHandler(0, 0, 10), nettyClientHandler)
-                            ;
+                                    .addLast(new IdleStateHandler(0, 0, 10))
+                                    .addLast(nettyClientHandler);
                         }
                     });
 
@@ -69,7 +73,23 @@ public class NettyClient {
         }
     }
 
-    public static void main(String[] args) throws InterruptedException {
+    @Subscribe
+    public List<Channel> connectAll(WorkerInfoChangeEvent event) throws Exception {
+        List<String> addresses = event.getAddresses();
+        List<Channel> channels = new ArrayList<>(addresses.size());
+        for(String address : addresses) {
+            String[] ss = address.split(":");
+            new NettyClient().connect(ss[0], Integer.parseInt(ss[1]), new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture channelFuture) {
+                    channels.add(channelFuture.channel());
+                }
+            });
+        }
+        return channels;
+    }
+
+    public static void main(String[] args) throws Exception {
         //启动定时器，每隔0.5秒上传一次
         new PushSchedulerStarter().startPusher();
 

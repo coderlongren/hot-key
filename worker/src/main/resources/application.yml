@@ -7,3 +7,5 @@ etcd:
 spring:
   aop:
     proxy-target-class: true
+server:
+  port: 9999

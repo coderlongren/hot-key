@@ -10,8 +10,10 @@ import com.jd.platform.common.rule.KeyRule;
 import com.jd.platform.common.tool.FastJsonUtils;
 import com.jd.platform.common.tool.IpUtils;
 import com.jd.platform.worker.model.KeyRuleHolder;
+import io.grpc.StatusRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -31,6 +33,8 @@ public class EtcdStarter {
     @Resource
     private IConfigCenter configCenter;
 
+    @Value("${netty.port}")
+    private int port;
 
     //Grant：分配一个租约。
     //Revoke：释放一个租约。
@@ -44,11 +48,10 @@ public class EtcdStarter {
      * 启动回调监听器
      */
     @Async
-    public void init() throws Exception {
-        //上传自己的ip信息到配置中心
+    public void init() {
+        //上传自己的ip信息到配置中心并维持心跳
         uploadNodeInfo();
 
-//        KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.rulePath);
         KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.hotKeyPath + "a/");
         while (watchIterator.hasNext()) {
             WatchUpdate watchUpdate = watchIterator.next();
@@ -67,7 +70,13 @@ public class EtcdStarter {
      */
     @Scheduled(fixedRate = 60000)
     public void pullRules() {
-        List<KeyValue> keyValues = configCenter.getPrefix(ConfigConstant.rulePath);
+        List<KeyValue> keyValues;
+        try {
+            keyValues = configCenter.getPrefix(ConfigConstant.rulePath);
+        } catch (StatusRuntimeException ex) {
+            logger.error("etcd is unConnected . please do something");
+            return;
+        }
         if (CollectionUtils.isEmpty(keyValues)) {
             logger.warn("very important warn !!! rule info is null!!!");
             return;
@@ -88,10 +97,9 @@ public class EtcdStarter {
             String ip = IpUtils.getIp();
             String hostName = IpUtils.getHostName();
             //每4秒续约一次。将自己的ip注册到etcd的固定目录下
-            configCenter.keepAlive(ConfigConstant.workersPath + hostName, ip, 4, 5);
+            configCenter.keepAlive(ConfigConstant.workersPath + hostName, ip + ":" + port, 4, 5);
         } catch (Exception e) {
             logger.error("keep alive with etcd server error");
-            e.printStackTrace();
         }
     }
 
