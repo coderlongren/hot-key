@@ -104,7 +104,7 @@ public class EtcdStarter {
     }
 
 
-    private long storeLeaseId;
+    private long storeLeaseId = -1;
 
     /**
      * 启动后，上传自己的信息到etcd，并维持心跳包
@@ -126,6 +126,31 @@ public class EtcdStarter {
     }
 
     /**
+     * 每隔一会去check一下，自己还在不在etcd里
+     */
+    @PostConstruct
+    public void makeSureSelfOn() {
+        //开启上传worker信息
+        ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+        scheduledExecutorService.scheduleAtFixedRate(() -> {
+
+            try {
+                String value = configCenter.get(buildKey());
+                if (!buildValue().equals(value)) {
+                    logger.info("check self info exist in etcd , return false");
+                    handUpload();
+                } else {
+                    logger.info("check self info exist in etcd , return true");
+                }
+            } catch (Exception e) {
+                //do nothing
+            }
+
+
+        }, 5, 30, TimeUnit.SECONDS);
+    }
+
+    /**
      * 通过http请求手工上传信息到etcd，适用于正常使用过程中，etcd挂掉，导致worker租期到期被删除，无法自动注册
      */
     public boolean handUpload() {
@@ -141,15 +166,19 @@ public class EtcdStarter {
     }
 
     private void uploadKey() {
-        String ip = IpUtils.getIp();
-
-        configCenter.put(buildKey(), ip + ":" + port, storeLeaseId);
+        configCenter.put(buildKey(), buildValue(), storeLeaseId);
     }
 
     private String buildKey() {
         String hostName = IpUtils.getHostName();
         return ConfigConstant.workersPath + hostName;
     }
+
+    private String buildValue() {
+        String ip = IpUtils.getIp();
+        return ip + ":" + port;
+    }
+
 
     private long createLeaseId() {
         try {
