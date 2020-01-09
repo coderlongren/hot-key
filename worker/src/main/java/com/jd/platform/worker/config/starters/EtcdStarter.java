@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * worker端对etcd相关的处理
+ *
  * @author wuweifeng wrote on 2019-12-10
  * @version 1.0
  */
@@ -103,6 +104,8 @@ public class EtcdStarter {
     }
 
 
+    private long storeLeaseId;
+
     /**
      * 启动后，上传自己的信息到etcd，并维持心跳包
      */
@@ -112,12 +115,10 @@ public class EtcdStarter {
         ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
         scheduledExecutorService.scheduleAtFixedRate(() -> {
             logger.info("upload info to etcd");
-            long leaseId = createLeaseId();
-            if (leaseId != -1) {
-                String ip = IpUtils.getIp();
-                String hostName = IpUtils.getHostName();
-                configCenter.put(ConfigConstant.workersPath + hostName, ip + ":" + port, leaseId);
-
+            storeLeaseId = createLeaseId();
+            if (storeLeaseId != -1) {
+                //上报到etcd
+                uploadKey();
                 scheduledExecutorService.shutdown();
             }
 
@@ -129,15 +130,25 @@ public class EtcdStarter {
      */
     public boolean handUpload() {
         logger.info("hand upload info to etcd");
-        long leaseId = createLeaseId();
-        if (leaseId != -1) {
-            String ip = IpUtils.getIp();
-            String hostName = IpUtils.getHostName();
-            configCenter.put(ConfigConstant.workersPath + hostName, ip + ":" + port, leaseId);
+
+        if (storeLeaseId != -1) {
+            //上报到etcd
+            uploadKey();
             return true;
         } else {
             return false;
         }
+    }
+
+    private void uploadKey() {
+        String ip = IpUtils.getIp();
+
+        configCenter.put(buildKey(), ip + ":" + port, storeLeaseId);
+    }
+
+    private String buildKey() {
+        String hostName = IpUtils.getHostName();
+        return ConfigConstant.workersPath + hostName;
     }
 
     private long createLeaseId() {

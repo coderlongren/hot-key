@@ -1,8 +1,11 @@
 package com.jd.platform.worker;
 
 import com.ibm.etcd.api.KeyValue;
+import com.ibm.etcd.api.LeaseLeasesResponse;
+import com.ibm.etcd.api.LeaseStatus;
 import com.jd.platform.common.configcenter.ConfigConstant;
 import com.jd.platform.common.configcenter.IConfigCenter;
+import com.jd.platform.common.configcenter.etcd.JdEtcdClient;
 import com.jd.platform.worker.config.starters.EtcdStarter;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,6 +14,7 @@ import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author wuweifeng wrote on 2019-12-09
@@ -24,10 +28,12 @@ public class TestController {
     private EtcdStarter etcdStarter;
 
     @RequestMapping("test")
-    public String aa(String key) {
-        iConfigCenter.put(ConfigConstant.hotKeyPath + "a/" + key, "1");
-        iConfigCenter.put(ConfigConstant.hotKeyPath + "a/" + key + "1", "1");
-        return "1";
+    public Object aa(String key) throws ExecutionException, InterruptedException {
+        LeaseLeasesResponse response = ((JdEtcdClient)iConfigCenter).getLeaseClient().list().get();
+        for(LeaseStatus status : response.getLeasesList()) {
+            System.out.println(status.getID());
+        }
+        return 1;
     }
 
     /**

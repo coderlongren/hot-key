@@ -29,10 +29,19 @@ public class JdEtcdClient implements IConfigCenter {
     private LeaseClient leaseClient;
     private LockClient lockClient;
 
+
     public JdEtcdClient(KvStoreClient kvStoreClient) {
         this.kvClient = kvStoreClient.getKvClient();
         this.leaseClient = kvStoreClient.getLeaseClient();
         this.lockClient = kvStoreClient.getLockClient();
+    }
+
+    public LeaseClient getLeaseClient() {
+        return leaseClient;
+    }
+
+    public void setLeaseClient(LeaseClient leaseClient) {
+        this.leaseClient = leaseClient;
     }
 
     @Override
@@ -43,6 +52,11 @@ public class JdEtcdClient implements IConfigCenter {
     @Override
     public void put(String key, String value, long leaseId) {
         kvClient.put(ByteString.copyFromUtf8(key), ByteString.copyFromUtf8(value), leaseId).sync();
+    }
+
+    @Override
+    public void revoke(long leaseId) {
+        leaseClient.revoke(leaseId);
     }
 
     @Override

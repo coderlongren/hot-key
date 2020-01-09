@@ -21,6 +21,11 @@ public interface IConfigCenter {
     void put(String key, String value, long leaseId);
 
     /**
+     * 删除一个lease
+     */
+    void revoke(long leaseId);
+
+    /**
      * 存入key、value，和过期时间，单位是秒
      */
     long putAndGrant(String key, String value, long ttl);
