@@ -32,7 +32,7 @@ public class EtcdStarter {
         //开启拉取etcd的worker信息，如果拉取失败，则定时继续拉取
         ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
         scheduledExecutorService.scheduleAtFixedRate(() -> {
-            logger.info("trying to connect to etcd . emmmmmmmmmm");
+            logger.info("trying to connect to etcd and fetch worker info");
             boolean success = fetch();
             if (success) {
                 scheduledExecutorService.shutdown();

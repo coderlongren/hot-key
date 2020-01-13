@@ -1,4 +1,4 @@
-package com.jd.platform.client.core;
+package com.jd.platform.client;
 
 /**
  * @author wuweifeng wrote on 2019-12-05

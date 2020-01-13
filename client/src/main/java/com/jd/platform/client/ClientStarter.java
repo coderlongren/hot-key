@@ -1,4 +1,4 @@
-package com.jd.platform.client.core;
+package com.jd.platform.client;
 
 import com.jd.platform.client.core.eventbus.EventBusCenter;
 import com.jd.platform.client.etcd.EtcdConfigFactory;
@@ -13,10 +13,13 @@ import org.slf4j.LoggerFactory;
  * @author wuweifeng wrote on 2019-12-05
  * @version 1.0
  */
-public class ClientBuilder {
+public class ClientStarter {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    public ClientBuilder(String appName) {
+    private String appName;
+    private String etcdServer;
+
+    public ClientStarter(String appName) {
         if (appName == null) {
             throw new NullPointerException("appName cannot be null!");
         }
@@ -24,7 +27,32 @@ public class ClientBuilder {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        new ClientBuilder("").startPipeline("https://127.0.0.1:2379");
+        new ClientStarter("").startPipeline("https://127.0.0.1:2379");
+    }
+
+    public static class Builder {
+        private String appName;
+        private String etcdServer;
+
+        public Builder() {
+        }
+
+        public Builder setAppName(String appName) {
+            this.appName = appName;
+            return this;
+        }
+
+        public Builder setEtcdServer(String etcdServer) {
+            this.etcdServer = etcdServer;
+            return this;
+        }
+
+        public ClientStarter build() {
+            ClientStarter clientStarter = new ClientStarter(appName);
+            clientStarter.etcdServer = etcdServer;
+            return clientStarter;
+        }
+
     }
 
     /**

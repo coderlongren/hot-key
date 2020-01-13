@@ -1,6 +1,6 @@
 package com.jd.platform.client.netty;
 
-import com.jd.platform.client.core.Context;
+import com.jd.platform.client.Context;
 import com.jd.platform.common.model.HotKeyMsg;
 import com.jd.platform.common.model.typeenum.MessageType;
 import com.jd.platform.common.tool.Constant;

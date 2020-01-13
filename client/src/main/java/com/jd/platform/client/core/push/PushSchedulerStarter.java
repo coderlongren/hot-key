@@ -1,6 +1,6 @@
 package com.jd.platform.client.core.push;
 
-import com.jd.platform.client.core.Context;
+import com.jd.platform.client.Context;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

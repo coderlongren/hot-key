@@ -1,7 +1,7 @@
 package com.jd.platform.client.core.push;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.jd.platform.client.core.Context;
+import com.jd.platform.client.Context;
 import com.jd.platform.common.model.HotKeyModel;
 import com.jd.platform.common.model.typeenum.KeyType;
 
