@@ -60,7 +60,7 @@ public class ClientStarter {
     /**
      * 启动监听etcd
      */
-    private void startPipeline() {
+    public void startPipeline() {
         //设置etcd地址
         EtcdConfigFactory.buildConfigCenter(etcdServer);
 

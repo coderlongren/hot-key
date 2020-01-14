@@ -13,6 +13,7 @@
         <module>worker</module>
         <module>client</module>
         <module>common</module>
+        <module>sample</module>
     </modules>
 
     <properties>
