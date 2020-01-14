@@ -1,5 +1,6 @@
 package com.jd.platform.common.configcenter.etcd;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.google.protobuf.ByteString;
 import com.ibm.etcd.api.KeyValue;
 import com.ibm.etcd.api.LeaseGrantResponse;
@@ -10,7 +11,6 @@ import com.ibm.etcd.client.lease.LeaseClient;
 import com.ibm.etcd.client.lease.PersistentLease;
 import com.ibm.etcd.client.lock.LockClient;
 import com.jd.platform.common.configcenter.IConfigCenter;
-import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -81,7 +81,7 @@ public class JdEtcdClient implements IConfigCenter {
     public String get(String key) {
         RangeResponse rangeResponse = kvClient.get(ByteString.copyFromUtf8(key)).sync();
         List<KeyValue> keyValues = rangeResponse.getKvsList();
-        if (CollectionUtils.isEmpty(keyValues)) {
+        if (CollectionUtil.isEmpty(keyValues)) {
             return null;
         }
         return keyValues.get(0).getValue().toStringUtf8();

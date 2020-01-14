@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -30,7 +29,6 @@ public class NodesServerStarter {
     @Resource
     private List<INettyMsgFilter> messageFilters;
 
-    @Async
     @EventListener(ApplicationReadyEvent.class)
     public void start() throws Exception {
         logger.info("netty server is starting");

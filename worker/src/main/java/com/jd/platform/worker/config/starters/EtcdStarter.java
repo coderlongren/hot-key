@@ -14,6 +14,8 @@ import io.grpc.StatusRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -109,7 +111,8 @@ public class EtcdStarter {
     /**
      * 启动后，上传自己的信息到etcd，并维持心跳包
      */
-    @PostConstruct
+    @EventListener(ApplicationReadyEvent.class)
+    @Async
     public void upload() {
         //开启上传worker信息
         ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
@@ -122,7 +125,7 @@ public class EtcdStarter {
                 scheduledExecutorService.shutdown();
             }
 
-        }, 0, 5000, TimeUnit.MILLISECONDS);
+        }, 1, 5, TimeUnit.SECONDS);
     }
 
     /**

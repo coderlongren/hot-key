@@ -4,6 +4,7 @@ import com.jd.platform.client.Context;
 import com.jd.platform.common.model.HotKeyMsg;
 import com.jd.platform.common.model.typeenum.MessageType;
 import com.jd.platform.common.tool.Constant;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author wuweifeng wrote on 2019-11-05.
  */
+@ChannelHandler.Sharable
 public class NettyClientHandler extends SimpleChannelInboundHandler<HotKeyMsg> {
 
     private Logger logger = LoggerFactory.getLogger(getClass());

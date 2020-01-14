@@ -10,6 +10,8 @@ import com.jd.platform.common.configcenter.etcd.JdEtcdBuilder;
 public class EtcdConfigFactory {
     private static IConfigCenter configCenter;
 
+    private EtcdConfigFactory() {}
+
     public static IConfigCenter configCenter() {
         return configCenter;
     }

@@ -3,7 +3,7 @@ package com.jd.platform.client;
 import com.jd.platform.client.core.eventbus.EventBusCenter;
 import com.jd.platform.client.etcd.EtcdConfigFactory;
 import com.jd.platform.client.etcd.EtcdStarter;
-import com.jd.platform.client.netty.NettyClient;
+import com.jd.platform.client.netty.subscribe.WorkerChangeSubscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 public class ClientStarter {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    private String appName;
     private String etcdServer;
 
     public ClientStarter(String appName) {
@@ -27,7 +26,10 @@ public class ClientStarter {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        new ClientStarter("").startPipeline("https://127.0.0.1:2379");
+        ClientStarter.Builder builder = new Builder();
+        ClientStarter starter = builder.setAppName("a").setEtcdServer("https://127.0.0.1:2379").build();
+        starter.startPipeline();
+
     }
 
     public static class Builder {
@@ -58,7 +60,7 @@ public class ClientStarter {
     /**
      * 启动监听etcd
      */
-    private void startPipeline(String etcdServer) {
+    private void startPipeline() {
         //设置etcd地址
         EtcdConfigFactory.buildConfigCenter(etcdServer);
 
@@ -69,13 +71,12 @@ public class ClientStarter {
         starter.fetchWorkerInfo();
 
         //启动etcd监听
-//        new Thread(starter::startWatch).start();
         starter.startWatch();
     }
 
     private void registEventBus() {
         //netty连接器会关注WorkerInfoChangeEvent事件
-        EventBusCenter.register(new NettyClient());
+        EventBusCenter.register(new WorkerChangeSubscriber());
     }
 
     private void fetchWorkerAddress() {
