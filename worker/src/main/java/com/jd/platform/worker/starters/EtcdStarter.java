@@ -1,4 +1,4 @@
-package com.jd.platform.worker.config.starters;
+package com.jd.platform.worker.starters;
 
 import com.ibm.etcd.api.Event;
 import com.ibm.etcd.api.KeyValue;

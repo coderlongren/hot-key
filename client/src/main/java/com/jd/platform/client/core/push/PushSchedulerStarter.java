@@ -25,7 +25,7 @@ public class PushSchedulerStarter {
             @Override
             public void run() {
                 ICollectHK collectHK = HKConfigFactory.getCollector();
-                HKConfigFactory.getPusher().send(Context.appName, collectHK.lockAndGetResult());
+                HKConfigFactory.getPusher().send(Context.APP_NAME, collectHK.lockAndGetResult());
                 collectHK.finishOnce();
             }
         },600, period, TimeUnit.MILLISECONDS);

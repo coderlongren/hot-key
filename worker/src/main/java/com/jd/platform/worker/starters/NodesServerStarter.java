@@ -1,4 +1,4 @@
-package com.jd.platform.worker.config.starters;
+package com.jd.platform.worker.starters;
 
 import com.jd.platform.worker.netty.client.IClientChangeListener;
 import com.jd.platform.worker.netty.filter.INettyMsgFilter;

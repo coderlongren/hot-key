@@ -6,7 +6,7 @@ import com.ibm.etcd.api.LeaseStatus;
 import com.jd.platform.common.configcenter.ConfigConstant;
 import com.jd.platform.common.configcenter.IConfigCenter;
 import com.jd.platform.common.configcenter.etcd.JdEtcdClient;
-import com.jd.platform.worker.config.starters.EtcdStarter;
+import com.jd.platform.worker.starters.EtcdStarter;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 

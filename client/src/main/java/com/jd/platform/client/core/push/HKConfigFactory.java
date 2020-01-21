@@ -1,8 +1,5 @@
 package com.jd.platform.client.core.push;
 
-import java.nio.channels.Channel;
-import java.util.List;
-
 /**
  * @author wuweifeng wrote on 2020-01-06
  * @version 1.0
@@ -20,12 +17,12 @@ public class HKConfigFactory {
      * 热key发送器，发到netty
      */
     public static IPushHK getPusher() {
+        if (pushHK == null) {
+            pushHK = new NettyPusher();
+        }
         return pushHK;
     }
 
-    public static void buildPusher(List<Channel> channels) {
-        pushHK = new NettyPusher(channels);
-    }
 
     /**
      * 热key搜集器，暂存key

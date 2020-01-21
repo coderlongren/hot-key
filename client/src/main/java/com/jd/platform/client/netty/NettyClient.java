@@ -63,7 +63,8 @@ public class NettyClient {
         return bootstrap;
     }
 
-    public void connect(List<String> addresses) {
+    public boolean connect(List<String> addresses) {
+        boolean allSuccess = true;
         for (int i = 0; i < addresses.size(); i++) {
             String address = addresses.get(i);
             String[] ss = address.split(":");
@@ -73,9 +74,12 @@ public class NettyClient {
                 WorkerInfoHolder.put(address, channel);
             } catch (Exception e) {
                 logger.error("----该worker连不上----" + address);
-                e.printStackTrace();
+                WorkerInfoHolder.put(address, null);
+                allSuccess = false;
             }
         }
+
+        return allSuccess;
 
         //这一步就阻塞了
 //            channelFuture.channel().closeFuture().sync();
@@ -93,7 +97,7 @@ public class NettyClient {
 //            public void operationComplete(ChannelFuture channelFuture) throws Exception {
 //                System.out.println(channelFuture.isSuccess());
 //
-//                channelFuture.channel().writeAndFlush(new HotKeyMsg(MessageType.APP_NAME, Context.appName));
+//                channelFuture.channel().writeAndFlush(new HotKeyMsg(MessageType.APP_NAME, Context.APP_NAME));
 //
 //                for (int j = 0; j < 1000; j++) {
 //                    HotKeyPusher.push("" + i, KeyType.REDIS_KEY);

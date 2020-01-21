@@ -20,9 +20,9 @@ public class ClientStarter {
 
     public ClientStarter(String appName) {
         if (appName == null) {
-            throw new NullPointerException("appName cannot be null!");
+            throw new NullPointerException("APP_NAME cannot be null!");
         }
-        Context.appName = appName;
+        Context.APP_NAME = appName;
     }
 
     public static void main(String[] args) throws InterruptedException {

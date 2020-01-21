@@ -5,6 +5,10 @@ package com.jd.platform.client;
  * @version 1.0
  */
 public class Context {
-    public static String appName = "aaa";
+    public static String APP_NAME = "aaa";
 
+    /**
+     * 与worker连接断开后，是否需要重连
+     */
+    public static boolean NEED_RECONNECT = true;
 }

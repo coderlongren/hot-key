@@ -12,7 +12,7 @@ import javax.annotation.PostConstruct;
  */
 @Component
 public class Starter {
-    @Value("${etcd-server}")
+    @Value("${etcd.server}")
     private String etcd;
     @Value("${spring.application.name}")
     private String appName;

@@ -24,15 +24,17 @@ public class HotKeyPusher {
             return;
         }
         HotKeyModel hotKeyModel = new HotKeyModel();
-        hotKeyModel.setAppName(Context.appName);
+        hotKeyModel.setAppName(Context.APP_NAME);
         hotKeyModel.setKeyType(keyType);
         hotKeyModel.setCount(count);
         hotKeyModel.setRemove(remove);
         hotKeyModel.setKey(key);
 
-        //如果是删除key，就直接发到netty去，不用搜集聚合
+
         if (remove) {
-            HKConfigFactory.getPusher().send(Context.appName, CollectionUtil.list(false, hotKeyModel));
+            //如果是删除key，就直接发到etcd去，不用做聚合
+            //TODO
+            HKConfigFactory.getPusher().send(Context.APP_NAME, CollectionUtil.list(false, hotKeyModel));
         } else {
             HKConfigFactory.getCollector().collect(hotKeyModel);
         }
