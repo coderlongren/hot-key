@@ -1,4 +1,4 @@
-package com.jd.platform.worker.eventlisten.keyevent;
+package com.jd.platform.worker.keylistener;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.google.common.base.Joiner;

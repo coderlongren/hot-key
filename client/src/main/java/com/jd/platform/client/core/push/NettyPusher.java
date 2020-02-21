@@ -1,6 +1,11 @@
 package com.jd.platform.client.core.push;
 
+import com.jd.platform.client.model.WorkerInfoHolder;
 import com.jd.platform.common.model.HotKeyModel;
+import com.jd.platform.common.model.HotKeyMsg;
+import com.jd.platform.common.model.typeenum.MessageType;
+import com.jd.platform.common.tool.FastJsonUtils;
+import io.netty.channel.Channel;
 
 import java.util.List;
 
@@ -13,15 +18,16 @@ public class NettyPusher implements IPushHK {
 
     @Override
     public void send(String appName, List<HotKeyModel> list) {
-
-
         //积攒了半秒的key集合，按照hash分发到不同的worker
         long now = System.currentTimeMillis();
         for(HotKeyModel model : list) {
             model.setCreateTime(now);
-
+            Channel channel = WorkerInfoHolder.chooseChannel(model.getKey());
+            if (channel == null) {
+                continue;
+            }
+            channel.writeAndFlush(new HotKeyMsg(MessageType.REQUEST_NEW_KEY, FastJsonUtils.convertObjectToJSON(model)));
         }
-
 
 
     }

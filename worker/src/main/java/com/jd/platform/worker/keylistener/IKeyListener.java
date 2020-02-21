@@ -1,4 +1,4 @@
-package com.jd.platform.worker.eventlisten.keyevent;
+package com.jd.platform.worker.keylistener;
 
 import com.jd.platform.common.model.HotKeyModel;
 

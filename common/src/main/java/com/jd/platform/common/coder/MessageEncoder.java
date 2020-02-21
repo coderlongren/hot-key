@@ -1,4 +1,4 @@
-package com.jd.platform.client.netty.encoder;
+package com.jd.platform.common.coder;
 
 import com.jd.platform.common.model.HotKeyMsg;
 import com.jd.platform.common.model.typeenum.MessageType;

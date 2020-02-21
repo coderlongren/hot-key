@@ -4,7 +4,7 @@ import com.jd.platform.common.tool.Constant;
 import com.jd.platform.worker.disruptor.hotkey.HotKeyConsumer;
 import com.jd.platform.worker.disruptor.hotkey.HotKeyEvent;
 import com.jd.platform.worker.disruptor.hotkey.HotKeyEventProducer;
-import com.jd.platform.worker.eventlisten.keyevent.IKeyListener;
+import com.jd.platform.worker.keylistener.IKeyListener;
 import com.lmax.disruptor.dsl.Disruptor;
 
 /**

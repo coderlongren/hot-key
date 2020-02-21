@@ -36,6 +36,7 @@ public class HotKeyPusher {
             //TODO
             HKConfigFactory.getPusher().send(Context.APP_NAME, CollectionUtil.list(false, hotKeyModel));
         } else {
+            //积攒起来，等待每半秒发送一次
             HKConfigFactory.getCollector().collect(hotKeyModel);
         }
     }

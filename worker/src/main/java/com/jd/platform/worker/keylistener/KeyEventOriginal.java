@@ -1,4 +1,4 @@
-package com.jd.platform.worker.eventlisten.keyevent;
+package com.jd.platform.worker.keylistener;
 
 /**
  * key变化的事件来源

@@ -2,8 +2,8 @@ package com.jd.platform.worker.disruptor.hotkey;
 
 import com.jd.platform.common.model.HotKeyModel;
 import com.jd.platform.worker.disruptor.AbsConsumer;
-import com.jd.platform.worker.eventlisten.keyevent.IKeyListener;
-import com.jd.platform.worker.eventlisten.keyevent.KeyEventOriginal;
+import com.jd.platform.worker.keylistener.IKeyListener;
+import com.jd.platform.worker.keylistener.KeyEventOriginal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

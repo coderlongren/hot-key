@@ -56,6 +56,7 @@ public class EtcdStarter {
     /**
      * 启动回调监听器
      */
+    @EventListener(ApplicationReadyEvent.class)
     @Async
     public void watch() {
         KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.hotKeyPath + "a/");

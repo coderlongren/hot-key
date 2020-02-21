@@ -1,8 +1,8 @@
 package com.jd.platform.client.netty;
 
 import com.jd.platform.client.model.WorkerInfoHolder;
-import com.jd.platform.client.netty.encoder.MessageDecoder;
-import com.jd.platform.client.netty.encoder.MessageEncoder;
+import com.jd.platform.common.coder.Codec;
+import com.jd.platform.common.coder.NettyCodec;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -27,6 +27,9 @@ public class NettyClient {
     private static final NettyClient nettyClient = new NettyClient();
 
     private Bootstrap bootstrap;
+
+    private Codec codec = new NettyCodec();
+
 
     public static NettyClient getInstance() {
         return nettyClient;
@@ -53,8 +56,8 @@ public class NettyClient {
                         ch.pipeline()
                                 .addLast(new LengthFieldBasedFrameDecoder(1024 * 1024, 0, 4, 0, 4))
                                 .addLast(new LengthFieldPrepender(4))
-                                .addLast(new MessageEncoder())
-                                .addLast(new MessageDecoder())
+                                .addLast(codec.newEncoder())
+                                .addLast(codec.newDecoder())
                                 //10秒没消息时，就发心跳包过去
                                 .addLast(new IdleStateHandler(0, 0, 10))
                                 .addLast(nettyClientHandler);
@@ -65,8 +68,7 @@ public class NettyClient {
 
     public boolean connect(List<String> addresses) {
         boolean allSuccess = true;
-        for (int i = 0; i < addresses.size(); i++) {
-            String address = addresses.get(i);
+        for (String address : addresses) {
             String[] ss = address.split(":");
             try {
                 ChannelFuture channelFuture = bootstrap.connect(ss[0], Integer.parseInt(ss[1])).sync();

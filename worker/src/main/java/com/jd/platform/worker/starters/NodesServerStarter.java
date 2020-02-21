@@ -1,5 +1,6 @@
 package com.jd.platform.worker.starters;
 
+import com.jd.platform.common.coder.Codec;
 import com.jd.platform.worker.netty.client.IClientChangeListener;
 import com.jd.platform.worker.netty.filter.INettyMsgFilter;
 import com.jd.platform.worker.netty.server.NodesServer;
@@ -28,6 +29,8 @@ public class NodesServerStarter {
     private IClientChangeListener iClientChangeListener;
     @Resource
     private List<INettyMsgFilter> messageFilters;
+    @Resource
+    private Codec codec;
 
     @EventListener(ApplicationReadyEvent.class)
     public void start() throws Exception {
@@ -36,6 +39,7 @@ public class NodesServerStarter {
         NodesServer nodesServer = new NodesServer();
         nodesServer.setClientChangeListener(iClientChangeListener);
         nodesServer.setMessageFilters(messageFilters);
+        nodesServer.setCodec(codec);
         nodesServer.startNettyServer(port);
     }
 }

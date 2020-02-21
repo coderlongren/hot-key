@@ -1,8 +1,7 @@
 package com.jd.platform.worker.netty.server;
 
+import com.jd.platform.common.coder.Codec;
 import com.jd.platform.worker.netty.client.IClientChangeListener;
-import com.jd.platform.worker.netty.encoder.MessageDecoder;
-import com.jd.platform.worker.netty.encoder.MessageEncoder;
 import com.jd.platform.worker.netty.filter.INettyMsgFilter;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -23,6 +22,7 @@ import java.util.List;
 public class NodesServer {
     private IClientChangeListener clientChangeListener;
     private List<INettyMsgFilter> messageFilters;
+    private Codec codec;
 
     public void startNettyServer(int port) throws Exception {
         //配置线程组
@@ -70,8 +70,8 @@ public class NodesServer {
             ch.pipeline()
                     .addLast(new LengthFieldBasedFrameDecoder(1024 * 1024, 0, 4, 0, 4))
                     .addLast(new LengthFieldPrepender(4))
-                    .addLast(new MessageEncoder())
-                    .addLast(new MessageDecoder())
+                    .addLast(codec.newEncoder())
+                    .addLast(codec.newDecoder())
                     .addLast(serverHandler);
         }
     }
@@ -82,5 +82,9 @@ public class NodesServer {
 
     public void setMessageFilters(List<INettyMsgFilter> messageFilters) {
         this.messageFilters = messageFilters;
+    }
+
+    public void setCodec(Codec codec) {
+        this.codec = codec;
     }
 }

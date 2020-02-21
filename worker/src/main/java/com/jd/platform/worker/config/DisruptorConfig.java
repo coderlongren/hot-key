@@ -3,7 +3,7 @@ package com.jd.platform.worker.config;
 import com.jd.platform.worker.disruptor.MessageProducer;
 import com.jd.platform.worker.disruptor.ProducerFactory;
 import com.jd.platform.worker.disruptor.hotkey.HotKeyEvent;
-import com.jd.platform.worker.eventlisten.keyevent.IKeyListener;
+import com.jd.platform.worker.keylistener.IKeyListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
