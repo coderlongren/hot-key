@@ -5,8 +5,11 @@ package com.jd.platform.common.model.typeenum;
  * @version 1.0
  */
 public enum MessageType {
-    APP_NAME((byte) 1), REQUEST_NEW_KEY((byte) 2), PING((byte) 3), PONG((byte) 4), EMPTY((byte) 5),
-    RESPONSE_NEW_KEY((byte) 11),;
+    APP_NAME((byte) 1),
+    REQUEST_NEW_KEY((byte) 10),
+    RESPONSE_NEW_KEY((byte) 20),
+    PING((byte) 50), PONG((byte) 51),
+    EMPTY((byte) 60);
 
     private byte type;
 

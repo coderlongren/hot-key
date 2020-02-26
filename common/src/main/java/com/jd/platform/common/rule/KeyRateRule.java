@@ -15,17 +15,17 @@ public class KeyRateRule {
      */
     private boolean prefix;
     /**
-     * 间隔时间
+     * 间隔时间（秒）
      */
     private int duration = 2;
     /**
      * 累计数量
      */
-    private int count = 500;
+    private int count = 1000;
     /**
-     * 变热key后，本地、etcd缓存它多久。默认10分钟
+     * 变热key后，本地、etcd缓存它多久。默认1分钟
      */
-    private int continued = 600;
+    private int continued = 60;
 
     public KeyRateRule(String key) {
         this.key = key;

@@ -1,6 +1,10 @@
 package com.jd.platform.client;
 
+import com.jd.platform.client.cache.CacheFactory;
+import com.jd.platform.client.cache.LocalCache;
+import com.jd.platform.client.callback.ReceiveNewKeySubscribe;
 import com.jd.platform.client.core.eventbus.EventBusCenter;
+import com.jd.platform.client.core.key.PushSchedulerStarter;
 import com.jd.platform.client.etcd.EtcdConfigFactory;
 import com.jd.platform.client.etcd.EtcdStarter;
 import com.jd.platform.client.netty.subscribe.WorkerChangeSubscriber;
@@ -18,6 +22,12 @@ public class ClientStarter {
 
     private String etcdServer;
 
+    private LocalCache localCache;
+    /**
+     * 推送key的间隔(毫秒)
+     */
+    private Long pushPeriod;
+
     public ClientStarter(String appName) {
         if (appName == null) {
             throw new NullPointerException("APP_NAME cannot be null!");
@@ -25,16 +35,11 @@ public class ClientStarter {
         Context.APP_NAME = appName;
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        ClientStarter.Builder builder = new Builder();
-        ClientStarter starter = builder.setAppName("a").setEtcdServer("https://127.0.0.1:2379").build();
-        starter.startPipeline();
-
-    }
-
     public static class Builder {
         private String appName;
         private String etcdServer;
+        private LocalCache localCache;
+        private Long pushPeriod;
 
         public Builder() {
         }
@@ -49,9 +54,22 @@ public class ClientStarter {
             return this;
         }
 
+        public Builder setLocalCache(LocalCache localCache) {
+            this.localCache = localCache;
+            return this;
+        }
+
+        public Builder setPushPeriod(Long pushPeriod) {
+            this.pushPeriod = pushPeriod;
+            return this;
+        }
+
         public ClientStarter build() {
             ClientStarter clientStarter = new ClientStarter(appName);
             clientStarter.etcdServer = etcdServer;
+            clientStarter.localCache = localCache;
+            clientStarter.pushPeriod = pushPeriod;
+
             return clientStarter;
         }
 
@@ -63,6 +81,10 @@ public class ClientStarter {
     public void startPipeline() {
         //设置etcd地址
         EtcdConfigFactory.buildConfigCenter(etcdServer);
+        //设置本地缓存器
+        CacheFactory.setCache(localCache);
+        //开始定时推送
+        PushSchedulerStarter.startPusher(pushPeriod);
 
         registEventBus();
 
@@ -77,10 +99,9 @@ public class ClientStarter {
     private void registEventBus() {
         //netty连接器会关注WorkerInfoChangeEvent事件
         EventBusCenter.register(new WorkerChangeSubscriber());
+        //热key探测回调关注热key事件
+        EventBusCenter.register(new ReceiveNewKeySubscribe());
     }
 
-    private void fetchWorkerAddress() {
-
-    }
 
 }

@@ -1,6 +1,6 @@
 package com.jd.platform.client.netty;
 
-import com.jd.platform.client.model.WorkerInfoHolder;
+import com.jd.platform.client.holder.WorkerInfoHolder;
 import com.jd.platform.common.coder.Codec;
 import com.jd.platform.common.coder.NettyCodec;
 import io.netty.bootstrap.Bootstrap;
@@ -102,7 +102,7 @@ public class NettyClient {
 //                channelFuture.channel().writeAndFlush(new HotKeyMsg(MessageType.APP_NAME, Context.APP_NAME));
 //
 //                for (int j = 0; j < 1000; j++) {
-//                    HotKeyPusher.push("" + i, KeyType.REDIS_KEY);
+//                    HotKeyPusher.key("" + i, KeyType.REDIS_KEY);
 //                }
 //            }
 //        });

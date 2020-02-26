@@ -1,7 +1,7 @@
 package com.jd.platform.worker.config;
 
-import com.jd.platform.worker.netty.encoder.Codec;
-import com.jd.platform.worker.netty.encoder.RpcCodec;
+import com.jd.platform.common.coder.Codec;
+import com.jd.platform.common.coder.NettyCodec;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,6 +15,6 @@ public class CodecConfig {
 
     @Bean
     public Codec codec() {
-        return new RpcCodec();
+        return new NettyCodec();
     }
 }

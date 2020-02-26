@@ -3,7 +3,7 @@ package com.jd.platform.client.netty.subscribe;
 import com.google.common.eventbus.Subscribe;
 import com.jd.platform.client.Context;
 import com.jd.platform.client.etcd.WorkerInfoChangeEvent;
-import com.jd.platform.client.model.WorkerInfoHolder;
+import com.jd.platform.client.holder.WorkerInfoHolder;
 import com.jd.platform.client.netty.event.ChannelInactiveEvent;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;

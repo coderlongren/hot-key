@@ -1,4 +1,4 @@
-package com.jd.platform.client.model;
+package com.jd.platform.client.holder;
 
 import cn.hutool.core.util.StrUtil;
 import com.jd.platform.client.netty.NettyClient;
@@ -15,7 +15,7 @@ public class WorkerInfoHolder {
      * 保存worker的ip地址和Channel的映射关系，这是有序的。每次client发送消息时，都会根据该map的size进行hash
      * 如key-1就发送到workerHolder的第1个Channel去，key-2就发到第2个Channel去
      */
-    private static volatile List<Server> workerHolder = new ArrayList<>();
+    private static final List<Server> workerHolder = new ArrayList<>();
 
 
     private WorkerInfoHolder() {

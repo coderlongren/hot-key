@@ -1,4 +1,4 @@
-package com.jd.platform.client.core.push;
+package com.jd.platform.client.core.key;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.jd.platform.client.Context;
@@ -34,10 +34,10 @@ public class HotKeyPusher {
         if (remove) {
             //如果是删除key，就直接发到etcd去，不用做聚合
             //TODO
-            HKConfigFactory.getPusher().send(Context.APP_NAME, CollectionUtil.list(false, hotKeyModel));
+            KeyHandlerFactory.getPusher().send(Context.APP_NAME, CollectionUtil.list(false, hotKeyModel));
         } else {
             //积攒起来，等待每半秒发送一次
-            HKConfigFactory.getCollector().collect(hotKeyModel);
+            KeyHandlerFactory.getCollector().collect(hotKeyModel);
         }
     }
 

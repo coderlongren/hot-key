@@ -61,7 +61,7 @@ public class EtcdStarter {
                     addresses.add(ipPort);
                 }
                 logger.info("worker info list is : " + addresses);
-                //发布workinfo变更信息
+                //发布workerinfo变更信息
                 notifyWorkerChange(addresses);
                 return true;
             }

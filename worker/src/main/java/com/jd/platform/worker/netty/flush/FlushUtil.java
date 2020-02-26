@@ -20,7 +20,7 @@ public class FlushUtil {
         if (channelHandlerContext.channel().isWritable()) {
             channelHandlerContext.channel().writeAndFlush(msg).addListener(future -> {
                 if (!future.isSuccess()) {
-                    logger.warn("unexpected push. msg:{} fail:{}", msg, future.cause().getMessage());
+                    logger.warn("unexpected key. msg:{} fail:{}", msg, future.cause().getMessage());
                 }
             });
         } else {

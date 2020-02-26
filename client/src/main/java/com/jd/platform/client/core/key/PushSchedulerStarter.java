@@ -1,4 +1,4 @@
-package com.jd.platform.client.core.push;
+package com.jd.platform.client.core.key;
 
 import com.jd.platform.client.Context;
 
@@ -7,28 +7,25 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * 定时推送一批key到worker
  * @author wuweifeng wrote on 2020-01-06
  * @version 1.0
  */
 public class PushSchedulerStarter {
 
-    public void startPusher() {
-        startPusher(1000L);
-    }
-
-    public void startPusher(Long period) {
-        if (period == null) {
+    public static void startPusher(Long period) {
+        if (period == null || period <= 0) {
             period = 500L;
         }
         ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
         scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                ICollectHK collectHK = HKConfigFactory.getCollector();
-                HKConfigFactory.getPusher().send(Context.APP_NAME, collectHK.lockAndGetResult());
+                IKeyCollector collectHK = KeyHandlerFactory.getCollector();
+                KeyHandlerFactory.getPusher().send(Context.APP_NAME, collectHK.lockAndGetResult());
                 collectHK.finishOnce();
             }
-        },600, period, TimeUnit.MILLISECONDS);
+        },0, period, TimeUnit.MILLISECONDS);
     }
 
 }

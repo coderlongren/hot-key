@@ -1,4 +1,4 @@
-package com.jd.platform.client.core.push;
+package com.jd.platform.client.core.key;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author wuweifeng wrote on 2020-01-06
  * @version 1.0
  */
-public class TurnCollectHK implements ICollectHK {
+public class TurnKeyCollector implements IKeyCollector {
     private ConcurrentHashMap<String, HotKeyModel> map0 = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, HotKeyModel> map1 = new ConcurrentHashMap<>();
 

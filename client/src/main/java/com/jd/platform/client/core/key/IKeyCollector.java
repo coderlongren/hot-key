@@ -1,4 +1,4 @@
-package com.jd.platform.client.core.push;
+package com.jd.platform.client.core.key;
 
 import com.jd.platform.common.model.HotKeyModel;
 
@@ -9,7 +9,7 @@ import java.util.List;
  * @author wuweifeng wrote on 2020-01-06
  * @version 1.0
  */
-public interface ICollectHK {
+public interface IKeyCollector {
     List<HotKeyModel> lockAndGetResult();
 
     void collect(HotKeyModel hotKeyModel);

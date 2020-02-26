@@ -4,7 +4,7 @@ package com.jd.platform.worker.tool;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 滑动窗口。该窗口同样的key，都是单线程计算。
+ * 滑动窗口。该窗口同样的key都是单线程计算。
  *
  * @author wuweifeng wrote on 2019-12-04.
  */

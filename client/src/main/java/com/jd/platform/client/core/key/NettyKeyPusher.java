@@ -1,6 +1,6 @@
-package com.jd.platform.client.core.push;
+package com.jd.platform.client.core.key;
 
-import com.jd.platform.client.model.WorkerInfoHolder;
+import com.jd.platform.client.holder.WorkerInfoHolder;
 import com.jd.platform.common.model.HotKeyModel;
 import com.jd.platform.common.model.HotKeyMsg;
 import com.jd.platform.common.model.typeenum.MessageType;
@@ -14,7 +14,7 @@ import java.util.List;
  * @author wuweifeng wrote on 2020-01-06
  * @version 1.0
  */
-public class NettyPusher implements IPushHK {
+public class NettyKeyPusher implements IKeyPusher {
 
     @Override
     public void send(String appName, List<HotKeyModel> list) {
@@ -28,7 +28,6 @@ public class NettyPusher implements IPushHK {
             }
             channel.writeAndFlush(new HotKeyMsg(MessageType.REQUEST_NEW_KEY, FastJsonUtils.convertObjectToJSON(model)));
         }
-
 
     }
 

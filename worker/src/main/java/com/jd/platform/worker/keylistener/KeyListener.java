@@ -2,12 +2,10 @@ package com.jd.platform.worker.keylistener;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.google.common.base.Joiner;
-import com.jd.platform.common.configcenter.ConfigConstant;
-import com.jd.platform.common.configcenter.IConfigCenter;
 import com.jd.platform.common.model.HotKeyModel;
 import com.jd.platform.common.rule.KeyRateRule;
 import com.jd.platform.worker.model.KeyRuleHolder;
-import com.jd.platform.worker.netty.holder.ClientInfoHolder;
+import com.jd.platform.worker.netty.pusher.IPusher;
 import com.jd.platform.worker.tool.SlidingWindow;
 import com.jd.platform.worker.tool.SystemClock;
 import org.slf4j.Logger;
@@ -15,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * key的新增、删除处理
@@ -29,7 +28,7 @@ public class KeyListener implements IKeyListener {
     @Resource(name = "hotKeyCache")
     private Cache<String, Object> hotCache;
     @Resource
-    private IConfigCenter iConfigCenter;
+    private List<IPusher> IPushers;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -37,7 +36,7 @@ public class KeyListener implements IKeyListener {
     @Override
     public void newKey(HotKeyModel hotKeyModel, KeyEventOriginal original) {
         //cache里的key
-        String key = key(hotKeyModel);
+        String key = buildKey(hotKeyModel);
         //判断是不是刚热不久
         Object o = hotCache.getIfPresent(key);
         if (o != null) {
@@ -55,12 +54,12 @@ public class KeyListener implements IKeyListener {
 
             //开启推送
             hotKeyModel.setCreateTime(SystemClock.now());
-            logger.info("new key created event push : " + hotKeyModel.toString());
-            ClientInfoHolder.pushToApp(hotKeyModel.getAppName(), hotKeyModel);
+            logger.info("new key created event key : " + hotKeyModel.toString());
 
-            //推送到etcd
-            iConfigCenter.putAndGrant(keyPath(hotKeyModel, key), "1",
-                    KeyRuleHolder.getRuleByAppAndKey(hotKeyModel).getContinued());
+            for (IPusher pusher : IPushers) {
+                pusher.push(hotKeyModel);
+            }
+
         }
 
     }
@@ -68,18 +67,19 @@ public class KeyListener implements IKeyListener {
     @Override
     public void removeKey(HotKeyModel hotKeyModel, KeyEventOriginal original) {
         //cache里的key
-        String key = key(hotKeyModel);
+        String key = buildKey(hotKeyModel);
 
         hotCache.invalidate(key);
         cache.invalidate(key);
 
         //推送所有client删除
         hotKeyModel.setCreateTime(SystemClock.now());
-        logger.info("key delete event push : " + hotKeyModel.toString());
-        ClientInfoHolder.pushToApp(hotKeyModel.getAppName(), hotKeyModel);
+        logger.info("key delete event key : " + hotKeyModel.toString());
 
-        //推送etcd删除
-        iConfigCenter.delete(keyPath(hotKeyModel, key));
+        for (IPusher pusher : IPushers) {
+            pusher.remove(hotKeyModel);
+        }
+
     }
 
     /**
@@ -96,11 +96,8 @@ public class KeyListener implements IKeyListener {
         return slidingWindow;
     }
 
-    private String key(HotKeyModel hotKeyModel) {
+    private String buildKey(HotKeyModel hotKeyModel) {
         return Joiner.on("-").join(hotKeyModel.getAppName(), hotKeyModel.getKeyType(), hotKeyModel.getKey());
     }
 
-    private String keyPath(HotKeyModel hotKeyModel, String key) {
-        return ConfigConstant.hotKeyPath + hotKeyModel.getAppName() + "/" + key;
-    }
 }
