@@ -1,9 +1,7 @@
-package com.jd.platform.client.netty.subscribe;
+package com.jd.platform.client.core.worker;
 
 import com.google.common.eventbus.Subscribe;
 import com.jd.platform.client.Context;
-import com.jd.platform.client.etcd.WorkerInfoChangeEvent;
-import com.jd.platform.client.holder.WorkerInfoHolder;
 import com.jd.platform.client.netty.event.ChannelInactiveEvent;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
@@ -11,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * eventbus监听worker信息变动
@@ -26,7 +25,7 @@ public class WorkerChangeSubscriber {
      */
     @Subscribe
     public void connectAll(WorkerInfoChangeEvent event) {
-        logger.info("worker info is changed , new infos is :" + event.getAddresses());
+        logger.info("new infos is :" + event.getAddresses());
         List<String> addresses = event.getAddresses();
         if (addresses == null) {
             return;
@@ -46,24 +45,27 @@ public class WorkerChangeSubscriber {
         InetSocketAddress socketAddress = (InetSocketAddress) channel.remoteAddress();
         String address = socketAddress.getHostName() + ":" + socketAddress.getPort();
         logger.warn("this channel is inactive : " + socketAddress + " trying to NEED_RECONNECT 10 seconds later");
-        new Thread(() -> {
-            try {
-                while (true) {
-                    //如果不需要重连
-                    if (!Context.NEED_RECONNECT) {
-                        return;
-                    }
-                    Thread.sleep(10000);
-                    boolean success = WorkerInfoHolder.dealChannelInactive(address);
-                    if (success) {
-                        return;
+
+        CompletableFuture.runAsync(
+                () -> {
+                    try {
+                        while (true) {
+                            //如果不需要重连
+                            if (!Context.NEED_RECONNECT) {
+                                return;
+                            }
+                            Thread.sleep(10000);
+                            boolean success = WorkerInfoHolder.dealChannelInactive(address);
+                            if (success) {
+                                return;
+                            }
+                        }
+
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
+        );
     }
 
 

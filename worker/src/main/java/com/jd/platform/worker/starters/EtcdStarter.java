@@ -6,7 +6,7 @@ import com.ibm.etcd.client.kv.KvClient;
 import com.ibm.etcd.client.kv.WatchUpdate;
 import com.jd.platform.common.configcenter.ConfigConstant;
 import com.jd.platform.common.configcenter.IConfigCenter;
-import com.jd.platform.common.rule.KeyRule;
+import com.jd.platform.common.rule.IKeyRule;
 import com.jd.platform.common.tool.FastJsonUtils;
 import com.jd.platform.common.tool.IpUtils;
 import com.jd.platform.worker.model.KeyRuleHolder;
@@ -91,8 +91,8 @@ public class EtcdStarter {
         for (KeyValue keyValue : keyValues) {
             String appName = keyValue.getKey().toStringUtf8();
             String ruleJson = keyValue.getValue().toStringUtf8();
-            KeyRule keyRule = FastJsonUtils.toBean(ruleJson, KeyRule.class);
-            KeyRuleHolder.put(appName, keyRule);
+            List<IKeyRule> keyRules = FastJsonUtils.toList(ruleJson, IKeyRule.class);
+            KeyRuleHolder.put(appName, keyRules);
         }
     }
 

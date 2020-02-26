@@ -1,6 +1,6 @@
 package com.jd.platform.client.core.key;
 
-import com.jd.platform.client.holder.WorkerInfoHolder;
+import com.jd.platform.client.core.worker.WorkerInfoHolder;
 import com.jd.platform.common.model.HotKeyModel;
 import com.jd.platform.common.model.HotKeyMsg;
 import com.jd.platform.common.model.typeenum.MessageType;

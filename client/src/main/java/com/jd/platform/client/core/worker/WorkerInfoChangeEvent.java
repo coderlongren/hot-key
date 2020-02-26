@@ -1,4 +1,4 @@
-package com.jd.platform.client.etcd;
+package com.jd.platform.client.core.worker;
 
 import java.util.List;
 

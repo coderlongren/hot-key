@@ -47,7 +47,7 @@ public class FastJsonUtils {
     }
 
     // 转换为数组
-    public static <T> Object[] toArray(String text) {
+    public static Object[] toArray(String text) {
         return toArray(text, null);
     }
 
@@ -62,28 +62,17 @@ public class FastJsonUtils {
     }
 
     /**
-     * 将javabean转化为序列化的json字符串
-     */
-    /*public static Object beanToJson(KeyValue keyvalue) {
-        String textJson = JSON.toJSONString(keyvalue);
-        Object objectJson  = JSON.parse(textJson);
-        return objectJson;
-    }*/
-
-    /**
      * 将string转化为序列化的json字符串
      */
     public static Object textToJson(String text) {
-        Object objectJson = JSON.parse(text);
-        return objectJson;
+        return JSON.parse(text);
     }
 
     /**
      * json字符串转化为map
      */
     public static <K, V> Map<K, V> stringToCollect(String s) {
-        Map<K, V> m = (Map<K, V>) JSONObject.parseObject(s);
-        return m;
+        return (Map<K, V>) JSONObject.parseObject(s);
     }
 
     /**

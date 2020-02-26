@@ -19,14 +19,9 @@ public class Starter {
 
     @PostConstruct
     public void init() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                ClientStarter.Builder builder = new ClientStarter.Builder();
-                ClientStarter starter = builder.setAppName(appName).setEtcdServer(etcd).build();
-                starter.startPipeline();
-            }
-        }).start();
-
+        ClientStarter.Builder builder = new ClientStarter.Builder();
+        ClientStarter starter = builder.setAppName(appName).setEtcdServer(etcd).build();
+        starter.startPipeline();
     }
+
 }

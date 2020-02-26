@@ -6,14 +6,15 @@ import com.ibm.etcd.api.LeaseStatus;
 import com.jd.platform.common.configcenter.ConfigConstant;
 import com.jd.platform.common.configcenter.IConfigCenter;
 import com.jd.platform.common.configcenter.etcd.JdEtcdClient;
+import com.jd.platform.common.rule.DefaultKeyRule;
+import com.jd.platform.common.rule.IKeyRule;
+import com.jd.platform.common.tool.FastJsonUtils;
 import com.jd.platform.worker.starters.EtcdStarter;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -70,6 +71,17 @@ public class TestController {
         return map;
     }
 
+    @RequestMapping("addRulePath")
+    public Object addRulePath(String appName) {
+        DefaultKeyRule defaultKeyRule = new DefaultKeyRule();
+        List<IKeyRule> keyRules = new ArrayList<>();
+        keyRules.add(defaultKeyRule);
+        String s = FastJsonUtils.convertObjectToJSON(keyRules);
+        System.out.println(s);
+        iConfigCenter.put(ConfigConstant.rulePath + appName, s);
+        return "success";
+    }
+
     @RequestMapping("hotKeyPath")
     public Object hotKeyPath() {
         List<KeyValue> list = iConfigCenter.getPrefix(ConfigConstant.hotKeyPath);
@@ -79,4 +91,5 @@ public class TestController {
         }
         return map;
     }
+
 }

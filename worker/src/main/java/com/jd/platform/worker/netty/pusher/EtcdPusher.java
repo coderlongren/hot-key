@@ -22,7 +22,7 @@ public class EtcdPusher implements IPusher {
     public void push(HotKeyModel model) {
         //推送到etcd
         iConfigCenter.putAndGrant(keyPath(model), "1",
-                KeyRuleHolder.getRuleByAppAndKey(model).getContinued());
+                KeyRuleHolder.getRuleByAppAndKey(model).getKeyRule().getDuration());
     }
 
     @Override

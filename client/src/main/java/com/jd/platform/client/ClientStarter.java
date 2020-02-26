@@ -5,11 +5,10 @@ import com.jd.platform.client.cache.LocalCache;
 import com.jd.platform.client.callback.ReceiveNewKeySubscribe;
 import com.jd.platform.client.core.eventbus.EventBusCenter;
 import com.jd.platform.client.core.key.PushSchedulerStarter;
+import com.jd.platform.client.core.rule.KeyRuleHolder;
+import com.jd.platform.client.core.worker.WorkerChangeSubscriber;
 import com.jd.platform.client.etcd.EtcdConfigFactory;
 import com.jd.platform.client.etcd.EtcdStarter;
-import com.jd.platform.client.netty.subscribe.WorkerChangeSubscriber;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 客户端启动器
@@ -18,7 +17,6 @@ import org.slf4j.LoggerFactory;
  * @version 1.0
  */
 public class ClientStarter {
-    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private String etcdServer;
 
@@ -89,11 +87,8 @@ public class ClientStarter {
         registEventBus();
 
         EtcdStarter starter = new EtcdStarter();
-        //worker的地址集合
-        starter.fetchWorkerInfo();
-
-        //启动etcd监听
-        starter.startWatch();
+        //与etcd相关的监听都开启
+        starter.start();
     }
 
     private void registEventBus() {
@@ -101,6 +96,8 @@ public class ClientStarter {
         EventBusCenter.register(new WorkerChangeSubscriber());
         //热key探测回调关注热key事件
         EventBusCenter.register(new ReceiveNewKeySubscribe());
+        //Rule的变化的事件
+        EventBusCenter.register(new KeyRuleHolder());
     }
 
 

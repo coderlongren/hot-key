@@ -7,23 +7,19 @@ package com.jd.platform.client.core.key;
 public class KeyHandlerFactory {
     private static final IKeyHandler iKeyHandler = new DefaultKeyHandler();
 
-    private static IKeyPusher iKeyPusher = null;
+    private static final IKeyPusher iKeyPusher = iKeyHandler.keyPusher();
 
-    private static IKeyCollector iKeyCollector = null;
+    private static final IKeyCollector iKeyCollector = iKeyHandler.keyCollector();
 
-    private KeyHandlerFactory(){}
+
+    private KeyHandlerFactory() {
+    }
 
     public synchronized static IKeyPusher getPusher() {
-        if (iKeyPusher == null) {
-            iKeyPusher = iKeyHandler.keyPusher();
-        }
         return iKeyPusher;
     }
 
-    public static IKeyCollector getCollector() {
-        if (iKeyCollector == null) {
-            iKeyCollector = iKeyHandler.keyCollector();
-        }
+    public synchronized static IKeyCollector getCollector() {
         return iKeyCollector;
     }
 }

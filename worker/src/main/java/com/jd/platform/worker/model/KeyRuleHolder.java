@@ -1,10 +1,11 @@
 package com.jd.platform.worker.model;
 
 import com.jd.platform.common.model.HotKeyModel;
-import com.jd.platform.common.rule.KeyRateRule;
-import com.jd.platform.common.rule.KeyRule;
+import com.jd.platform.common.rule.DefaultKeyRule;
+import com.jd.platform.common.rule.IKeyRule;
 import org.springframework.util.CollectionUtils;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,27 +19,27 @@ public class KeyRuleHolder {
     /**
      * key就是appName，value是rule
      */
-    public static final Map<String, KeyRule> RULE_MAP = new ConcurrentHashMap<>();
+    private static final Map<String, List<IKeyRule>> RULE_MAP = new ConcurrentHashMap<>();
 
-    public static KeyRateRule getRuleByAppAndKey(HotKeyModel hotKeyModel) {
-        KeyRule keyRule = RULE_MAP.get(hotKeyModel.getAppName());
+    public static IKeyRule getRuleByAppAndKey(HotKeyModel hotKeyModel) {
+        List<IKeyRule> keyRules = RULE_MAP.get(hotKeyModel.getAppName());
         //没有该key相关信息时，返回默认
-        if (keyRule == null || CollectionUtils.isEmpty(keyRule.getKeyRateRules())) {
-            return new KeyRateRule(hotKeyModel.getKey());
+        if (keyRules == null || CollectionUtils.isEmpty(keyRules)) {
+            return new DefaultKeyRule();
         }
-        for (KeyRateRule keyRateRule : keyRule.getKeyRateRules()) {
-            if (hotKeyModel.getKey().equals(keyRateRule.getKey())) {
-                return keyRateRule;
+        for (IKeyRule keyRule : keyRules) {
+            if (hotKeyModel.getKey().equals(keyRule.getKeyRule().getKey())) {
+                return keyRule;
             }
-            if (keyRateRule.isPrefix() && hotKeyModel.getKey().startsWith(keyRateRule.getKey())) {
-                return keyRateRule;
+            if (keyRule.getKeyRule().isPrefix() && hotKeyModel.getKey().startsWith(keyRule.getKeyRule().getKey())) {
+                return keyRule;
             }
         }
-        return new KeyRateRule(hotKeyModel.getKey());
+        return new DefaultKeyRule();
     }
 
-    public static void put(String appName, KeyRule keyRule) {
-        RULE_MAP.put(appName, keyRule);
+    public static void put(String appName, List<IKeyRule> keyRules) {
+        RULE_MAP.put(appName, keyRules);
     }
 
 }

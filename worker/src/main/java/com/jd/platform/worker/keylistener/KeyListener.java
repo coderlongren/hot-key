@@ -3,7 +3,7 @@ package com.jd.platform.worker.keylistener;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.google.common.base.Joiner;
 import com.jd.platform.common.model.HotKeyModel;
-import com.jd.platform.common.rule.KeyRateRule;
+import com.jd.platform.common.rule.IKeyRule;
 import com.jd.platform.worker.model.KeyRuleHolder;
 import com.jd.platform.worker.netty.pusher.IPusher;
 import com.jd.platform.worker.tool.SlidingWindow;
@@ -90,8 +90,8 @@ public class KeyListener implements IKeyListener {
         SlidingWindow slidingWindow = (SlidingWindow) cache.getIfPresent(key);
         if (slidingWindow == null) {
             //是个新key，获取它的规则
-            KeyRateRule keyRateRule = KeyRuleHolder.getRuleByAppAndKey(hotKeyModel);
-            slidingWindow = new SlidingWindow(keyRateRule.getDuration(), keyRateRule.getCount());
+            IKeyRule keyRule = KeyRuleHolder.getRuleByAppAndKey(hotKeyModel);
+            slidingWindow = new SlidingWindow(keyRule.getKeyRule().getInterval(), keyRule.getKeyRule().getThreshold());
         }
         return slidingWindow;
     }

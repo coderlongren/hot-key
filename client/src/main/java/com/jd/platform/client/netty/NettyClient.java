@@ -1,6 +1,6 @@
 package com.jd.platform.client.netty;
 
-import com.jd.platform.client.holder.WorkerInfoHolder;
+import com.jd.platform.client.core.worker.WorkerInfoHolder;
 import com.jd.platform.common.coder.Codec;
 import com.jd.platform.common.coder.NettyCodec;
 import io.netty.bootstrap.Bootstrap;

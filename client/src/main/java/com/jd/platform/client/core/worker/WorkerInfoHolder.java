@@ -1,4 +1,4 @@
-package com.jd.platform.client.holder;
+package com.jd.platform.client.core.worker;
 
 import cn.hutool.core.util.StrUtil;
 import com.jd.platform.client.netty.NettyClient;
