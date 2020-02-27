@@ -11,7 +11,7 @@ import com.jd.platform.client.core.rule.KeyRuleInfoChangeEvent;
 import com.jd.platform.client.core.worker.WorkerInfoChangeEvent;
 import com.jd.platform.common.configcenter.ConfigConstant;
 import com.jd.platform.common.configcenter.IConfigCenter;
-import com.jd.platform.common.rule.IKeyRule;
+import com.jd.platform.common.rule.KeyRule;
 import com.jd.platform.common.tool.FastJsonUtils;
 import io.grpc.StatusRuntimeException;
 import io.netty.util.internal.StringUtil;
@@ -94,7 +94,7 @@ public class EtcdStarter {
         EventBusCenter.getInstance().post(new WorkerInfoChangeEvent(addresses));
     }
 
-    private void notifyRuleChange(List<IKeyRule> rules) {
+    private void notifyRuleChange(List<KeyRule> rules) {
         EventBusCenter.getInstance().post(new KeyRuleInfoChangeEvent(rules));
     }
 
@@ -146,7 +146,7 @@ public class EtcdStarter {
                 logger.warn("rule is empty");
                 return true;
             }
-            List<IKeyRule> ruleList = FastJsonUtils.toList(rules, IKeyRule.class);
+            List<KeyRule> ruleList = FastJsonUtils.toList(rules, KeyRule.class);
 
             notifyRuleChange(ruleList);
             return true;

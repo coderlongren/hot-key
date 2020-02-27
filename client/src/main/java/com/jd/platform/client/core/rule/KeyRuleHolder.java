@@ -3,7 +3,6 @@ package com.jd.platform.client.core.rule;
 import com.google.common.eventbus.Subscribe;
 import com.jd.platform.client.cache.CacheFactory;
 import com.jd.platform.client.cache.LocalCache;
-import com.jd.platform.common.rule.IKeyRule;
 import com.jd.platform.common.rule.KeyRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,8 +32,7 @@ public class KeyRuleHolder {
     /**
      * 所有的规则，如果规则的超时时间变化了，会重建caffine
      */
-    public static void putRules(List<IKeyRule> ruleList) {
-        List<KeyRule> keyRules = ruleList.stream().map(IKeyRule::getKeyRule).collect(Collectors.toList());
+    public static void putRules(List<KeyRule> keyRules) {
         synchronized (KEY_RULES) {
             KEY_RULES.clear();
             KEY_RULES.addAll(keyRules);
@@ -91,7 +89,7 @@ public class KeyRuleHolder {
     @Subscribe
     public void ruleChange(KeyRuleInfoChangeEvent event) {
         logger.info("new rules info is :" + event.getKeyRules());
-        List<IKeyRule> ruleList = event.getKeyRules();
+        List<KeyRule> ruleList = event.getKeyRules();
         if (ruleList == null) {
             return;
         }

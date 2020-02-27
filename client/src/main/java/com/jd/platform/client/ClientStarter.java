@@ -1,6 +1,5 @@
 package com.jd.platform.client;
 
-import com.jd.platform.client.cache.CacheFactory;
 import com.jd.platform.client.cache.LocalCache;
 import com.jd.platform.client.callback.ReceiveNewKeySubscribe;
 import com.jd.platform.client.core.eventbus.EventBusCenter;
@@ -20,7 +19,6 @@ public class ClientStarter {
 
     private String etcdServer;
 
-    private LocalCache localCache;
     /**
      * 推送key的间隔(毫秒)
      */
@@ -65,7 +63,6 @@ public class ClientStarter {
         public ClientStarter build() {
             ClientStarter clientStarter = new ClientStarter(appName);
             clientStarter.etcdServer = etcdServer;
-            clientStarter.localCache = localCache;
             clientStarter.pushPeriod = pushPeriod;
 
             return clientStarter;
@@ -79,8 +76,6 @@ public class ClientStarter {
     public void startPipeline() {
         //设置etcd地址
         EtcdConfigFactory.buildConfigCenter(etcdServer);
-        //设置本地缓存器
-        CacheFactory.setCache(localCache);
         //开始定时推送
         PushSchedulerStarter.startPusher(pushPeriod);
 

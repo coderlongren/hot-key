@@ -1,7 +1,6 @@
 package com.jd.platform.client.callback;
 
 import com.jd.platform.client.cache.CacheFactory;
-import com.jd.platform.client.cache.LocalCache;
 import com.jd.platform.common.model.typeenum.KeyType;
 import com.jd.platform.common.tool.Constant;
 
@@ -11,15 +10,14 @@ import com.jd.platform.common.tool.Constant;
  */
 public class DefaultNewKeyListener extends AbsReceiveNewKey {
 
-    private LocalCache localCache = CacheFactory.getCache();
 
     @Override
     void addKey(String key, KeyType keyType, long createTime) {
-        localCache.set(key, Constant.MAGIC_NUMBER);
+        CacheFactory.getNonNullCache(key).set(key, Constant.MAGIC_NUMBER);
     }
 
     @Override
     void deleteKey(String key, KeyType keyType, long createTime) {
-        localCache.delete(key);
+        CacheFactory.getNonNullCache(key).delete(key);
     }
 }

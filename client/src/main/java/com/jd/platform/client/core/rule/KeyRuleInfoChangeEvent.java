@@ -1,6 +1,6 @@
 package com.jd.platform.client.core.rule;
 
-import com.jd.platform.common.rule.IKeyRule;
+import com.jd.platform.common.rule.KeyRule;
 
 import java.util.List;
 
@@ -9,17 +9,17 @@ import java.util.List;
  * @version 1.0
  */
 public class KeyRuleInfoChangeEvent {
-    private List<IKeyRule> keyRules;
+    private List<KeyRule> keyRules;
 
-    public KeyRuleInfoChangeEvent(List<IKeyRule> keyRules) {
+    public KeyRuleInfoChangeEvent(List<KeyRule> keyRules) {
         this.keyRules = keyRules;
     }
 
-    public List<IKeyRule> getKeyRules() {
+    public List<KeyRule> getKeyRules() {
         return keyRules;
     }
 
-    public void setKeyRules(List<IKeyRule> keyRules) {
+    public void setKeyRules(List<KeyRule> keyRules) {
         this.keyRules = keyRules;
     }
 }

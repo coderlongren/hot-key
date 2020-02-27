@@ -7,6 +7,7 @@ import com.jd.platform.common.configcenter.ConfigConstant;
 import com.jd.platform.common.configcenter.IConfigCenter;
 import com.jd.platform.common.configcenter.etcd.JdEtcdClient;
 import com.jd.platform.common.rule.DefaultKeyRule;
+import com.jd.platform.common.rule.KeyRule;
 import com.jd.platform.common.tool.FastJsonUtils;
 import com.jd.platform.worker.starters.EtcdStarter;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -74,8 +75,10 @@ public class TestController {
     }
 
     @RequestMapping("addRulePath")
-    public Object addRulePath(String appName) {
-        iConfigCenter.put(ConfigConstant.rulePath + appName, FastJsonUtils.convertObjectToJSON(Arrays.asList(new DefaultKeyRule())));
+    public Object adRulePath(String appName) {
+        KeyRule keyRule = new DefaultKeyRule().getKeyRule();
+
+        iConfigCenter.put(ConfigConstant.rulePath + appName, FastJsonUtils.convertObjectToJSON(Arrays.asList(keyRule)));
         return "success";
     }
 
