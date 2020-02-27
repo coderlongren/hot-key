@@ -1,4 +1,4 @@
-package com.jd.platform.worker.model;
+package com.jd.platform.worker.rule;
 
 import com.jd.platform.common.model.HotKeyModel;
 import com.jd.platform.common.rule.DefaultKeyRule;

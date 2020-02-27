@@ -22,7 +22,7 @@ public class KeyRule {
      */
     private int threshold;
     /**
-     * 变热key后，本地、etcd缓存它多久。默认1分钟
+     * 变热key后，本地、etcd缓存它多久。单位（秒），默认60
      */
     private int duration;
 
@@ -96,6 +96,9 @@ public class KeyRule {
             return this;
         }
         public Builder duration(int duration) {
+            if (duration < 1) {
+                duration = 1;
+            }
             this.duration = duration;
             return this;
         }

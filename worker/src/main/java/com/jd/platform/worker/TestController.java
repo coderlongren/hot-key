@@ -7,14 +7,16 @@ import com.jd.platform.common.configcenter.ConfigConstant;
 import com.jd.platform.common.configcenter.IConfigCenter;
 import com.jd.platform.common.configcenter.etcd.JdEtcdClient;
 import com.jd.platform.common.rule.DefaultKeyRule;
-import com.jd.platform.common.rule.IKeyRule;
 import com.jd.platform.common.tool.FastJsonUtils;
 import com.jd.platform.worker.starters.EtcdStarter;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -30,8 +32,8 @@ public class TestController {
 
     @RequestMapping("test")
     public Object aa(String key) throws ExecutionException, InterruptedException {
-        LeaseLeasesResponse response = ((JdEtcdClient)iConfigCenter).getLeaseClient().list().get();
-        for(LeaseStatus status : response.getLeasesList()) {
+        LeaseLeasesResponse response = ((JdEtcdClient) iConfigCenter).getLeaseClient().list().get();
+        for (LeaseStatus status : response.getLeasesList()) {
             System.out.println(status.getID());
         }
         return 1;
@@ -73,12 +75,13 @@ public class TestController {
 
     @RequestMapping("addRulePath")
     public Object addRulePath(String appName) {
-        DefaultKeyRule defaultKeyRule = new DefaultKeyRule();
-        List<IKeyRule> keyRules = new ArrayList<>();
-        keyRules.add(defaultKeyRule);
-        String s = FastJsonUtils.convertObjectToJSON(keyRules);
-        System.out.println(s);
-        iConfigCenter.put(ConfigConstant.rulePath + appName, s);
+        iConfigCenter.put(ConfigConstant.rulePath + appName, FastJsonUtils.convertObjectToJSON(Arrays.asList(new DefaultKeyRule())));
+        return "success";
+    }
+
+    @RequestMapping("deleteRulePath")
+    public Object deleteRulePath(String appName) {
+        iConfigCenter.delete(ConfigConstant.rulePath + appName);
         return "success";
     }
 

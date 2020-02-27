@@ -11,13 +11,13 @@ import com.jd.platform.common.tool.Constant;
  * @version 1.0
  */
 public class JdHotKeyStore {
-    /**
-     * 本地缓存
-     */
-    private static LocalCache cache = CacheFactory.cache();
 
     public static Object getValue(String key, KeyType keyType) {
-        Object value = cache.get(key);
+        //如果没有为该key配置规则，就不用上报key
+        if (!inRule(key)) {
+            return null;
+        }
+        Object value = getCache(key).get(key);
         if (value == null) {
             HotKeyPusher.push(key, keyType);
         }
@@ -32,7 +32,7 @@ public class JdHotKeyStore {
      * 仅获取value，如果不存在也不上报热key
      */
     public static Object getValueSimple(String key) {
-        return cache.get(key);
+        return getCache(key).get(key);
     }
 
     public static void setValue(String key, Object value) {
@@ -42,11 +42,11 @@ public class JdHotKeyStore {
     }
 
     public static void setValueDirectly(String key, Object value) {
-        cache.set(key, value);
+        getCache(key).set(key, value);
     }
 
     public static void remove(String key) {
-        cache.delete(key);
+        getCache(key).delete(key);
         HotKeyPusher.remove(key);
     }
 
@@ -54,7 +54,7 @@ public class JdHotKeyStore {
      * 判断是否是热key。适用于只需要判断key，而不需要value的场景
      */
     public static boolean isCached(String key) {
-        return cache.get(key) != null;
+        return getCache(key).get(key) != null;
     }
 
     public static boolean isValueCached(String key) {
@@ -71,5 +71,16 @@ public class JdHotKeyStore {
             return false;
         }
         return !(value instanceof Integer) || Constant.MAGIC_NUMBER != (int) value;
+    }
+
+    private static LocalCache getCache(String key) {
+        return CacheFactory.getNonNullCache(key);
+    }
+
+    /**
+     * 判断这个key是否在被探测的规则范围内
+     */
+    private static boolean inRule(String key) {
+        return CacheFactory.getCache(key) != null;
     }
 }

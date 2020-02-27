@@ -11,7 +11,7 @@ import com.jd.platform.common.tool.Constant;
  */
 public class DefaultNewKeyListener extends AbsReceiveNewKey {
 
-    private LocalCache localCache = CacheFactory.cache();
+    private LocalCache localCache = CacheFactory.getCache();
 
     @Override
     void addKey(String key, KeyType keyType, long createTime) {

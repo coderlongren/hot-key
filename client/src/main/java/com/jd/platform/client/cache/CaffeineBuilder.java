@@ -11,12 +11,16 @@ import java.util.concurrent.TimeUnit;
  */
 public class CaffeineBuilder {
 
+    public static Cache<String, Object> cache(int duration) {
+        return cache(512, 10000000, duration);
+    }
+
     public static Cache<String, Object> cache() {
         return cache(512, 10000000, 60);
     }
 
     /**
-     * 构建所有来的要缓存的key cache
+     * 构建所有来的要缓存的key getCache
      */
     public static Cache<String, Object> cache(int minSize, int maxSize, int expireSeconds) {
         return Caffeine.newBuilder()

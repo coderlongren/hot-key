@@ -4,7 +4,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.google.common.base.Joiner;
 import com.jd.platform.common.model.HotKeyModel;
 import com.jd.platform.common.rule.IKeyRule;
-import com.jd.platform.worker.model.KeyRuleHolder;
+import com.jd.platform.worker.rule.KeyRuleHolder;
 import com.jd.platform.worker.netty.pusher.IPusher;
 import com.jd.platform.worker.tool.SlidingWindow;
 import com.jd.platform.worker.tool.SystemClock;

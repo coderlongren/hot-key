@@ -9,7 +9,7 @@ import com.jd.platform.common.configcenter.IConfigCenter;
 import com.jd.platform.common.rule.IKeyRule;
 import com.jd.platform.common.tool.FastJsonUtils;
 import com.jd.platform.common.tool.IpUtils;
-import com.jd.platform.worker.model.KeyRuleHolder;
+import com.jd.platform.worker.rule.KeyRuleHolder;
 import io.grpc.StatusRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

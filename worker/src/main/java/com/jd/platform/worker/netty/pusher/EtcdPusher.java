@@ -2,7 +2,7 @@ package com.jd.platform.worker.netty.pusher;
 
 import com.jd.platform.common.configcenter.IConfigCenter;
 import com.jd.platform.common.model.HotKeyModel;
-import com.jd.platform.worker.model.KeyRuleHolder;
+import com.jd.platform.worker.rule.KeyRuleHolder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;

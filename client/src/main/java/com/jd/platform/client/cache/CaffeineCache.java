@@ -4,12 +4,17 @@ package com.jd.platform.client.cache;
 import com.github.benmanes.caffeine.cache.Cache;
 
 /**
+ * caffine缓存对localCache的实现
  * @author wuweifeng wrote on 2020-02-24
  * @version 1.0
  */
-public class DefaultCache implements LocalCache {
+public class CaffeineCache implements LocalCache {
 
-    private Cache<String, Object> cache = CaffeineBuilder.cache();
+    private Cache<String, Object> cache;
+
+    public CaffeineCache(int duration) {
+        this.cache = CaffeineBuilder.cache(duration);
+    }
 
     @Override
     public Object get(String key) {
