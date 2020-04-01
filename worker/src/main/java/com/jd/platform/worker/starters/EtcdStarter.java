@@ -112,7 +112,7 @@ public class EtcdStarter {
     /**
      * 启动后，上传自己的信息到etcd，并维持心跳包
      */
-    @EventListener(ApplicationReadyEvent.class)
+    @PostConstruct
     @Async
     public void upload() {
         //开启上传worker信息
@@ -140,6 +140,9 @@ public class EtcdStarter {
 
             try {
                 String value = configCenter.get(buildKey());
+                logger.info("buildKey: " + buildKey());
+                logger.info("value: " + value);
+                logger.info("buildValue: " + buildValue());
                 if (!buildValue().equals(value)) {
                     logger.info("check self info exist in etcd , return false");
                     handUpload();
@@ -158,7 +161,7 @@ public class EtcdStarter {
      * 通过http请求手工上传信息到etcd，适用于正常使用过程中，etcd挂掉，导致worker租期到期被删除，无法自动注册
      */
     public boolean handUpload() {
-        logger.info("hand upload info to etcd");
+        logger.info("hand upload info to etcd，now storeLeaseId is " + storeLeaseId);
 
         if (storeLeaseId != -1) {
             //上报到etcd
