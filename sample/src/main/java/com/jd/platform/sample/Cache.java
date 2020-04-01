@@ -1,6 +1,6 @@
 package com.jd.platform.sample;
 
-import com.jd.platform.client.callback.JdHotKeyStore;
+import com.jd.platform.hotkey.client.callback.JdHotKeyStore;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +16,7 @@ public class Cache {
     private RedisTemplate<String, String> redisTemplate;
 
 
-    public String getN(String key) {
+    public String getFromRedis(String key) {
         return redisTemplate.opsForValue().get(key);
     }
 
@@ -25,11 +25,10 @@ public class Cache {
         if (JdHotKeyStore.isValueCached(key)) {
             return JdHotKeyStore.getValue(key).toString();
         } else {
-            String value = getN(key);
+            String value = getFromRedis(key);
             JdHotKeyStore.setValue(key, value);
             return value;
         }
-
     }
 
     public void set(String key, String value) {

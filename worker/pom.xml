@@ -37,7 +37,7 @@
         </dependency>
 
         <dependency>
-            <groupId>com.jd.platform</groupId>
+            <groupId>com.jd.platform.hotkey</groupId>
             <artifactId>common</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>

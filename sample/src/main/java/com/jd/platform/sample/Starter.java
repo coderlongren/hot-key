@@ -1,6 +1,6 @@
 package com.jd.platform.sample;
 
-import com.jd.platform.client.ClientStarter;
+import com.jd.platform.hotkey.client.ClientStarter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

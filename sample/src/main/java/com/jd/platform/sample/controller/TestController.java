@@ -43,7 +43,7 @@ public class TestController {
         }
         List<String> values = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
-            values.add(cache.getN("key" + i));
+            values.add(cache.getFromRedis("key" + i));
         }
         return values;
     }

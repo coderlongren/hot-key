@@ -20,7 +20,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.jd.platform</groupId>
+            <groupId>com.jd.platform.hotkey</groupId>
             <artifactId>client</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>

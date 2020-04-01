@@ -29,3 +29,5 @@ build/
 
 ### VS Code ###
 .vscode/
+
+/catalina.base_IS_UNDEFINED/
