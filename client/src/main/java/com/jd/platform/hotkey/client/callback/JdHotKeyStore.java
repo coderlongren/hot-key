@@ -41,6 +41,9 @@ public class JdHotKeyStore {
         }
     }
 
+    /**
+     * 纯粹的本地缓存，无需该key是热key
+     */
     public static void setValueDirectly(String key, Object value) {
         getCache(key).set(key, value);
     }

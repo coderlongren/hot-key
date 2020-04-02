@@ -1,5 +1,6 @@
 package com.jd.platform.hotkey.client.core.rule;
 
+import cn.hutool.core.util.StrUtil;
 import com.google.common.eventbus.Subscribe;
 import com.jd.platform.hotkey.client.cache.CacheFactory;
 import com.jd.platform.hotkey.client.cache.LocalCache;
@@ -65,24 +66,49 @@ public class KeyRuleHolder {
      * 如果命中了key1，就直接返回。如果key1、key2都没命中，再去判断rule里是否有 * ，如果有 * 代表通配
      */
     public static LocalCache findByKey(String key) {
-        synchronized (KEY_RULES) {
-            for (KeyRule keyRule : KEY_RULES) {
-                //如果
-                if (key.equals(keyRule.getKey()) || (keyRule.isPrefix() && key.startsWith(keyRule.getKey()))) {
-                    return RULE_CACHE_MAP.get(keyRule.getDuration());
-                }
-            }
-
-            for (KeyRule keyRule : KEY_RULES) {
-                //如果
-                if ("*".equals(keyRule.getKey())) {
-                    return RULE_CACHE_MAP.get(keyRule.getDuration());
-                }
-            }
-
+        if (StrUtil.isEmpty(key)) {
             return null;
         }
+        synchronized (KEY_RULES) {
+            LocalCache prefix = null;
+            LocalCache common = null;
 
+            //遍历该app的所有rule，找到与key匹配的rule。优先全匹配->prefix匹配-> * 通配
+            for (KeyRule keyRule : KEY_RULES) {
+                if (key.equals(keyRule.getKey())) {
+                    return RULE_CACHE_MAP.get(keyRule.getDuration());
+                }
+                if ((keyRule.isPrefix() && key.startsWith(keyRule.getKey()))) {
+                    prefix = RULE_CACHE_MAP.get(keyRule.getDuration());
+                }
+                if ("*".equals(keyRule.getKey())) {
+                    common = RULE_CACHE_MAP.get(keyRule.getDuration());
+                }
+            }
+
+            if (prefix != null) {
+                return prefix;
+            }
+            return common;
+        }
+
+    }
+
+    /**
+     * 判断key是否在配置的要探测的规则内
+     */
+    public static boolean isKeyInRule(String key) {
+        if (StrUtil.isEmpty(key)) {
+            return false;
+        }
+        //遍历该app的所有rule，找到与key匹配的rule。优先全匹配->prefix匹配-> * 通配
+        for (KeyRule keyRule : KEY_RULES) {
+            if ("*".equals(keyRule.getKey()) || key.equals(keyRule.getKey()) ||
+                    (keyRule.isPrefix() && key.startsWith(keyRule.getKey()))) {
+                return true;
+            }
+        }
+        return false;
     }
 
 

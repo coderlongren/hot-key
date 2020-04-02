@@ -27,14 +27,29 @@ public class KeyRuleHolder {
         if (keyRules == null || CollectionUtils.isEmpty(keyRules)) {
             return new DefaultKeyRule();
         }
+
+        IKeyRule prefix = null;
+        IKeyRule common = null;
+
+        //遍历该app的所有rule，找到与key匹配的rule。优先全匹配->prefix匹配-> * 通配
         for (IKeyRule keyRule : keyRules) {
             if (hotKeyModel.getKey().equals(keyRule.getKeyRule().getKey())) {
                 return keyRule;
             }
             if (keyRule.getKeyRule().isPrefix() && hotKeyModel.getKey().startsWith(keyRule.getKeyRule().getKey())) {
-                return keyRule;
+                prefix = keyRule;
+            }
+            if ("*".equals(keyRule.getKeyRule().getKey())) {
+                common = keyRule;
             }
         }
+        if (prefix != null) {
+            return prefix;
+        }
+        if (common != null) {
+            return common;
+        }
+
         return new DefaultKeyRule();
     }
 

@@ -6,7 +6,7 @@ package com.jd.platform.hotkey.common.rule;
  */
 public class KeyRule {
     /**
-     * key的前缀，也可以完全和key相同
+     * key的前缀，也可以完全和key相同。为"*"时代表通配符
      */
     private String key;
     /**
