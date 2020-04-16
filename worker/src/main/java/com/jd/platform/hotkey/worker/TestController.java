@@ -74,7 +74,7 @@ public class TestController {
     }
 
     @RequestMapping("addRulePath")
-    public Object adRulePath(String appName) {
+    public Object addRulePath(String appName) {
 //        KeyRule keyRule = new DefaultKeyRule().getKeyRule();
 
         KeyRule keyRule = new KeyRule.Builder().key("*").interval(5).threshold(2).duration(60).build();

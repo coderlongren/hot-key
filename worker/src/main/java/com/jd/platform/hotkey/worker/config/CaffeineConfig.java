@@ -13,11 +13,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CaffeineConfig {
 
-    @Bean("allKeyCache")
-    public Cache<String, Object> allKeyCache() {
-        return CaffeineBuilder.buildAllKeyCache();
-    }
-
     @Bean("hotKeyCache")
     public Cache<String, Object> hotKeyCache() {
         return CaffeineBuilder.buildRecentHotKeyCache();

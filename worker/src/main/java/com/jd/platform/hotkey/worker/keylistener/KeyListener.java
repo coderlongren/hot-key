@@ -4,6 +4,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.google.common.base.Joiner;
 import com.jd.platform.hotkey.common.model.HotKeyModel;
 import com.jd.platform.hotkey.common.rule.KeyRule;
+import com.jd.platform.hotkey.worker.cache.CaffeineCacheHolder;
 import com.jd.platform.hotkey.worker.netty.pusher.IPusher;
 import com.jd.platform.hotkey.worker.rule.KeyRuleHolder;
 import com.jd.platform.hotkey.worker.tool.SlidingWindow;
@@ -23,8 +24,6 @@ import java.util.List;
  */
 @Component
 public class KeyListener implements IKeyListener {
-    @Resource(name = "allKeyCache")
-    private Cache<String, Object> cache;
     @Resource(name = "hotKeyCache")
     private Cache<String, Object> hotCache;
     @Resource
@@ -48,7 +47,7 @@ public class KeyListener implements IKeyListener {
         boolean hot = slidingWindow.addCount(hotKeyModel.getCount());
         if (!hot) {
             //如果没hot，重新put，cache会自动刷新过期时间
-            cache.put(key, slidingWindow);
+            CaffeineCacheHolder.getCache(hotKeyModel.getAppName()).put(key, slidingWindow);
         } else {
             hotCache.put(key, 1);
 
@@ -70,7 +69,7 @@ public class KeyListener implements IKeyListener {
         String key = buildKey(hotKeyModel);
 
         hotCache.invalidate(key);
-        cache.invalidate(key);
+        CaffeineCacheHolder.getCache(hotKeyModel.getAppName()).invalidate(key);
 
         //推送所有client删除
         hotKeyModel.setCreateTime(SystemClock.now());
@@ -87,7 +86,7 @@ public class KeyListener implements IKeyListener {
      */
     private SlidingWindow checkWindow(HotKeyModel hotKeyModel, String key) {
         //取该key的滑窗
-        SlidingWindow slidingWindow = (SlidingWindow) cache.getIfPresent(key);
+        SlidingWindow slidingWindow = (SlidingWindow) CaffeineCacheHolder.getCache(hotKeyModel.getAppName()).getIfPresent(key);
         //TODO  这一块需要注意，当Rule规则变化后，如果该key已经有SlidingWindow了，那么该SlidingWindow不会重建
         //考虑在某个APP的rule变化后，清空该APP所有key
         if (slidingWindow == null) {
