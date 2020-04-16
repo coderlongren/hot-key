@@ -5,7 +5,7 @@ package com.jd.platform.hotkey.client;
  * @version 1.0
  */
 public class Context {
-    public static String APP_NAME = "aaa";
+    public static String APP_NAME;
 
     /**
      * 与worker连接断开后，是否需要重连

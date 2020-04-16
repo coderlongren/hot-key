@@ -3,7 +3,7 @@ package com.jd.platform.hotkey.worker.keylistener;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.google.common.base.Joiner;
 import com.jd.platform.hotkey.common.model.HotKeyModel;
-import com.jd.platform.hotkey.common.rule.IKeyRule;
+import com.jd.platform.hotkey.common.rule.KeyRule;
 import com.jd.platform.hotkey.worker.netty.pusher.IPusher;
 import com.jd.platform.hotkey.worker.rule.KeyRuleHolder;
 import com.jd.platform.hotkey.worker.tool.SlidingWindow;
@@ -28,7 +28,7 @@ public class KeyListener implements IKeyListener {
     @Resource(name = "hotKeyCache")
     private Cache<String, Object> hotCache;
     @Resource
-    private List<IPusher> IPushers;
+    private List<IPusher> iPushers;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -56,7 +56,7 @@ public class KeyListener implements IKeyListener {
             hotKeyModel.setCreateTime(SystemClock.now());
             logger.info("new key created event key : " + hotKeyModel.toString());
 
-            for (IPusher pusher : IPushers) {
+            for (IPusher pusher : iPushers) {
                 pusher.push(hotKeyModel);
             }
 
@@ -76,7 +76,7 @@ public class KeyListener implements IKeyListener {
         hotKeyModel.setCreateTime(SystemClock.now());
         logger.info("key delete event key : " + hotKeyModel.toString());
 
-        for (IPusher pusher : IPushers) {
+        for (IPusher pusher : iPushers) {
             pusher.remove(hotKeyModel);
         }
 
@@ -88,10 +88,12 @@ public class KeyListener implements IKeyListener {
     private SlidingWindow checkWindow(HotKeyModel hotKeyModel, String key) {
         //取该key的滑窗
         SlidingWindow slidingWindow = (SlidingWindow) cache.getIfPresent(key);
+        //TODO  这一块需要注意，当Rule规则变化后，如果该key已经有SlidingWindow了，那么该SlidingWindow不会重建
+        //考虑在某个APP的rule变化后，清空该APP所有key
         if (slidingWindow == null) {
             //是个新key，获取它的规则
-            IKeyRule keyRule = KeyRuleHolder.getRuleByAppAndKey(hotKeyModel);
-            slidingWindow = new SlidingWindow(keyRule.getKeyRule().getInterval(), keyRule.getKeyRule().getThreshold());
+            KeyRule keyRule = KeyRuleHolder.getRuleByAppAndKey(hotKeyModel);
+            slidingWindow = new SlidingWindow(keyRule.getInterval(), keyRule.getThreshold());
         }
         return slidingWindow;
     }

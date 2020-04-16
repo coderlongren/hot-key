@@ -6,7 +6,7 @@ import com.ibm.etcd.client.kv.KvClient;
 import com.ibm.etcd.client.kv.WatchUpdate;
 import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
 import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
-import com.jd.platform.hotkey.common.rule.IKeyRule;
+import com.jd.platform.hotkey.common.rule.KeyRule;
 import com.jd.platform.hotkey.common.tool.FastJsonUtils;
 import com.jd.platform.hotkey.common.tool.IpUtils;
 import com.jd.platform.hotkey.worker.rule.KeyRuleHolder;
@@ -59,7 +59,7 @@ public class EtcdStarter {
     @EventListener(ApplicationReadyEvent.class)
     @Async
     public void watch() {
-        KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.hotKeyPath + "a/");
+        KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.hotKeyPath);
         while (watchIterator.hasNext()) {
             WatchUpdate watchUpdate = watchIterator.next();
             List<Event> eventList = watchUpdate.getEvents();
@@ -89,9 +89,9 @@ public class EtcdStarter {
             return;
         }
         for (KeyValue keyValue : keyValues) {
-            String appName = keyValue.getKey().toStringUtf8();
+            String appName = keyValue.getKey().toStringUtf8().replace(ConfigConstant.rulePath, "");
             String ruleJson = keyValue.getValue().toStringUtf8();
-            List<IKeyRule> keyRules = FastJsonUtils.toList(ruleJson, IKeyRule.class);
+            List<KeyRule> keyRules = FastJsonUtils.toList(ruleJson, KeyRule.class);
             KeyRuleHolder.put(appName, keyRules);
         }
     }
