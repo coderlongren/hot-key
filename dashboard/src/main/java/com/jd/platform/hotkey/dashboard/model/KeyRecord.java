@@ -11,6 +11,16 @@ public class KeyRecord {
 
     private Integer count;
 
+    /**
+     * 缓存时间
+     */
+    private Integer duration;
+
+    /**
+     * 来源： SYSTEM 系统探测；USERNAME创建人
+     */
+    private String source;
+
     private Date createTime;
 
     public Long getId() {
@@ -43,6 +53,22 @@ public class KeyRecord {
 
     public void setCount(Integer count) {
         this.count = count;
+    }
+
+    public Integer getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Integer duration) {
+        this.duration = duration;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 
     public Date getCreateTime() {

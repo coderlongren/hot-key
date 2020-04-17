@@ -5,13 +5,13 @@
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="biz_id" jdbcType="INTEGER" property="bizId" />
     <result column="biz_type" jdbcType="INTEGER" property="bizType" />
-    <result column="from" jdbcType="VARCHAR" property="from" />
-    <result column="to" jdbcType="VARCHAR" property="to" />
+    <result column="from_str" jdbcType="VARCHAR" property="from" />
+    <result column="to_str" jdbcType="VARCHAR" property="to" />
     <result column="update_user" jdbcType="VARCHAR" property="updateUser" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, biz_id, biz_type, from, to, update_user, create_time
+    id, biz_id, biz_type, from_str, to_str, update_user, create_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -37,10 +37,10 @@
         biz_type,
       </if>
       <if test="from != null">
-        from,
+        from_str,
       </if>
       <if test="to != null">
-        to,
+        to_str,
       </if>
       <if test="updateUser != null">
         update_user,
@@ -83,10 +83,10 @@
         biz_type = #{bizType,jdbcType=INTEGER},
       </if>
       <if test="from != null">
-        from = #{from,jdbcType=VARCHAR},
+        from_str = #{from,jdbcType=VARCHAR},
       </if>
       <if test="to != null">
-        to = #{to,jdbcType=VARCHAR},
+        to_str = #{to,jdbcType=VARCHAR},
       </if>
       <if test="updateUser != null">
         update_user = #{updateUser,jdbcType=VARCHAR},
@@ -97,4 +97,11 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+
+  <select id="listChangeLog"  parameterType="com.jd.platform.hotkey.dashboard.common.domain.SearchDto"   resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from hk_change_log
+  </select>
 </mapper>

@@ -4,11 +4,11 @@ import java.util.List;
 
 import com.alibaba.fastjson.JSON;
 import com.jd.platform.hotkey.dashboard.common.base.BaseController;
-import com.jd.platform.hotkey.dashboard.common.domain.AjaxResult;
-import com.jd.platform.hotkey.dashboard.model.BootstrapTree;
+import com.jd.platform.hotkey.dashboard.common.domain.Result;
+import com.jd.platform.hotkey.dashboard.common.eunm.ResultEnum;
 import com.jd.platform.hotkey.dashboard.model.User;
 import com.jd.platform.hotkey.dashboard.service.UserService;
-import org.checkerframework.checker.units.qual.A;
+import com.jd.platform.hotkey.dashboard.util.JwtTokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -34,32 +35,17 @@ public class AdminController extends BaseController {
 	private String prefix = "admin";
 	
 	@GetMapping("/index")
-	public String index(HttpServletRequest request) {
+	public String index() {
 		return prefix+"/index";
 	}
 
 	@GetMapping("/main")
-	public String main(ModelMap map) {
-	//	setTitle(map, new TitleVo("首页", "首页", true,"欢迎进入", true, false));
+	public String main() {
 		return prefix+"/main";
 	}
 
 	@GetMapping("/login")
     public String login(ModelMap modelMap) {
-        try {
-			System.out.println("==============login==============");
-        	// 已经登陆
-            if (1==1) {
-				return "login";
-			//	return "redirect:/"+prefix+"/index";
-			//	return "admin/index";
-            } else {
-            	System.out.println("--进行登录验证..验证开始");
-                return "login";
-            }
-        } catch (Exception e) {
-        		e.printStackTrace();
-        }
         return "login";
     }
 
@@ -67,9 +53,19 @@ public class AdminController extends BaseController {
 
 	@PostMapping("/login")
 	@ResponseBody
-	public AjaxResult login(String userStr) {
-		User user = userService.findByNameAndPwd(JSON.parseObject(userStr, User.class));
-		return  AjaxResult.success();
+	public Result login(User param,HttpServletResponse response) {
+		User user = userService.findByNameAndPwd(param);
+		if(user == null){
+			return Result.error(ResultEnum.PWD_ERROR);
+		}
+		String token = JwtTokenUtil.createJWT(user.getId(), user.getUserName(), user.getRole(), user.getAppName());
+		Cookie cookie = new Cookie("token", JwtTokenUtil.TOKEN_PREFIX + token);
+		cookie.setMaxAge(3600);
+		cookie.setDomain("localhost");
+		cookie.setPath("/");
+		response.addCookie(cookie);
+		//response.setHeader(JwtTokenUtil.AUTH_HEADER_KEY, JwtTokenUtil.TOKEN_PREFIX + token);
+		return  Result.success(token);
 	}
 	
 

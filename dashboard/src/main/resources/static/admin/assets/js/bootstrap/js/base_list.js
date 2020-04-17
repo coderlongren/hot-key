@@ -9,7 +9,7 @@
 			_option: {},
 			oTableInit:function(parms){//初始化表单
 				$.table._option=parms;
-			    var oTableInit = new Object();
+			    var oTableInit = {};
 			    //初始化Table
 			    oTableInit.Init = function () {
 			        $('#dataTable').bootstrapTable({
@@ -34,8 +34,7 @@
 			            uniqueId: "id",           //每一行的唯一标识，一般为主键列
 			            queryParamsType: "",//参数类型  为null 后台用pageHelp  默认为limit
 			            search: !0,
-			            showRefresh: !0,//刷新按钮
-			            showToggle: !0,//排版按钮
+                        showRefresh: !0,//刷新按钮
 			            showColumns: !0,//显示列按钮
 			            columns:parms.dataColumns,
 			            showToggle : false, //是否显示详细视图和列表视图的切换按钮
@@ -43,6 +42,9 @@
 			            buttonsAlign:"right",  //按钮位置
 			            exportDataType : "all",
 			            Icons:'glyphicon-export',
+                        ajaxOptions:{
+                            headers: {"Authorization": getCookie("token")}
+                        },
 			            exportOptions:{
 			                ignoreColumn: [0,1],  //忽略某一列的索引
 			                fileName: '报表导出',  //文件名称设置
@@ -54,7 +56,10 @@
                             var datas = $('#dataTable').bootstrapTable('getData');
 			                console.info("加载成功");
 				        },
-				        onLoadError: function(){  //加载失败时执行
+				        onLoadError: function(status){  //加载失败时执行
+			        	    if(status == 500 && getCookie("token") ==""){
+                                top.location.href = '/admin/login';
+                            }
 				            console.info("加载数据失败");
 				        }
 			        });
@@ -470,7 +475,7 @@
                 return selects
             }
         }
-        
+
 	});
 	
 })(jQuery);
@@ -483,3 +488,29 @@ modal_status = {
     FAIL: "error",
     WARNING: "warning"
 };
+
+
+function getCookie(cname){
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0; i<ca.length; i++){
+        var c = ca[i].trim();
+        if (c.indexOf(name)==0) return c.substring(name.length,c.length);
+    }
+    return "";
+}
+
+
+//修改——转换日期格式(时间戳转换为datetime格式)
+function changeDateFormat(cellval) {
+    if (cellval != null) {
+        var date = new Date(parseInt(cellval.replace("/Date(", "").replace(")/", ""), 10));
+        var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+        var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+        return date.getFullYear() + "-" + month + "-" + currentDate;
+    }
+}
+
+
+
+

@@ -3,9 +3,9 @@
 <mapper namespace="com.jd.platform.hotkey.dashboard.mapper.KeyRuleMapper">
   <resultMap id="BaseResultMap" type="com.jd.platform.hotkey.dashboard.model.KeyRule">
     <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="key" jdbcType="VARCHAR" property="key" />
+    <result column="key_name" jdbcType="VARCHAR" property="key" />
     <result column="prefix" jdbcType="INTEGER" property="prefix" />
-    <result column="interval" jdbcType="INTEGER" property="interval" />
+    <result column="intervals" jdbcType="INTEGER" property="interval" />
     <result column="threshold" jdbcType="INTEGER" property="threshold" />
     <result column="duration" jdbcType="INTEGER" property="duration" />
     <result column="app_name" jdbcType="VARCHAR" property="appName" />
@@ -15,7 +15,7 @@
     <result column="version" jdbcType="INTEGER" property="version" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, key, prefix, interval, threshold, duration, app_name, state, update_user, update_time, 
+    id, key_name, prefix, intervals, threshold, duration, app_name, state, update_user, update_time,
     version
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -35,13 +35,13 @@
         id,
       </if>
       <if test="key != null">
-        key,
+        key_name,
       </if>
       <if test="prefix != null">
         prefix,
       </if>
       <if test="interval != null">
-        interval,
+        intervals,
       </if>
       <if test="threshold != null">
         threshold,
@@ -105,13 +105,13 @@
     update hk_key_rule
     <set>
       <if test="key != null">
-        key = #{key,jdbcType=VARCHAR},
+        key_name = #{key,jdbcType=VARCHAR},
       </if>
       <if test="prefix != null">
         prefix = #{prefix,jdbcType=INTEGER},
       </if>
       <if test="interval != null">
-        interval = #{interval,jdbcType=INTEGER},
+        intervals = #{interval,jdbcType=INTEGER},
       </if>
       <if test="threshold != null">
         threshold = #{threshold,jdbcType=INTEGER},
@@ -137,4 +137,11 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+
+  <select id="listRule"  parameterType="com.jd.platform.hotkey.dashboard.common.domain.SearchDto"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from hk_key_rule
+  </select>
 </mapper>

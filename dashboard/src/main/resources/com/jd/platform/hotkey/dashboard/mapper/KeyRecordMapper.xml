@@ -3,13 +3,15 @@
 <mapper namespace="com.jd.platform.hotkey.dashboard.mapper.KeyRecordMapper">
   <resultMap id="BaseResultMap" type="com.jd.platform.hotkey.dashboard.model.KeyRecord">
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="key" jdbcType="VARCHAR" property="key" />
+    <result column="key_name" jdbcType="VARCHAR" property="key" />
     <result column="app_name" jdbcType="VARCHAR" property="appName" />
     <result column="count" jdbcType="INTEGER" property="count" />
+    <result column="source" jdbcType="VARCHAR" property="source" />
+    <result column="duration" jdbcType="INTEGER" property="duration" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, key, app_name, count, create_time
+    id, key_name, app_name, count, duration,source,create_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -28,13 +30,19 @@
         id,
       </if>
       <if test="key != null">
-        key,
+        key_name,
       </if>
       <if test="appName != null">
         app_name,
       </if>
       <if test="count != null">
         count,
+      </if>
+      <if test="source != null">
+        source,
+      </if>
+      <if test="duration != null">
+        duration,
       </if>
       <if test="createTime != null">
         create_time,
@@ -53,6 +61,12 @@
       <if test="count != null">
         #{count,jdbcType=INTEGER},
       </if>
+      <if test="source != null">
+        #{source,jdbcType=VARCHAR},
+      </if>
+      <if test="duration != null">
+        #{duration,jdbcType=INTEGER},
+      </if>
       <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
       </if>
@@ -62,7 +76,7 @@
     update hk_key_record
     <set>
       <if test="key != null">
-        key = #{key,jdbcType=VARCHAR},
+        key_name = #{key,jdbcType=VARCHAR},
       </if>
       <if test="appName != null">
         app_name = #{appName,jdbcType=VARCHAR},
@@ -70,10 +84,24 @@
       <if test="count != null">
         count = #{count,jdbcType=INTEGER},
       </if>
+      <if test="source != null">
+        source = #{source,jdbcType=VARCHAR},
+      </if>
+      <if test="duration != null">
+        duration = #{duration,jdbcType=INTEGER},
+      </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+
+  <select id="listKey"  parameterType="com.jd.platform.hotkey.dashboard.common.domain.SearchDto"   resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from hk_key_record
+  </select>
+
 </mapper>

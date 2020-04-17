@@ -79,21 +79,22 @@
 		<div class="row">
 			<div class="col-md-4 col-md-offset-4">
 				<div class="account-box">
-					<form role="form"  method="post" id="loginForm">
+					<!--<form role="form"  method="post" id="loginForm">-->
+					<form role="form"  method="post" id="loginf">
 						<div class="form-group">
 							<a href="#" class="pull-right label-forgot">忘记账号?</a>
-							<label for="inputUsernameEmail">账号</label>
+							<label>账号</label>
 							<input type="text" placeholder="请输入账号"  name="userName" id="loginname"  class="form-control">
 						</div>
 						<div class="form-group">
 							<a href="#" class="pull-right label-forgot">忘记密码?</a>
-							<label for="inputPassword">密码</label>
+							<label>密码</label>
 							<input type="password" placeholder="请输入密码" name="pwd" id="password"  class="form-control">
 						</div>
 
-						<button class="btn btn btn-primary pull-right" type="submit">登录</button>
+						<button class="btn btn btn-primary pull-right" onclick="sub()" type="submit">登录</button>
 					</form>
-					<a class="forgotLnk" href="index-2.html"></a>
+					<!--<a class="forgotLnk" href="index-2.html"></a>-->
 					<!--<div class="or-box">-->
 						<!--<center><span class="text-center login-with">登录 or <b>注册</b></span></center>-->
 					<!--	<div class="row">
@@ -121,7 +122,8 @@
 					<div class="row-block">
 						<div class="row">
 							<div class="col-md-12 row-block">
-								<a href="index-2.html" class="btn btn-primary btn-block" style="margin-top: 11px">新建账号</a>
+							<!--	<a href="index-2.html" class="btn btn-primary btn-block" style="margin-top: 11px">新建账号</a>-->
+								<a href="#" class="btn btn-primary btn-block" style="margin-top: 11px">新建账号</a>
 							</div>
 						</div>
 					</div>
@@ -151,21 +153,14 @@
 <script type="text/javascript" th:src="@{/static/admin/assets/js/validate/jquery.validate.extend.js}"></script>
 <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=WSrX4bCfgcjTfhWNCwvfI1ZnQnfZDxFW"></script>
 <script type="text/javascript" th:inline="javascript">
-window.rootPath=[[${rootPath}]];
-var isRoll=[[${RollVerification}]];
+var isRoll=false;
 $(document).ready(function(){
 	(function(window,document){
 		window.v2={
 			version:"3.2",
 			init:function(){
-				this.iftop();
 				this.loginSubmit();
 				this.showdd();
-			},
-			iftop:function(){
-		    	if (window != top) {
-		          top.location.href = location.href;
-		        }
 			},
 			showdd:function(){
 				var timer;
@@ -174,8 +169,7 @@ $(document).ready(function(){
 				var current2 = 1;
 				var showfh=function(){
 					fhi = 1;
-					//关闭提示晃动屏幕，注释掉这句话即可
-					timer = setInterval(xzfh2, 10); 
+					timer = setInterval(xzfh2, 10);
 				};
 				var xzfh=function(){
 					current = (current)%360;
@@ -202,67 +196,96 @@ $(document).ready(function(){
 				};
 			},
 
-			loginSubmit:function(){
-				$("#loginForm").validate({
-					rules:{
-						username:{
-							required:true,
-							minlength: 1,
-							maxlength: 20,
-						},
-						password:{
-							required:true,
-							minlength: 1,
-							maxlength: 20,
-						},
-						code:{
-							required:true,
-							minlength: 4,
-							maxlength: 20,
-						}
+		};
+
+	})(window,document);
+})
+
+function sub(){
+	$("#loginf").validate({
+		rules:{
+			userName:{
+				required:true,
+				minlength: 1,
+				maxlength: 20,
+			},
+			pwd:{
+				required:true,
+				minlength: 1,
+				maxlength: 20,
+			}
+		},
+		submitHandler:function(form){
+			if(isRoll){
+				$('#myModal').modal('show');
+			}else{
+				var user=$("#loginf").serialize();
+				$.ajax({
+					cache : false,
+					type : "POST",
+					url :  "/admin/login",
+					data : user,
+					async : false,
+					dataType : "json",
+					error : function(request) {
+						$.modal.alertError("系统错误");
 					},
-					messages: {
-				        "name": {
-				            remote: "名称已经存在"
-				        }
-				    },
-					submitHandler:function(form){
-						if(isRoll){
-							$('#myModal').modal('show');
+					success : function(data) {
+						if(data.code==200){
+							location.href = '/admin/index';
 						}else{
-							var dataFormJson=$("#loginForm").serialize();
-							$.ajax({
-								cache : true,
-								type : "POST",
-								url :  "/admin/login",
-								data : dataFormJson,
-								async : false,
-								error : function(request) {
-									alert(111);
-									$.modal.alertError("系统错误");
-								},
-								success : function(data) {
-									if(data.code==200){
-										 location.href = '/admin/index';
-									}else{
-										v2.showdd().init();
-										layer.msg(data.msg, function(){
-											//关闭后的操作
-										});
-									}
-									
-								}
+							v2.showdd().init();
+							layer.msg(data.msg, function(){
+								//关闭后的操作
 							});
 						}
-						
 					}
 				});
 			}
-		};
-		
-		v2.init();
-	})(window,document);
-})
+		}
+	});
+}
+
+function toIndex(){
+	alert("index--> ");
+	$.ajax({
+		cache : false,
+		type : "POST",
+		url :  "/admin/login",
+		data : user,
+		async : false,
+		dataType : "json",
+		error : function(request) {
+			$.modal.alertError("系统错误");
+		},
+		success : function(data) {
+			if(data.code==200){
+				//	location.href = '/admin/index';
+				var url='/admin/index';   //请求的URl
+				var xhr = new XMLHttpRequest();		//定义http请求对象
+				xhr.open("POST", url, true);
+				xhr.setRequestHeader("Content-type",
+						"application/json");
+				xhr.send();
+				xhr.responseType = "json";  //
+				xhr.onload = function() {   // 定义请求完成的处理函数，请求前也可以增加加载框/禁用下载按钮逻辑
+					if (this.status===200) {
+						alert(1111);
+					}
+					else{
+						alert("出现了未知的错误!");
+					}
+				}
+			}else{
+				v2.showdd().init();
+				layer.msg(data.msg, function(){
+					//关闭后的操作
+				});
+			}
+		}
+	});
+}
+
 
 </script>
 

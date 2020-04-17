@@ -32,6 +32,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public int insertUser(User user) {
+        return userMapper.insertSelective(user);
+    }
+
+    @Override
+    public int deleteByPrimaryKey(int id) {
+        return userMapper.deleteByPrimaryKey(id);
+    }
+
+    @Override
+    public User selectByPrimaryKey(int id) {
+        return userMapper.selectByPrimaryKey(id);
+    }
+
+    @Override
+    public int updateUser(User user) {
+        return userMapper.updateByPk(user);
+    }
+
+    @Override
     public PageInfo<User> pageUser(PageParam param, SearchDto dto) {
         PageHelper.startPage(param.getPageNum(),param.getPageSize());
         List<User> users = userMapper.listUser(dto);

@@ -1,14 +1,18 @@
 package com.jd.platform.hotkey.dashboard.util;
 
+import com.jd.platform.hotkey.dashboard.common.eunm.ResultEnum;
+import com.jd.platform.hotkey.dashboard.common.ex.BizException;
 import io.jsonwebtoken.*;
 import org.apache.logging.log4j.util.Base64Util;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 import java.security.Key;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -23,7 +27,7 @@ public class JwtTokenUtil {
 
     private static Logger log = LoggerFactory.getLogger(JwtTokenUtil.class);
 
-    public static final Integer EXPIRATION_TIME = 3600;
+    public static final Integer EXPIRATION_TIME = 3600*1000;
     public static final String SECRET = "happy";
     public static final String TOKEN_PREFIX = "hk";
     public static final String AUTH_HEADER_KEY = "Authorization";
@@ -35,10 +39,7 @@ public class JwtTokenUtil {
      */
     public static Claims parseJWT(String jsonWebToken) {
         try {
-            Claims claims = Jwts.parser()
-                    .setSigningKey(DatatypeConverter.parseBase64Binary(SECRET))
-                    .parseClaimsJws(jsonWebToken).getBody();
-            return claims;
+            return Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(SECRET)).parseClaimsJws(jsonWebToken).getBody();
         } catch (ExpiredJwtException  eje) {
             log.error("===== Token过期 =====", eje);
             throw new RuntimeException();
@@ -55,25 +56,21 @@ public class JwtTokenUtil {
      * @param role
      * @return
      */
-    public static String createJWT(String userId, String username, String role, String appName) {
+    public static String createJWT(Integer userId, String username, String role, String appName) {
         try {
             // 使用HS256加密算法
             SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
-
             long nowMillis = System.currentTimeMillis();
-            Date now = new Date(nowMillis);
-
             //生成签名密钥
             byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(SECRET);
             Key signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
 
             //userId是重要信息，进行加密下
-            String encryId = Base64Util.encode(userId);
-
+            String encryId = Base64Util.encode(userId.toString());
             //添加构成JWT的参数
             JwtBuilder builder = Jwts.builder().setHeaderParam("type", "JWT")
+                    .claim("id", encryId)
                     .claim("role", role)
-                    .claim("userId", userId)
                     .claim("appName", appName)
                     .setSubject(username)           // 代表这个JWT的主体，即它的所有人
                  //   .setIssuer(audience.getClientId())              // 代表这个JWT的签发主体；
@@ -85,8 +82,11 @@ public class JwtTokenUtil {
             if (TTLMillis >= 0) {
                 long expMillis = nowMillis + TTLMillis;
                 Date exp = new Date(expMillis);
-                builder.setExpiration(exp)  // 是一个时间戳，代表这个JWT的过期时间；
-                        .setNotBefore(now); // 是一个时间戳，代表这个JWT生效的开始时间，意味着在这个时间之前验证JWT是会失败的
+                System.out.println("当前时间： "+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+
+                System.out.println("过期时间： "+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(exp));
+                builder.setExpiration(exp); // 是一个时间戳，代表这个JWT的过期时间；
+                      //  .setNotBefore(now); // 是一个时间戳，代表这个JWT生效的开始时间，意味着在这个时间之前验证JWT是会失败的
             }
 
             //生成JWT
@@ -106,6 +106,17 @@ public class JwtTokenUtil {
     public static String getAppName(String token){
         return parseJWT(token).get("appName", String.class);
     }
+
+
+    /**
+     * 从token中获取role
+     * @param token
+     * @return
+     */
+    public static String getRole(String token){
+        return parseJWT(token).get("role", String.class);
+    }
+
 
 
     /**
@@ -136,4 +147,13 @@ public class JwtTokenUtil {
     public static boolean isExpiration(String token) {
         return parseJWT(token).getExpiration().before(new Date());
     }
+
+
+    public static void main(String[] args) {
+        String authHeader="";
+        if (StringUtils.isEmpty(authHeader)) {
+            throw new BizException(ResultEnum.NO_LOGIN);
+        }
+    }
+
 }

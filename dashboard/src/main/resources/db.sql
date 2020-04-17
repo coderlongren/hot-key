@@ -30,9 +30,9 @@ CREATE TABLE `hk_user`  (
 DROP TABLE IF EXISTS `hk_key_rule`;
 CREATE TABLE `hk_key_rule`  (
   `id` int(0) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `key` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT 'key',
+  `key_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT 'key',
   `prefix` int(0) NOT NULL COMMENT '是否前缀：1是；0否',
-  `interval` int(0) NOT NULL COMMENT '间隔时间（秒）',
+  `intervals` int(0) NOT NULL COMMENT '间隔时间（秒）',
   `threshold` int(0) NOT NULL COMMENT '阈值',
   `duration` int(0) NOT NULL DEFAULT 60 COMMENT '缓存时间',
   `app_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '所属appName',
@@ -49,9 +49,11 @@ CREATE TABLE `hk_key_rule`  (
 DROP TABLE IF EXISTS `hk_key_record`;
 CREATE TABLE `hk_key_record`  (
   `id` bigint(0) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `key` varchar(128) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT 'key',
+  `key_name` varchar(128) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT 'key',
   `app_name` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '所属appName',
   `count` int(0) NOT NULL DEFAULT 1 COMMENT 'key出现的数量',
+  `duration` int(0) NOT NULL DEFAULT 60 COMMENT '缓存时间',
+  `source` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '来源',
   `create_time` datetime(0) NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Dynamic;
@@ -63,8 +65,8 @@ CREATE TABLE `hk_change_log`  (
   `id` int(0) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `biz_id` int(0) NOT NULL COMMENT '业务ID',
   `biz_type` int(0) NOT NULL COMMENT '业务类型：1规则变更 ',
-  `from` varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '原始值',
-  `to` varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '目标值',
+  `from_str` varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '原始值',
+  `to_str` varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '目标值',
   `update_user` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '修改人',
   `create_time` datetime(0) NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE

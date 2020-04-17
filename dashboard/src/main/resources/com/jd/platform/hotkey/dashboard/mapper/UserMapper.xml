@@ -108,7 +108,7 @@
         app_name = #{appName,jdbcType=VARCHAR},
       </if>
       <if test="createTime != null">
-        create_time = #{createTime,jdbcType=TIMESTAMP},
+        create_time = now(),
       </if>
       <if test="state != null">
         state = #{state,jdbcType=INTEGER},

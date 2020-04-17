@@ -86,4 +86,12 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+
+  <select id="listWorker"  parameterType="com.jd.platform.hotkey.dashboard.common.domain.SearchDto"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from hk_worker
+  </select>
+
 </mapper>

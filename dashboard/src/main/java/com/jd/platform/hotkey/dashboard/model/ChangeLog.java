@@ -6,6 +6,8 @@ import java.util.Date;
 public class ChangeLog implements Serializable {
     private Integer id;
 
+    private Integer bizId;
+
     private Integer bizType;
 
     private String from;
@@ -22,6 +24,14 @@ public class ChangeLog implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getBizId() {
+        return bizId;
+    }
+
+    public void setBizId(Integer bizId) {
+        this.bizId = bizId;
     }
 
     public Integer getBizType() {

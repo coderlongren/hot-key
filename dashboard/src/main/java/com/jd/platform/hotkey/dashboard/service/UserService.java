@@ -17,4 +17,12 @@ public interface UserService {
     PageInfo<User> pageUser(PageParam page, SearchDto dto);
 
     User findByNameAndPwd(User user);
+
+    int insertUser(User user);
+
+    int deleteByPrimaryKey(int id);
+
+    User selectByPrimaryKey(int id);
+
+    int updateUser(User user);
 }

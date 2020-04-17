@@ -1,7 +1,12 @@
 package com.jd.platform.hotkey.dashboard.mapper;
 
+import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
 import com.jd.platform.hotkey.dashboard.model.KeyRule;
+import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
+@Mapper
 public interface KeyRuleMapper {
     int deleteByPrimaryKey(Integer id);
 
@@ -11,7 +16,7 @@ public interface KeyRuleMapper {
 
     KeyRule selectByPrimaryKey(Integer id);
 
-    int updateByPrimaryKeySelective(KeyRule record);
+    int updateByPk(KeyRule record);
 
-    int updateByPrimaryKey(KeyRule record);
+    List<KeyRule> listRule(SearchDto param);
 }

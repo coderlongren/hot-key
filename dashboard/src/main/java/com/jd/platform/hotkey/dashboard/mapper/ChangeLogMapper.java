@@ -1,7 +1,12 @@
 package com.jd.platform.hotkey.dashboard.mapper;
 
+import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
 import com.jd.platform.hotkey.dashboard.model.ChangeLog;
+import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
+@Mapper
 public interface ChangeLogMapper {
     int deleteByPrimaryKey(Integer id);
 
@@ -11,7 +16,7 @@ public interface ChangeLogMapper {
 
     ChangeLog selectByPrimaryKey(Integer id);
 
-    int updateByPrimaryKeySelective(ChangeLog record);
+    int updateByPk(ChangeLog record);
 
-    int updateByPrimaryKey(ChangeLog record);
+    List<ChangeLog> listChangeLog(SearchDto param);
 }

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" 
-      xmlns:sec="http://www.pollix.at/thymeleaf/shiro">
+<html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="admin/common/html/head :: head_Normal(~{::title},~{::link},~{::style})">
 
 <title th:text=${title}></title>
@@ -11,9 +10,7 @@
 <link th:href="@{/static/admin/assets/js/bootstrap/css/bootstrap-table/bootstrap-table.min.css}" rel="stylesheet"/>
 
 <style type="text/css">
-/**
-*这里写单独的css样式
-*/
+
 .select-list ul li{
 	list-style-type: none;
 	float: left;
@@ -23,11 +20,9 @@
 </head>
 
 <body id="listbody">
-<!-- ###############################代码编写处############################### -->
 <!-- 右边内容 -->
 <div class="wrap-fluid">
     <div class="container-fluid paper-wrap bevel tlbr">
-        <!-- 内容 -->
         <!--标题 通用-->
         <div th:replace="admin/common/html/title :: title(${title},${parenttitle},${isMsg},${msgHTML})">
         </div>
@@ -57,7 +52,7 @@
                                 <div class="form_left">
                                     <form role="form" class="form-inline">
                                         <div class="form-group">
-                                            <label for="exampleInputEmail2" class="sr-only">用户名字</label>
+                                            <label class="sr-only">用户名字</label>
                                             <input type="text" name="searchText" placeholder="用户名字"class="form-control">
                                         </div>
                                         <button onclick="$.table.search(this)" class="btn btn-success" type="button"><i class="fa fa-search"></i>&nbsp;搜索</button>
@@ -94,8 +89,7 @@
                                <button onclick="updatePwd()" type="button" class="btn btn-danger">
                                     <span class="entypo-tools"></span>&nbsp;&nbsp;修改密码
                                </button>
-                               
-                               
+
                            </div>
                             <!-- 工具条 end-->
                            <table id="dataTable" class="table-striped footable-res footable metro-blue" data-page-size="6">
@@ -113,8 +107,6 @@
         </div>
     </div>
 </div>
-<!-- 结束右边内容 -->
-<!-- ###############################代码编写处############################### -->
 <!-- 通用js -->
 <div th:include="admin/common/html/js :: onload_js">
    
@@ -133,15 +125,12 @@
 <script th:src="@{/static/admin/assets/js/blockUI/jquery.blockUI.js}" type="text/javascript"></script>
 
 <script type="text/javascript">
-<!-- jquery-export 表格导出插件 -->
-
-<!-- 导出 -->
-var dataUrl=window.rootPath+"/user/list";
-var removeUrl=window.rootPath+"/user/remove";
-var createUrl=window.rootPath+"/user/add";
-var updateUrl=window.rootPath+"/user/edit/{id}";
-var exportUrl=window.rootPath+"/user/export";
-  var options = {
+var dataUrl="/user/list";
+var removeUrl="/user/remove";
+var createUrl="/user/add";
+var updateUrl="/user/edit/{id}";
+var exportUrl="/user/export";
+var options = {
 		dataUrl: dataUrl,
         createUrl: createUrl,
         updateUrl: updateUrl,
@@ -165,7 +154,15 @@ var exportUrl=window.rootPath+"/user/export";
 			{
 			    field: 'userName',
 			    title: '账号'
-			}, {
+			},
+            {
+                field: 'appName',
+                title: '所属APP'
+            },
+            {
+                field: 'phone',
+                title: '手机号'
+            },{
 			    title: '操作',
 			    formatter: function (value, row, index) {
 			        var id = row.id;
@@ -194,12 +191,9 @@ $(function(){
         	 $.modal.alertWarning("请选择一条记录");
         	 return
          }
-         
-        
+
          var url = editPwdUrl.replace("{id}", rows.join());
-         var data = {
-             "id":rows.join()
-         };
+         var data = { "id":rows.join() };
 		 $.modal.open("修改密码", url);
 	}
 
