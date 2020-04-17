@@ -14,6 +14,7 @@
         <module>client</module>
         <module>common</module>
         <module>sample</module>
+        <module>dashboard</module>
     </modules>
 
     <properties>
