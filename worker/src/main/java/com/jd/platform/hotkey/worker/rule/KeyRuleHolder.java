@@ -2,7 +2,8 @@ package com.jd.platform.hotkey.worker.rule;
 
 import com.jd.platform.hotkey.common.model.HotKeyModel;
 import com.jd.platform.hotkey.common.rule.DefaultKeyRule;
-import com.jd.platform.hotkey.common.rule.IKeyRule;
+import com.jd.platform.hotkey.common.rule.KeyRule;
+import com.jd.platform.hotkey.worker.cache.CaffeineCacheHolder;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
@@ -19,27 +20,30 @@ public class KeyRuleHolder {
     /**
      * key就是appName，value是rule
      */
-    private static final Map<String, List<IKeyRule>> RULE_MAP = new ConcurrentHashMap<>();
+    private static final Map<String, List<KeyRule>> RULE_MAP = new ConcurrentHashMap<>();
 
-    public static IKeyRule getRuleByAppAndKey(HotKeyModel hotKeyModel) {
-        List<IKeyRule> keyRules = RULE_MAP.get(hotKeyModel.getAppName());
+    /**
+     * 获取key对应的rule规则
+     */
+    public static KeyRule getRuleByAppAndKey(HotKeyModel hotKeyModel) {
+        List<KeyRule> keyRules = RULE_MAP.get(hotKeyModel.getAppName());
         //没有该key相关信息时，返回默认
-        if (keyRules == null || CollectionUtils.isEmpty(keyRules)) {
-            return new DefaultKeyRule();
+        if (CollectionUtils.isEmpty(keyRules)) {
+            return new DefaultKeyRule().getKeyRule();
         }
 
-        IKeyRule prefix = null;
-        IKeyRule common = null;
+        KeyRule prefix = null;
+        KeyRule common = null;
 
         //遍历该app的所有rule，找到与key匹配的rule。优先全匹配->prefix匹配-> * 通配
-        for (IKeyRule keyRule : keyRules) {
-            if (hotKeyModel.getKey().equals(keyRule.getKeyRule().getKey())) {
+        for (KeyRule keyRule : keyRules) {
+            if (hotKeyModel.getKey().equals(keyRule.getKey())) {
                 return keyRule;
             }
-            if (keyRule.getKeyRule().isPrefix() && hotKeyModel.getKey().startsWith(keyRule.getKeyRule().getKey())) {
+            if (keyRule.isPrefix() && hotKeyModel.getKey().startsWith(keyRule.getKey())) {
                 prefix = keyRule;
             }
-            if ("*".equals(keyRule.getKeyRule().getKey())) {
+            if ("*".equals(keyRule.getKey())) {
                 common = keyRule;
             }
         }
@@ -50,11 +54,24 @@ public class KeyRuleHolder {
             return common;
         }
 
-        return new DefaultKeyRule();
+        return new DefaultKeyRule().getKeyRule();
     }
 
-    public static void put(String appName, List<IKeyRule> keyRules) {
+    /**
+     * 判断新取的rules和已有的是否一样
+     */
+    public static void put(String appName, List<KeyRule> keyRules) {
+        if (RULE_MAP.get(appName) == null) {
+            RULE_MAP.put(appName, keyRules);
+            return;
+        }
+        if (keyRules.toString().equals(RULE_MAP.get(appName).toString())) {
+            return;
+        }
+        //判断该APP的rule是否有变化，如果有变化了，则需要清空该app的caffeine缓存。
         RULE_MAP.put(appName, keyRules);
+
+        CaffeineCacheHolder.clearCacheByAppName(appName);
     }
 
 }

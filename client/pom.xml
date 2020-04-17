@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>jar</packaging>
 
-    <artifactId>client</artifactId>
+    <artifactId>hotkey-client</artifactId>
 
     <dependencies>
         <dependency>
@@ -33,10 +33,9 @@
             <version>28.2-jre</version>
         </dependency>
     </dependencies>
-    <!--通过maven-jar-plugin插件打jar包-->
+
     <build>
         <plugins>
-            <!-- Maven Assembly Plugin -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.0.0</version>

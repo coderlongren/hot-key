@@ -6,7 +6,6 @@ import com.ibm.etcd.api.LeaseStatus;
 import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
 import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
 import com.jd.platform.hotkey.common.configcenter.etcd.JdEtcdClient;
-import com.jd.platform.hotkey.common.rule.DefaultKeyRule;
 import com.jd.platform.hotkey.common.rule.KeyRule;
 import com.jd.platform.hotkey.common.tool.FastJsonUtils;
 import com.jd.platform.hotkey.worker.starters.EtcdStarter;
@@ -75,8 +74,10 @@ public class TestController {
     }
 
     @RequestMapping("addRulePath")
-    public Object adRulePath(String appName) {
-        KeyRule keyRule = new DefaultKeyRule().getKeyRule();
+    public Object addRulePath(String appName) {
+//        KeyRule keyRule = new DefaultKeyRule().getKeyRule();
+
+        KeyRule keyRule = new KeyRule.Builder().key("*").interval(5).threshold(2).duration(60).build();
 
         iConfigCenter.put(ConfigConstant.rulePath + appName, FastJsonUtils.convertObjectToJSON(Arrays.asList(keyRule)));
         return "success";
