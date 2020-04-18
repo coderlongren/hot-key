@@ -2,12 +2,6 @@ server :
   port : 8080
   servlet :
     context-path : /
-  tomcat :
-    max-threads : 128
-    min-spare-threads : 5
-    uri-encoding : UTF-8
-    #shiro 报错修改的地方
-    max-connections: 200000
 spring :
   profiles :
     active : dev
@@ -30,7 +24,6 @@ spring :
   jackson:
     time-zone: GMT+8
     date-format: yyyy-MM-dd HH:mm:ss
-
   datasource:
     username: root
     password: Hello123!
@@ -44,3 +37,7 @@ pagehelper:
 mybatis:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+etcd:
+  server: ${etcdServer:http://127.0.0.1:2379}
+

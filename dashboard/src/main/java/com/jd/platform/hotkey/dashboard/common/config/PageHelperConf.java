@@ -1,9 +1,8 @@
-package com.jd.platform.hotkey.dashboard.common.conf;
+package com.jd.platform.hotkey.dashboard.common.config;
 
 import java.util.Properties;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import com.github.pagehelper.PageHelper;
 

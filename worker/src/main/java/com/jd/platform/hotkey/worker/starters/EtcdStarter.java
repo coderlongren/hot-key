@@ -64,10 +64,13 @@ public class EtcdStarter {
             WatchUpdate watchUpdate = watchIterator.next();
             List<Event> eventList = watchUpdate.getEvents();
 
-            System.out.println(eventList.size());
-            System.err.println(eventList.get(0).getKv());
+            System.out.println("even list size-> "+eventList.size());
+            System.err.println("kv--> "+eventList.get(0).getKv());
             //包含put、delete
             Event.EventType eventType = eventList.get(0).getType();
+
+            System.out.println("eventType--> "+eventType);
+
         }
 
     }
