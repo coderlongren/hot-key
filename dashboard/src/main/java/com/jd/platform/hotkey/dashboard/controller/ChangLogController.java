@@ -15,6 +15,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
+
 
 @Controller
 @RequestMapping("/changeLog")
@@ -22,7 +24,7 @@ public class ChangLogController extends BaseController {
 	
 	private String prefix = "admin/changeLog";
 
-	@Autowired
+	@Resource
 	private ChangeLogService logService;
 
 	@GetMapping("/view")
@@ -35,7 +37,7 @@ public class ChangLogController extends BaseController {
 	@PostMapping("/list")
 	@ResponseBody
 	public Page<ChangeLog> list(PageParam page, String searchText){
-		PageInfo<ChangeLog> info = logService.pageChangeLog(page, SearchDto.param(searchText, request));
+		PageInfo<ChangeLog> info = logService.pageChangeLog(page, param(searchText));
 		return new Page<>(info.getPageNum(),(int)info.getTotal(),info.getList());
 	}
 

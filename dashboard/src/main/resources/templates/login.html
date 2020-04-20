@@ -2,60 +2,23 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>SpringBoot_v2</title>
+<title>热点key探测</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="SpringBoot_v2,脚手架">
-	<meta name="author" content="QQ87766867">
+	<meta name="description" content="热点Key探测">
 	<!--样式 -->
 	<script type="text/javascript" th:src="@{/static/admin/assets/js/jquery.min.js}"></script>
-	<!--  <link rel="stylesheet" href="@{/static/admin/assets/css/style.css}"> -->
 	<link rel="stylesheet" th:href="@{/static/admin/assets/css/loader-style.css}">
 	<link rel="stylesheet" th:href="@{/static/admin/assets/css/bootstrap.css}">
 	<link rel="stylesheet" th:href="@{/static/admin/assets/css/signin.css}">
 	<!--icons -->
-    <link rel="icon" th:href="@{/static/admin/images/favicon.ico}" type="image/x-icon">
-    
-    <!-- 滚动验证码 -->
-    <link rel="stylesheet" th:href="@{/static/login/disk/slidercaptcha.css}">
+    <link rel="icon" th:href="@{/static/admin/images/jd.ico}" type="image/x-icon">
     <style type="text/css">
-.container-fluid{
-
-    /* position: relative; */
-    margin: 0 auto;
-}
-.slidercaptcha {
-    margin: 0 auto;
-    width: 314px;
-    height: 286px;
-    border-radius: 4px;
-    background-color:white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.125);
-    margin-top: 40px;
-}
-.card-header {
-    padding: .75rem 1.25rem;
-    margin-bottom: 0;
-    background-color: rgba(0,0,0,.03);
-    border-bottom: 1px solid rgba(0,0,0,.125);
-}
-.slidercaptcha .card-body {
-	padding: 1rem;
-}
 
 .slidercaptcha canvas:first-child {
 	border-radius: 4px;
 	border: 1px solid #e6e8eb;
 }
 
-.slidercaptcha.card .card-header {
-	background-image: none;
-	background-color: rgba(0, 0, 0, 0.03);
-}
-
-.refreshIcon {
-	top: -50px;
-    font-size: 1.8rem;
-}
     </style>
 </head>
 <body>
@@ -94,31 +57,7 @@
 
 						<button class="btn btn btn-primary pull-right" onclick="sub()" type="submit">登录</button>
 					</form>
-					<!--<a class="forgotLnk" href="index-2.html"></a>-->
-					<!--<div class="or-box">-->
-						<!--<center><span class="text-center login-with">登录 or <b>注册</b></span></center>-->
-					<!--	<div class="row">
-							<div class="col-md-6 row-block">
-								<a target="_blank" href="https://gitee.com/bdj/SpringBoot_v2" class="btn btn-facebook btn-block">
-								<span class="entypo-cloud space-icon"></span>Gitee</a>
-							</div>
-							<div class="col-md-6 row-block">
-								<a target="_blank" href="https://github.com/fuce1314/Springboot_v2" class="btn btn-twitter btn-block">
-								<span class="entypo-github space-icon"></span>Github</a>
-							</div>
-						</div>-->
-						<!--<div style="margin-top:25px" class="row">
-							<div class="col-md-6 row-block">
-								<a target="_blank" href="https://gitee.com/bdj/SpringBoot_v2/wikis" class="btn btn-google btn-block">
-								<span class="entypo-book-open space-icon"></span>Wiki</a>
-							</div>
-							<div class="col-md-6 row-block">
-								<a target="_blank" href="http://shang.qq.com/wpa/qunwpa?idkey=a8770621a7c51a904d667db47312b320d30e5c5581bb46103c2d5a8486cb8dce" class="btn btn-instagram btn-block">
-								<span class="entypo-qq space-icon"></span>QQ群</a>
-							</div>
-						</div>-->
-				<!--	</div>-->
-					<!--<hr>-->
+
 					<div class="row-block">
 						<div class="row">
 							<div class="col-md-12 row-block">

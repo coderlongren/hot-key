@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 public class AdminController extends BaseController {
 	private static Logger log = LoggerFactory.getLogger(AdminController.class);
 
-	@Autowired
+	@Resource
 	private UserService userService;
 
 	private String prefix = "admin";
@@ -45,7 +46,7 @@ public class AdminController extends BaseController {
 	}
 
 	@GetMapping("/login")
-    public String login(ModelMap modelMap) {
+    public String login() {
         return "login";
     }
 
@@ -81,24 +82,21 @@ public class AdminController extends BaseController {
 
 
 	@GetMapping("Out404")
-	public String Out404(HttpServletRequest request, HttpServletResponse response){
-		
+	public String Out404(){
         return "redirect:/error/404";
 	}
 	
 	@GetMapping("Out403")
-	public String Out403(HttpServletRequest request, HttpServletResponse response){
-		
+	public String Out403(){
         return "redirect:/error/403";
 	}
 	@GetMapping("Out500")
-	public String Out500(HttpServletRequest request, HttpServletResponse response){
-		
+	public String Out500(){
         return "redirect:/error/500";
 	}
 
 	@GetMapping("Outqx")
-	public String Outqx(HttpServletRequest request, HttpServletResponse response){
+	public String Outqx(){
         return "redirect:/error/500";
 	}
 

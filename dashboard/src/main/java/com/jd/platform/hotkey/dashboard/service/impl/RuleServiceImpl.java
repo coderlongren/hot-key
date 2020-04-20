@@ -10,6 +10,7 @@ import com.jd.platform.hotkey.dashboard.service.RuleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -23,7 +24,7 @@ import java.util.List;
 public class RuleServiceImpl implements RuleService {
 
 
-    @Autowired
+    @Resource
     private KeyRuleMapper ruleMapper;
 
     @Override

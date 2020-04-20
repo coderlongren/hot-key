@@ -15,6 +15,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
+
 
 @Controller
 @RequestMapping("/worker")
@@ -22,7 +24,7 @@ public class WorkerController extends BaseController {
 	
 	private String prefix = "admin/worker";
 
-	@Autowired
+	@Resource
 	private WorkerService workerService;
 
 	@GetMapping("/view")
@@ -35,7 +37,7 @@ public class WorkerController extends BaseController {
 	@PostMapping("/list")
 	@ResponseBody
 		public Page<Worker> list(PageParam page, String searchText){
-		PageInfo<Worker> info = workerService.pageWorker(page, SearchDto.param(searchText, request));
+		PageInfo<Worker> info = workerService.pageWorker(page, param(searchText));
 		return new Page<>(info.getPageNum(),(int)info.getTotal(),info.getList());
 	}
 

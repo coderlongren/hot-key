@@ -10,6 +10,7 @@ import com.jd.platform.hotkey.dashboard.service.WorkerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -22,7 +23,7 @@ import java.util.List;
 @Service
 public class WorkerServiceImpl implements WorkerService {
 
-    @Autowired
+    @Resource
     private WorkerMapper workerMapper;
 
     @Override

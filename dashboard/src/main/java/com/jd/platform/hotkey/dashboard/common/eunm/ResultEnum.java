@@ -13,7 +13,7 @@ public enum ResultEnum {
 
     NO_PERMISSION(1003, "没有操作权限"),
 
-    NO_RESOURCE(1004, "没有操作权限"),
+    NO_RESOURCE(1004, "没有资源"),
 
     PARAM_ERROR(1005, "参数错误"),
 

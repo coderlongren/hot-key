@@ -10,7 +10,10 @@ import com.jd.platform.hotkey.dashboard.model.User;
 import com.jd.platform.hotkey.dashboard.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
+import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -23,7 +26,7 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
+    @Resource
     private UserMapper userMapper;
 
     @Override
@@ -33,6 +36,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int insertUser(User user) {
+        user.setPwd(DigestUtils.md5DigestAsHex(user.getPwd().getBytes()));
         return userMapper.insertSelective(user);
     }
 
@@ -48,6 +52,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int updateUser(User user) {
+        if(!StringUtils.isEmpty(user.getPwd())){
+            user.setPwd(DigestUtils.md5DigestAsHex(user.getPwd().getBytes()));
+        };
         return userMapper.updateByPk(user);
     }
 

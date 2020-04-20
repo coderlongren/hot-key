@@ -14,6 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
+
 
 @Controller
 @RequestMapping("/user")
@@ -21,7 +23,7 @@ public class UserController extends BaseController {
 	
 	private String prefix = "admin/user";
 
-	@Autowired
+	@Resource
 	private UserService userService;
 
 	@GetMapping("/view")
@@ -34,7 +36,7 @@ public class UserController extends BaseController {
 	@PostMapping("/list")
 	@ResponseBody
 	public Page<User> list(PageParam page, String searchText){
-		PageInfo<User> info = userService.pageUser(page, SearchDto.param(searchText, request));
+		PageInfo<User> info = userService.pageUser(page, param(searchText));
 		return new Page<>(info.getPageNum(),(int)info.getTotal(),info.getList());
 	}
 

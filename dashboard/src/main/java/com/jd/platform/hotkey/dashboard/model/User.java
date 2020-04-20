@@ -21,6 +21,16 @@ public class User {
 
     private Integer state;
 
+    public User() {
+    }
+
+    public User(Integer id, String userName, String role, String appName) {
+        this.id = id;
+        this.userName = userName;
+        this.role = role;
+        this.appName = appName;
+    }
+
     public Integer getId() {
         return id;
     }

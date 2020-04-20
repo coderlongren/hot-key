@@ -17,6 +17,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
+
 
 @Controller
 @RequestMapping("/key")
@@ -24,7 +26,7 @@ public class KeyController extends BaseController {
 	
 	private String prefix = "admin/key";
 
-	@Autowired
+	@Resource
 	private KeyService keyService;
 
 	@GetMapping("/view")
@@ -37,7 +39,7 @@ public class KeyController extends BaseController {
 	@PostMapping("/list")
 	@ResponseBody
 	public Page<KeyRecord> list(PageParam page, String searchText){
-		PageInfo<KeyRecord> info = keyService.pageKeyRecord(page, SearchDto.param(searchText, request));
+		PageInfo<KeyRecord> info = keyService.pageKeyRecord(page, param(searchText));
 		return new Page<>(info.getPageNum(),(int)info.getTotal(),info.getList());
 	}
 

@@ -16,6 +16,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
+
 
 @Controller
 @RequestMapping("/rule")
@@ -23,7 +25,7 @@ public class RuleController extends BaseController {
 	
 	private String prefix = "admin/rule";
 
-	@Autowired
+	@Resource
 	private RuleService ruleService;
 
 	@GetMapping("/view")
@@ -36,7 +38,7 @@ public class RuleController extends BaseController {
 	@PostMapping("/list")
 	@ResponseBody
 	public Page<KeyRule> list(PageParam page, String searchText){
-		PageInfo<KeyRule> info = ruleService.pageKeyRule(page, SearchDto.param(searchText, request));
+		PageInfo<KeyRule> info = ruleService.pageKeyRule(page, param(searchText));
 		return new Page<>(info.getPageNum(),(int)info.getTotal(),info.getList());
 	}
 

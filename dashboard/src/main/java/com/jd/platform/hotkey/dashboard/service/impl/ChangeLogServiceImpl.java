@@ -12,6 +12,7 @@ import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -24,7 +25,7 @@ import java.util.List;
 @Service
 public class ChangeLogServiceImpl implements ChangeLogService {
 
-    @Autowired
+    @Resource
     private ChangeLogMapper changeLogMapper;
 
 

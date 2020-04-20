@@ -8,6 +8,7 @@ import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.List;
  * @Author: liyunfeng31
  * @Date: 2020/4/18 18:29
  */
+@Component
 public class EtcdMonitor {
 
     @Resource
@@ -36,8 +38,7 @@ public class EtcdMonitor {
             System.err.println(eventList.get(0).getKv());
             //包含put、delete
             Event.EventType eventType = eventList.get(0).getType();
+            System.out.println(eventType.toString());
         }
-
     }
-
 }

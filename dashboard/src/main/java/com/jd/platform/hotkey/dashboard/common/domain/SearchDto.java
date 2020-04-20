@@ -66,15 +66,4 @@ public class SearchDto implements Serializable {
         this.appName = appName;
     }
 
-    public static SearchDto param(String text, HttpServletRequest request){
-       /* String token = request.getHeader("token");
-        SearchDto dto = JSON.parseObject(text, SearchDto.class);
-        dto.setAppName(JwtTokenUtil.getAppName(token));*/
-        SearchDto dto = JSON.parseObject(text, SearchDto.class);
-        if(dto == null){
-            dto = new SearchDto();
-        }
-        dto.setAppName("test");
-        return dto;
-    }
 }

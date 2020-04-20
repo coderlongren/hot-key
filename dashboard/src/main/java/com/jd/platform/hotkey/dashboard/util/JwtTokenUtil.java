@@ -1,13 +1,10 @@
 package com.jd.platform.hotkey.dashboard.util;
 
-import com.jd.platform.hotkey.dashboard.common.eunm.ResultEnum;
-import com.jd.platform.hotkey.dashboard.common.ex.BizException;
 import io.jsonwebtoken.*;
 import org.apache.logging.log4j.util.Base64Util;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
@@ -15,14 +12,7 @@ import java.security.Key;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * ========================
- * Created with IntelliJ IDEA.
- * User：pyy
- * Date：2019/7/17 17:24
- * Version: v1.0
- * ========================
- */
+
 public class JwtTokenUtil {
 
     private static Logger log = LoggerFactory.getLogger(JwtTokenUtil.class);
@@ -69,7 +59,7 @@ public class JwtTokenUtil {
             String encryId = Base64Util.encode(userId.toString());
             //添加构成JWT的参数
             JwtBuilder builder = Jwts.builder().setHeaderParam("type", "JWT")
-                    .claim("id", encryId)
+                    .claim("userId", encryId)
                     .claim("role", role)
                     .claim("appName", appName)
                     .setSubject(username)           // 代表这个JWT的主体，即它的所有人
@@ -104,7 +94,8 @@ public class JwtTokenUtil {
      * @return
      */
     public static String getAppName(String token){
-        return parseJWT(token).get("appName", String.class);
+        Claims re = parseJWT(token);
+        return re.get("appName", String.class);
     }
 
 
@@ -131,10 +122,9 @@ public class JwtTokenUtil {
     /**
      * 从token中获取用户ID
      * @param token
-     * @param base64Security
      * @return
      */
-    public static String getUserId(String token, String base64Security){
+    public static String getUserId(String token){
         String userId = parseJWT(token).get("userId", String.class);
         return new String(Base64.decodeBase64(userId));
     }
@@ -149,11 +139,5 @@ public class JwtTokenUtil {
     }
 
 
-    public static void main(String[] args) {
-        String authHeader="";
-        if (StringUtils.isEmpty(authHeader)) {
-            throw new BizException(ResultEnum.NO_LOGIN);
-        }
-    }
 
 }

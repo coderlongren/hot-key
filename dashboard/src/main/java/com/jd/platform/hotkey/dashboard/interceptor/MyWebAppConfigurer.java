@@ -1,4 +1,4 @@
-package com.jd.platform.hotkey.dashboard.common.interceptor;
+package com.jd.platform.hotkey.dashboard.interceptor;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.*;
