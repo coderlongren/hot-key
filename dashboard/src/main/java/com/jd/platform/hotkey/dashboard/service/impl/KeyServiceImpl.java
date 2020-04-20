@@ -2,12 +2,12 @@ package com.jd.platform.hotkey.dashboard.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
 import com.jd.platform.hotkey.dashboard.common.domain.PageParam;
 import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
 import com.jd.platform.hotkey.dashboard.mapper.KeyRecordMapper;
 import com.jd.platform.hotkey.dashboard.model.KeyRecord;
 import com.jd.platform.hotkey.dashboard.service.KeyService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -25,6 +25,8 @@ public class KeyServiceImpl implements KeyService {
 
     @Resource
     private KeyRecordMapper recordMapper;
+    @Resource
+    private IConfigCenter iConfigCenter;
 
 
     @Override
@@ -36,7 +38,10 @@ public class KeyServiceImpl implements KeyService {
 
     @Override
     public int insertKeyRecord(KeyRecord record) {
-        return recordMapper.insertSelective(record);
+        iConfigCenter.put(record.getKey(), "1");
+
+//        return recordMapper.insertSelective(record);
+        return 1;
     }
 
     @Override

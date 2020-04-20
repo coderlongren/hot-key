@@ -87,7 +87,6 @@ public class KeyListener implements IKeyListener {
     private SlidingWindow checkWindow(HotKeyModel hotKeyModel, String key) {
         //取该key的滑窗
         SlidingWindow slidingWindow = (SlidingWindow) CaffeineCacheHolder.getCache(hotKeyModel.getAppName()).getIfPresent(key);
-        //TODO  这一块需要注意，当Rule规则变化后，如果该key已经有SlidingWindow了，那么该SlidingWindow不会重建
         //考虑在某个APP的rule变化后，清空该APP所有key
         if (slidingWindow == null) {
             //是个新key，获取它的规则
