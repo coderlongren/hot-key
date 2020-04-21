@@ -1,5 +1,7 @@
 package com.jd.platform.hotkey.worker;
 
+import com.alibaba.fastjson.JSON;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.ibm.etcd.api.KeyValue;
 import com.ibm.etcd.api.LeaseLeasesResponse;
 import com.ibm.etcd.api.LeaseStatus;
@@ -32,6 +34,10 @@ public class TestController {
 
     @RequestMapping("test")
     public Object aa(String key) throws ExecutionException, InterruptedException {
+        ListenableFuture<LeaseLeasesResponse> list = ((JdEtcdClient) iConfigCenter).getLeaseClient().list();
+        System.out.println("LeaseList---> "+ JSON.toJSONString(list));
+
+
         LeaseLeasesResponse response = ((JdEtcdClient) iConfigCenter).getLeaseClient().list().get();
         for (LeaseStatus status : response.getLeasesList()) {
             System.out.println(status.getID());

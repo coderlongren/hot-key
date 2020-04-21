@@ -64,7 +64,7 @@ public class WorkerController extends BaseController {
 
 	@GetMapping("/edit/{id}")
     public String edit(@PathVariable("id") Integer id, ModelMap modelMap){
-		modelMap.put("user", workerService.selectByPrimaryKey(id));
+		modelMap.put("worker", workerService.selectByPrimaryKey(id));
         return prefix + "/edit";
     }
 	

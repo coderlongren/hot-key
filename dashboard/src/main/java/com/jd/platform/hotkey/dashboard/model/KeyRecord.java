@@ -1,8 +1,11 @@
 package com.jd.platform.hotkey.dashboard.model;
 
+import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
-public class KeyRecord {
+public class KeyRecord implements Serializable {
+
     private Long id;
 
     private String key;
@@ -21,7 +24,24 @@ public class KeyRecord {
      */
     private String source;
 
+    /**
+     * 事件类型： 1：新增； 2删除
+     */
+    private Integer type;
+
     private Date createTime;
+
+    private boolean dir;
+
+    private String value;
+
+    private Long ttl;
+
+    private Date expiration;
+
+    private String parentKey;
+
+    private List<KeyRecord> nodes;
 
     public Long getId() {
         return id;
@@ -71,11 +91,67 @@ public class KeyRecord {
         this.source = source;
     }
 
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
     public Date getCreateTime() {
         return createTime;
     }
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public boolean isDir() {
+        return dir;
+    }
+
+    public void setDir(boolean dir) {
+        this.dir = dir;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public Long getTtl() {
+        return ttl;
+    }
+
+    public void setTtl(Long ttl) {
+        this.ttl = ttl;
+    }
+
+    public Date getExpiration() {
+        return expiration;
+    }
+
+    public void setExpiration(Date expiration) {
+        this.expiration = expiration;
+    }
+
+    public String getParentKey() {
+        return parentKey;
+    }
+
+    public void setParentKey(String parentKey) {
+        this.parentKey = parentKey;
+    }
+
+    public List<KeyRecord> getNodes() {
+        return nodes;
+    }
+
+    public void setNodes(List<KeyRecord> nodes) {
+        this.nodes = nodes;
     }
 }

@@ -122,10 +122,10 @@
     select
     <include refid="Base_Column_List" />
     from hk_user
-    where app_name = #{appName}
-     <!-- <if test="uname!=null and uname!=''">
-          and appName like concat('%',#{uname},'%')
-      </if >-->
+    where 1=1
+    <if test="appName !=null and appName !=''">
+      and app_name = #{appName}
+    </if >
   </select>
 
 

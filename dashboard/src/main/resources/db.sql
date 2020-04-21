@@ -5,8 +5,8 @@ CREATE TABLE `hk_worker`  (
   `name` varchar(128) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '节点名称',
   `ip` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT 'ip',
   `port` int(0) NOT NULL COMMENT 'port',
-  `update_time` datetime(0) NOT NULL COMMENT '修改时间',
-  `state` tinyint(0) NOT NULL COMMENT '状态:1 可用，0不可用，-1 永久移除',
+  `update_time` datetime(0)  NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
+  `state` tinyint(0) NOT NULL COMMENT '状态:1 可用，0不可用',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uniq_name`(`name`) USING BTREE COMMENT '实例名称唯一索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Dynamic;
@@ -20,8 +20,8 @@ CREATE TABLE `hk_user`  (
   `phone` varchar(16) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '手机号',
   `role` varchar(16) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '角色：ADMIN-超管，APPADMIN-app管理员，APPUSER-app用户',
   `app_name` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '所属appName',
-  `create_time` datetime(0) NOT NULL COMMENT '创建时间',
-  `state` int(0) NOT NULL DEFAULT 1 COMMENT '状态：1可用；0冻结; -1永久移除',
+  `create_time` datetime(0)  NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时间',
+  `state` int(0) NOT NULL DEFAULT 1 COMMENT '状态：1可用；0冻结',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uniq_userName`(`user_name`) USING BTREE COMMENT '账号唯一索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Dynamic;
@@ -38,7 +38,7 @@ CREATE TABLE `hk_key_rule`  (
   `app_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '所属appName',
   `state` int(0) NOT NULL COMMENT '状态：1可用；-1删除',
   `update_user` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '修改人',
-  `update_time` datetime(0) NOT NULL COMMENT '修改时间',
+  `update_time` datetime(0)  NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
   `version` int(0) NOT NULL COMMENT '数据版本',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uniq_key`(`key`) USING BTREE COMMENT '唯一索引'
@@ -54,7 +54,8 @@ CREATE TABLE `hk_key_record`  (
   `count` int(0) NOT NULL DEFAULT 1 COMMENT 'key出现的数量',
   `duration` int(0) NOT NULL DEFAULT 60 COMMENT '缓存时间',
   `source` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '来源',
-  `create_time` datetime(0) NOT NULL COMMENT '创建时间',
+  `type`  int(0) NOT NULL DEFAULT 1 COMMENT '记录类型：1put；2del',
+  `create_time` datetime(0)  NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Dynamic;
 
@@ -68,7 +69,21 @@ CREATE TABLE `hk_change_log`  (
   `from_str` varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '原始值',
   `to_str` varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '目标值',
   `update_user` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '修改人',
-  `create_time` datetime(0) NOT NULL COMMENT '创建时间',
+  `create_time` datetime(0)  NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Dynamic;
+
+
+DROP TABLE IF EXISTS `hk_key_timely`;
+CREATE TABLE `hk_key_timely`  (
+  `id` bigint(0) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `key_name` varchar(128) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT 'key',
+  `val` varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT 'value',
+  `parent_key` varchar(128) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '父级KEY',
+  `app_name` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '所属appName',
+  `duration` int(0) NOT NULL DEFAULT 0 COMMENT '缓存时间',
+  `create_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Dynamic;
+
 

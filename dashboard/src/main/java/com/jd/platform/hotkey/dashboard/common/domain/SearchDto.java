@@ -26,6 +26,8 @@ public class SearchDto implements Serializable {
 
     private String appName;
 
+    private String key;
+
     public Date getStartTime() {
         return startTime;
     }
@@ -66,4 +68,11 @@ public class SearchDto implements Serializable {
         this.appName = appName;
     }
 
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
 }
