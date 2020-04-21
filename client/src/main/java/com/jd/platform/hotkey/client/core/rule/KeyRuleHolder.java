@@ -4,9 +4,8 @@ import cn.hutool.core.util.StrUtil;
 import com.google.common.eventbus.Subscribe;
 import com.jd.platform.hotkey.client.cache.CacheFactory;
 import com.jd.platform.hotkey.client.cache.LocalCache;
+import com.jd.platform.hotkey.client.log.JdLogger;
 import com.jd.platform.hotkey.common.rule.KeyRule;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +20,6 @@ import java.util.stream.Collectors;
  * @version 1.0
  */
 public class KeyRuleHolder {
-    private Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * 保存超时时间和caffine的映射，key是超时时间，value是caffeine
@@ -114,7 +112,7 @@ public class KeyRuleHolder {
 
     @Subscribe
     public void ruleChange(KeyRuleInfoChangeEvent event) {
-        logger.info("new rules info is :" + event.getKeyRules());
+        JdLogger.info(getClass(),"new rules info is :" + event.getKeyRules());
         List<KeyRule> ruleList = event.getKeyRules();
         if (ruleList == null) {
             return;

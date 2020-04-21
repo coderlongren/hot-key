@@ -2,10 +2,9 @@ package com.jd.platform.hotkey.client.core.worker;
 
 import com.google.common.eventbus.Subscribe;
 import com.jd.platform.hotkey.client.Context;
+import com.jd.platform.hotkey.client.log.JdLogger;
 import com.jd.platform.hotkey.client.netty.event.ChannelInactiveEvent;
 import io.netty.channel.Channel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.List;
@@ -18,14 +17,13 @@ import java.util.concurrent.CompletableFuture;
  * @version 1.0
  */
 public class WorkerChangeSubscriber {
-    private Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * 监听worker信息变动
      */
     @Subscribe
     public void connectAll(WorkerInfoChangeEvent event) {
-        logger.info("new infos is :" + event.getAddresses());
+        JdLogger.info(getClass(),"new infos is :" + event.getAddresses());
         List<String> addresses = event.getAddresses();
         if (addresses == null) {
             return;
@@ -44,7 +42,7 @@ public class WorkerChangeSubscriber {
         Channel channel = inactiveEvent.getChannel();
         InetSocketAddress socketAddress = (InetSocketAddress) channel.remoteAddress();
         String address = socketAddress.getHostName() + ":" + socketAddress.getPort();
-        logger.warn("this channel is inactive : " + socketAddress + " trying to NEED_RECONNECT 10 seconds later");
+        JdLogger.warn(getClass(),"this channel is inactive : " + socketAddress + " trying to NEED_RECONNECT 10 seconds later");
 
         CompletableFuture.runAsync(
                 () -> {

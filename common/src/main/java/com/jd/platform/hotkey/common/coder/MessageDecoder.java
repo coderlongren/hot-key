@@ -16,10 +16,12 @@ import java.util.List;
 public class MessageDecoder extends ByteToMessageDecoder {
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> out) throws Exception {
+    protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> out) {
         HotKeyMsg message = new HotKeyMsg();
         message.setMagicNumber(byteBuf.readInt());  // 读取魔数
-        message.setMessageType(MessageType.get(byteBuf.readByte()));	// 读取当前的消息类型
+
+        MessageType messageType = MessageType.get(byteBuf.readByte());
+        message.setMessageType(messageType);	// 读取当前的消息类型
 
         int bodyLength = byteBuf.readInt();	// 读取消息体长度和数据
         CharSequence body = byteBuf.readCharSequence(bodyLength, Charset.defaultCharset());

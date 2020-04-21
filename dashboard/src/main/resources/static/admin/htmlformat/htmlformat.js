@@ -1,4 +1,4 @@
-﻿
+
 function style_html(html_source, indent_size, indent_character, max_char) {
 //Wrapper function to invoke all the necessary constructors and deal with the output.
   

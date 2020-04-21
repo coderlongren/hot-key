@@ -6,10 +6,10 @@ package com.jd.platform.hotkey.common.model.typeenum;
  */
 public enum MessageType {
     APP_NAME((byte) 1),
-    REQUEST_NEW_KEY((byte) 10),
-    RESPONSE_NEW_KEY((byte) 20),
-    PING((byte) 50), PONG((byte) 51),
-    EMPTY((byte) 60);
+    REQUEST_NEW_KEY((byte) 2),
+    RESPONSE_NEW_KEY((byte) 3),
+    PING((byte) 4), PONG((byte) 5),
+    EMPTY((byte) 6);
 
     private byte type;
 
@@ -27,6 +27,6 @@ public enum MessageType {
                 return value;
             }
         }
-        throw new RuntimeException("unsupported type: " + type);
+        return null;
     }
 }
