@@ -32,22 +32,6 @@ public class WorkerInfoHolder {
         }
     }
 
-    public static void main(String[] args) {
-        List<String> allAddresses = new ArrayList<>();
-        allAddresses.add("a:80");
-        allAddresses.add("b:80");
-        allAddresses.add("aC:80");
-        mergeAndConnectNew(allAddresses);
-
-        List<String> a1 = new ArrayList<>();
-        a1.add("b:80");
-        a1.add("aC:80");
-        mergeAndConnectNew(a1);
-
-        List<String> a2 = new ArrayList<>();
-        mergeAndConnectNew(a2);
-    }
-
     /**
      * etcd监听到worker信息变化后
      * 将新的worker信息和当前的进行合并，并且连接新的address

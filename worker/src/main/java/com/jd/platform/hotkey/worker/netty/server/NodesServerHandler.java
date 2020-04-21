@@ -28,7 +28,6 @@ public class NodesServerHandler extends SimpleChannelInboundHandler<HotKeyMsg> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HotKeyMsg message) {
-        System.out.println(message);
         if (StringUtils.isEmpty(message)) {
             return;
         }

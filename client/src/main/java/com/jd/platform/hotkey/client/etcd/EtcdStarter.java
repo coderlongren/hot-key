@@ -41,6 +41,11 @@ public class EtcdStarter {
         startWatchWorker();
 
         startWatchRule();
+
+        //监听热key事件，worker探测出来后也会推给etcd，到时client会收到来自于worker和来自于etcd的两个热key事件，如果是新增，
+        //就只处理worker的就行。如果是删除，可能是etcd的热key过期删除，也可能是手工删除的
+        //只监听手工的增删？
+//        startWatchHotKey();
     }
 
     /**

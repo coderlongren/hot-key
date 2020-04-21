@@ -33,7 +33,7 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<HotKeyMsg> {
 
             if (idleStateEvent.state() == IdleState.ALL_IDLE){
                 //向服务端发送消息
-                ctx.writeAndFlush(new HotKeyMsg(MessageType.PING, Constant.PING)) ;
+                ctx.writeAndFlush(new HotKeyMsg(MessageType.PING, Constant.PING));
             }
         }
 
@@ -42,6 +42,7 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<HotKeyMsg> {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
+        logger.info("channelActive:" + ctx.name());
         ctx.writeAndFlush(new HotKeyMsg(MessageType.APP_NAME, Context.APP_NAME));
     }
 
@@ -58,8 +59,7 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<HotKeyMsg> {
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, HotKeyMsg msg) throws Exception {
-        System.err.println(msg);
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, HotKeyMsg msg) {
         if (MessageType.PONG == msg.getMessageType()) {
             logger.info("heart beat");
             return;
