@@ -8,7 +8,7 @@ import com.jd.platform.hotkey.client.core.rule.KeyRuleHolder;
  * @version 1.0
  */
 public class CacheFactory {
-    private static final LocalCache defaultCache = new DefaultCaffeineCache();
+    private static final LocalCache DEFAULT_CACHE = new DefaultCaffeineCache();
 
     /**
      * 创建一个本地缓存实例
@@ -20,7 +20,7 @@ public class CacheFactory {
     public static LocalCache getNonNullCache(String key) {
         LocalCache localCache = getCache(key);
         if (localCache == null) {
-            return defaultCache;
+            return DEFAULT_CACHE;
         }
         return localCache;
     }

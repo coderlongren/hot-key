@@ -9,14 +9,13 @@ import com.jd.platform.hotkey.client.Context;
 import com.jd.platform.hotkey.client.core.eventbus.EventBusCenter;
 import com.jd.platform.hotkey.client.core.rule.KeyRuleInfoChangeEvent;
 import com.jd.platform.hotkey.client.core.worker.WorkerInfoChangeEvent;
+import com.jd.platform.hotkey.client.log.JdLogger;
 import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
 import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
 import com.jd.platform.hotkey.common.rule.KeyRule;
 import com.jd.platform.hotkey.common.tool.FastJsonUtils;
 import io.grpc.StatusRuntimeException;
 import io.netty.util.internal.StringUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,11 +26,11 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * etcd连接管理器
+ *
  * @author wuweifeng wrote on 2019-12-10
  * @version 1.0
  */
 public class EtcdStarter {
-    private Logger logger = LoggerFactory.getLogger(getClass());
 
     public void start() {
         fetchWorkerInfo();
@@ -55,7 +54,7 @@ public class EtcdStarter {
         ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
         //开启拉取etcd的worker信息，如果拉取失败，则定时继续拉取
         scheduledExecutorService.scheduleAtFixedRate(() -> {
-            logger.info("trying to connect to etcd and fetch worker info");
+            JdLogger.info(getClass(), "trying to connect to etcd and fetch worker info");
             boolean success = fetch();
             if (success) {
                 scheduledExecutorService.shutdown();
@@ -72,7 +71,7 @@ public class EtcdStarter {
             List<KeyValue> keyValues = configCenter.getPrefix(ConfigConstant.workersPath);
             //worker为空，可能是worker后启动。就先不管了，等待监听变化吧
             if (CollectionUtil.isEmpty(keyValues)) {
-                logger.warn("very important warn !!! workers ip info is null!!!");
+                JdLogger.warn(getClass(), "very important warn !!! workers ip info is null!!!");
                 notifyWorkerChange(new ArrayList<>());
                 return false;
             } else {
@@ -82,14 +81,14 @@ public class EtcdStarter {
                     String ipPort = keyValue.getValue().toStringUtf8();
                     addresses.add(ipPort);
                 }
-                logger.info("worker info list is : " + addresses);
+                JdLogger.info(getClass(), "worker info list is : " + addresses);
                 //发布workerinfo变更信息
                 notifyWorkerChange(addresses);
                 return true;
             }
         } catch (StatusRuntimeException ex) {
             //etcd连不上
-            logger.error("etcd connected fail. Check the etcd address!!!");
+            JdLogger.error(getClass(), "etcd connected fail. Check the etcd address!!!");
             return false;
         }
 
@@ -108,13 +107,13 @@ public class EtcdStarter {
      */
     private void startWatchWorker() {
         CompletableFuture.runAsync(() -> {
-            logger.info("--- begin watch worker change ----");
+            JdLogger.info(getClass(), "--- begin watch worker change ----");
             IConfigCenter configCenter = EtcdConfigFactory.configCenter();
             try {
                 KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.workersPath);
                 //如果有新事件，即worker的变更，就重新拉取所有的信息
                 while (watchIterator.hasNext()) {
-                    logger.info("worker info changed. begin to fetch new infos");
+                    JdLogger.info(getClass(), "worker info changed. begin to fetch new infos");
                     WatchUpdate watchUpdate = watchIterator.next();
                     List<Event> eventList = watchUpdate.getEvents();
                     System.err.println(eventList.get(0).getKv());
@@ -123,7 +122,7 @@ public class EtcdStarter {
                     fetch();
                 }
             } catch (Exception e) {
-                logger.error("watch err");
+                JdLogger.error(getClass(), "watch err");
             }
         });
 
@@ -133,7 +132,7 @@ public class EtcdStarter {
         ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
         //开启拉取etcd的worker信息，如果拉取失败，则定时继续拉取
         scheduledExecutorService.scheduleAtFixedRate(() -> {
-            logger.info("trying to connect to etcd and fetch rule info");
+            JdLogger.info(getClass(), "trying to connect to etcd and fetch rule info");
             boolean success = fetchRuleFromEtcd();
             if (success) {
                 scheduledExecutorService.shutdown();
@@ -148,7 +147,7 @@ public class EtcdStarter {
             //从etcd获取自己的rule
             String rules = configCenter.get(ConfigConstant.rulePath + Context.APP_NAME);
             if (StringUtil.isNullOrEmpty(rules)) {
-                logger.warn("rule is empty");
+                JdLogger.warn(getClass(), "rule is empty");
                 return true;
             }
             List<KeyRule> ruleList = FastJsonUtils.toList(rules, KeyRule.class);
@@ -157,10 +156,10 @@ public class EtcdStarter {
             return true;
         } catch (StatusRuntimeException ex) {
             //etcd连不上
-            logger.error("etcd connected fail. Check the etcd address!!!");
+            JdLogger.error(getClass(), "etcd connected fail. Check the etcd address!!!");
             return false;
         } catch (Exception e) {
-            logger.error("fetch rule failure, please check the rule info in etcd");
+            JdLogger.error(getClass(), "fetch rule failure, please check the rule info in etcd");
             return true;
         }
 
@@ -171,13 +170,13 @@ public class EtcdStarter {
      */
     private void startWatchRule() {
         CompletableFuture.runAsync(() -> {
-            logger.info("--- begin watch rule change ----");
+            JdLogger.info(getClass(), "--- begin watch rule change ----");
             try {
                 IConfigCenter configCenter = EtcdConfigFactory.configCenter();
                 KvClient.WatchIterator watchIterator = configCenter.watch(ConfigConstant.rulePath + Context.APP_NAME);
                 //如果有新事件，即rule的变更，就重新拉取所有的信息
                 while (watchIterator.hasNext()) {
-                    logger.info("rules info changed. begin to fetch new infos");
+                    JdLogger.info(getClass(), "rules info changed. begin to fetch new infos");
                     WatchUpdate watchUpdate = watchIterator.next();
                     List<Event> eventList = watchUpdate.getEvents();
                     System.err.println(eventList.get(0).getKv());
@@ -186,7 +185,7 @@ public class EtcdStarter {
                     fetchRuleFromEtcd();
                 }
             } catch (Exception e) {
-                logger.error("watch err");
+                JdLogger.error(getClass(), "watch err");
             }
 
 

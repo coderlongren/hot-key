@@ -8,8 +8,7 @@ import com.jd.platform.hotkey.client.core.rule.KeyRuleHolder;
 import com.jd.platform.hotkey.client.core.worker.WorkerChangeSubscriber;
 import com.jd.platform.hotkey.client.etcd.EtcdConfigFactory;
 import com.jd.platform.hotkey.client.etcd.EtcdStarter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.jd.platform.hotkey.client.log.JdLogger;
 
 /**
  * 客户端启动器
@@ -18,7 +17,6 @@ import org.slf4j.LoggerFactory;
  * @version 1.0
  */
 public class ClientStarter {
-    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private String etcdServer;
 
@@ -77,7 +75,7 @@ public class ClientStarter {
      * 启动监听etcd
      */
     public void startPipeline() {
-        logger.info("etcdServer:" + etcdServer);
+        JdLogger.info(getClass(), "etcdServer:" + etcdServer);
         //设置etcd地址
         EtcdConfigFactory.buildConfigCenter(etcdServer);
         //开始定时推送

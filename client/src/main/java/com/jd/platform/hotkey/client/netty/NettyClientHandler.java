@@ -3,6 +3,7 @@ package com.jd.platform.hotkey.client.netty;
 import com.jd.platform.hotkey.client.Context;
 import com.jd.platform.hotkey.client.callback.ReceiveNewKeyEvent;
 import com.jd.platform.hotkey.client.core.eventbus.EventBusCenter;
+import com.jd.platform.hotkey.client.log.JdLogger;
 import com.jd.platform.hotkey.client.netty.event.ChannelInactiveEvent;
 import com.jd.platform.hotkey.common.model.HotKeyModel;
 import com.jd.platform.hotkey.common.model.HotKeyMsg;
@@ -15,8 +16,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author wuweifeng wrote on 2019-11-05.
@@ -24,14 +23,12 @@ import org.slf4j.LoggerFactory;
 @ChannelHandler.Sharable
 public class NettyClientHandler extends SimpleChannelInboundHandler<HotKeyMsg> {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
-
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-        if (evt instanceof IdleStateEvent){
-            IdleStateEvent idleStateEvent = (IdleStateEvent) evt ;
+        if (evt instanceof IdleStateEvent) {
+            IdleStateEvent idleStateEvent = (IdleStateEvent) evt;
 
-            if (idleStateEvent.state() == IdleState.ALL_IDLE){
+            if (idleStateEvent.state() == IdleState.ALL_IDLE) {
                 //向服务端发送消息
                 ctx.writeAndFlush(new HotKeyMsg(MessageType.PING, Constant.PING));
             }
@@ -42,7 +39,7 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<HotKeyMsg> {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        logger.info("channelActive:" + ctx.name());
+        JdLogger.info(getClass(), "channelActive:" + ctx.name());
         ctx.writeAndFlush(new HotKeyMsg(MessageType.APP_NAME, Context.APP_NAME));
     }
 
@@ -61,11 +58,11 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<HotKeyMsg> {
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, HotKeyMsg msg) {
         if (MessageType.PONG == msg.getMessageType()) {
-            logger.info("heart beat");
+            JdLogger.info(getClass(), "heart beat");
             return;
         }
         if (MessageType.RESPONSE_NEW_KEY == msg.getMessageType()) {
-            logger.info("receive new key : " + msg);
+            JdLogger.info(getClass(), "receive new key : " + msg);
             HotKeyModel model = FastJsonUtils.toBean(msg.getBody(), HotKeyModel.class);
             EventBusCenter.getInstance().post(new ReceiveNewKeyEvent(model));
         }
