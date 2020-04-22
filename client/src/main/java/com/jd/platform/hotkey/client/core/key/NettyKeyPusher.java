@@ -3,6 +3,7 @@ package com.jd.platform.hotkey.client.core.key;
 import com.jd.platform.hotkey.client.core.worker.WorkerInfoHolder;
 import com.jd.platform.hotkey.common.model.HotKeyModel;
 import com.jd.platform.hotkey.common.model.HotKeyMsg;
+import com.jd.platform.hotkey.common.model.MsgBuilder;
 import com.jd.platform.hotkey.common.model.typeenum.MessageType;
 import com.jd.platform.hotkey.common.tool.FastJsonUtils;
 import io.netty.channel.Channel;
@@ -26,7 +27,7 @@ public class NettyKeyPusher implements IKeyPusher {
             if (channel == null) {
                 continue;
             }
-            channel.writeAndFlush(new HotKeyMsg(MessageType.REQUEST_NEW_KEY, FastJsonUtils.convertObjectToJSON(model)));
+            channel.writeAndFlush(MsgBuilder.buildMsg(new HotKeyMsg(MessageType.REQUEST_NEW_KEY, FastJsonUtils.convertObjectToJSON(model))));
         }
 
     }
