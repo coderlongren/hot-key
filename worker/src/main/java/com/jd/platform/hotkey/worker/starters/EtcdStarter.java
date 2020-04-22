@@ -143,8 +143,6 @@ public class EtcdStarter {
 
             try {
                 String value = configCenter.get(buildKey());
-                logger.info("buildKey: " + buildKey());
-                logger.info("value: " + value);
                 logger.info("buildValue: " + buildValue());
                 if (!buildValue().equals(value)) {
                     logger.info("check self info exist in etcd , return false");

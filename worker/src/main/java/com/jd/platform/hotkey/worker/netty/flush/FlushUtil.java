@@ -16,7 +16,6 @@ public class FlushUtil {
      * 往channel里输出消息
      */
     public static void flush(ChannelHandlerContext channelHandlerContext, HotKeyMsg msg) {
-
         if (channelHandlerContext.channel().isWritable()) {
             channelHandlerContext.channel().writeAndFlush(msg).addListener(future -> {
                 if (!future.isSuccess()) {

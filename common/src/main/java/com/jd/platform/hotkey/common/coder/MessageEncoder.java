@@ -17,17 +17,26 @@ public class MessageEncoder extends MessageToByteEncoder<HotKeyMsg> {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, HotKeyMsg message, ByteBuf out) {
-        // 这里会判断消息类型是不是EMPTY类型，如果是EMPTY类型，则表示当前消息不需要写入到管道中
-        if (message.getMessageType() != MessageType.EMPTY) {
-            out.writeInt(Constant.MAGIC_NUMBER);	// 写入当前的魔数
-            out.writeByte(message.getMessageType().getType());	// 写入当前消息的类型
-
-            if (null == message.getBody()) {
-                out.writeInt(0);	// 如果消息体为空，则写入0，表示消息体长度为0
-            } else {
-                out.writeInt(message.getBody().length());
-                out.writeCharSequence(message.getBody(), Charset.defaultCharset());
-            }
+        MessageType messageType = message.getMessageType();
+        if (MessageType.get(messageType.getType()) == null) {
+            return;
         }
+
+        if (messageType == MessageType.EMPTY) {
+            return;
+        }
+
+        // 这里会判断消息类型是不是EMPTY类型，如果是EMPTY类型，则表示当前消息不需要写入到管道中
+        out.writeInt(Constant.MAGIC_NUMBER);    // 写入当前的魔数
+
+        out.writeByte(message.getMessageType().getType());    // 写入当前消息的类型
+
+        if (null == message.getBody()) {
+            out.writeInt(0);    // 如果消息体为空，则写入0，表示消息体长度为0
+        } else {
+            out.writeInt(message.getBody().length());
+            out.writeCharSequence(message.getBody(), Charset.defaultCharset());
+        }
+        out.writeBytes(Constant.DELIMITER.getBytes());
     }
 }

@@ -1,14 +1,16 @@
 package com.jd.platform.hotkey.worker.netty.server;
 
 import com.jd.platform.hotkey.common.coder.Codec;
+import com.jd.platform.hotkey.common.tool.Constant;
 import com.jd.platform.hotkey.worker.netty.client.IClientChangeListener;
 import com.jd.platform.hotkey.worker.netty.filter.INettyMsgFilter;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import io.netty.handler.codec.LengthFieldPrepender;
+import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
@@ -62,14 +64,10 @@ public class NodesServer {
             NodesServerHandler serverHandler = new NodesServerHandler();
             serverHandler.setClientEventListener(clientChangeListener);
             serverHandler.addMessageFilters(messageFilters);
-            //maxFrameLength：最大消息长度，超过会抛出异常TooLongFrameException
-            //lengthFieldOffset：长度域的起始偏移
-            //lengthFieldLength：长度域占用字节数
-            //lengthAdjustment：帧长度的调整字段，用来根据具体情况调整实际读取的帧字节数
-            //initialBytesToStrip：如果业务中用不到消息长度，指定需要跳过的字节数可以直接截掉
+
+            ByteBuf delimiter = Unpooled.copiedBuffer(Constant.DELIMITER.getBytes());
             ch.pipeline()
-                    .addLast(new LengthFieldBasedFrameDecoder(1024 * 1024, 0, 4, 0, 4))
-                    .addLast(new LengthFieldPrepender(4))
+                    .addLast(new DelimiterBasedFrameDecoder(8192, delimiter))
                     .addLast(codec.newEncoder())
                     .addLast(codec.newDecoder())
                     .addLast(serverHandler);

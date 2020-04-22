@@ -17,7 +17,7 @@ public enum MessageType {
         this.type = type;
     }
 
-    public int getType() {
+    public byte getType() {
         return type;
     }
 
