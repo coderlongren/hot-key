@@ -12,4 +12,6 @@ public interface Constant {
 
     int MAGIC_NUMBER = 0x12fcf76;
     String DELIMITER = "$(* *)$";
+
+    int MAX_LENGTH = 8192;
 }

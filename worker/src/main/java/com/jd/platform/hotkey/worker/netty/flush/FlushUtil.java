@@ -1,6 +1,7 @@
 package com.jd.platform.hotkey.worker.netty.flush;
 
 import com.jd.platform.hotkey.common.model.HotKeyMsg;
+import com.jd.platform.hotkey.common.model.MsgBuilder;
 import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,7 @@ public class FlushUtil {
      */
     public static void flush(ChannelHandlerContext channelHandlerContext, HotKeyMsg msg) {
         if (channelHandlerContext.channel().isWritable()) {
-            channelHandlerContext.channel().writeAndFlush(msg).addListener(future -> {
+            channelHandlerContext.channel().writeAndFlush(MsgBuilder.buildMsg(msg)).addListener(future -> {
                 if (!future.isSuccess()) {
                     logger.warn("unexpected key. msg:{} fail:{}", msg, future.cause().getMessage());
                 }
@@ -25,7 +26,7 @@ public class FlushUtil {
         } else {
             try {
                 //同步发送
-                channelHandlerContext.channel().writeAndFlush(msg).sync();
+                channelHandlerContext.channel().writeAndFlush(MsgBuilder.buildMsg(msg)).sync();
             } catch (InterruptedException e) {
                 logger.info("write and flush msg exception. msg:[{}]", msg, e);
             }

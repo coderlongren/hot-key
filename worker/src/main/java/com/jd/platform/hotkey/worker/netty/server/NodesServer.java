@@ -11,6 +11,7 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
+import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
@@ -67,9 +68,10 @@ public class NodesServer {
 
             ByteBuf delimiter = Unpooled.copiedBuffer(Constant.DELIMITER.getBytes());
             ch.pipeline()
-                    .addLast(new DelimiterBasedFrameDecoder(8192, delimiter))
-                    .addLast(codec.newEncoder())
-                    .addLast(codec.newDecoder())
+                    .addLast(new DelimiterBasedFrameDecoder(Constant.MAX_LENGTH, delimiter))
+//                    .addLast(codec.newEncoder())
+//                    .addLast(codec.newDecoder())
+                    .addLast(new StringDecoder())
                     .addLast(serverHandler);
         }
     }

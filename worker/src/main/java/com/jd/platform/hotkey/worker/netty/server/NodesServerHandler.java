@@ -1,6 +1,7 @@
 package com.jd.platform.hotkey.worker.netty.server;
 
 import com.jd.platform.hotkey.common.model.HotKeyMsg;
+import com.jd.platform.hotkey.common.tool.FastJsonUtils;
 import com.jd.platform.hotkey.worker.netty.client.IClientChangeListener;
 import com.jd.platform.hotkey.worker.netty.filter.INettyMsgFilter;
 import io.netty.channel.ChannelHandlerContext;
@@ -16,7 +17,7 @@ import java.util.List;
  *
  * @author wuweifeng wrote on 2019-11-05.
  */
-public class NodesServerHandler extends SimpleChannelInboundHandler<HotKeyMsg> {
+public class NodesServerHandler extends SimpleChannelInboundHandler<String> {
     /**
      * 客户端状态监听器
      */
@@ -27,12 +28,13 @@ public class NodesServerHandler extends SimpleChannelInboundHandler<HotKeyMsg> {
     private List<INettyMsgFilter> messageFilters = new ArrayList<>();
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, HotKeyMsg message) {
+    protected void channelRead0(ChannelHandlerContext ctx, String message) {
         if (StringUtils.isEmpty(message)) {
             return;
         }
+        HotKeyMsg msg = FastJsonUtils.toBean(message, HotKeyMsg.class);
         for (INettyMsgFilter messageFilter : messageFilters) {
-            boolean doNext = messageFilter.chain(message, ctx);
+            boolean doNext = messageFilter.chain(msg, ctx);
             if (!doNext) {
                 return;
             }
