@@ -44,10 +44,7 @@ public class KeyServiceImpl implements KeyService {
 
     public KeyVo listKeyRecord(SearchDto param) {
          // ALL_KEYS
-
-        KvClient kvClient = ((JdEtcdClient) iConfigCenter).getKvClient();
-        RangeResponse response = kvClient.get(ByteString.copyFromUtf8("/jd/")).asPrefix().sync();
-        List<KeyValue> keyValues = response.getKvsList();
+        List<KeyValue> keyValues = iConfigCenter.getPrefix("");
         if (CollectionUtil.isEmpty(keyValues)) { return null; }
         List<KeyVo> keyVos = convert(keyValues, param.getAppName());
         KeyVo kv = new KeyVo();
