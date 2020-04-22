@@ -44,6 +44,14 @@ public class JdEtcdClient implements IConfigCenter {
         this.leaseClient = leaseClient;
     }
 
+    public KvClient getKvClient() {
+        return kvClient;
+    }
+
+    public void setKvClient(KvClient kvClient) {
+        this.kvClient = kvClient;
+    }
+
     @Override
     public void put(String key, String value) {
         kvClient.put(ByteString.copyFromUtf8(key), ByteString.copyFromUtf8(value)).sync();

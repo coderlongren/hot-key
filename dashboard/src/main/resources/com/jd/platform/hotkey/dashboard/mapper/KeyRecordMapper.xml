@@ -8,10 +8,11 @@
     <result column="count" jdbcType="INTEGER" property="count" />
     <result column="source" jdbcType="VARCHAR" property="source" />
     <result column="duration" jdbcType="INTEGER" property="duration" />
+    <result column="type" jdbcType="INTEGER" property="type" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, key_name, app_name, count, duration,source,create_time
+    id, key_name, app_name, count, duration,source,type,create_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -44,6 +45,9 @@
       <if test="duration != null">
         duration,
       </if>
+      <if test="type != null">
+        type,
+      </if>
       <if test="createTime != null">
         create_time,
       </if>
@@ -66,6 +70,9 @@
       </if>
       <if test="duration != null">
         #{duration,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=INTEGER},
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
@@ -90,6 +97,9 @@
       <if test="duration != null">
         duration = #{duration,jdbcType=INTEGER},
       </if>
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
@@ -98,10 +108,14 @@
   </update>
 
 
-  <select id="listKey"  parameterType="com.jd.platform.hotkey.dashboard.common.domain.SearchDto"   resultMap="BaseResultMap">
+  <select id="listKeyRecord"  resultMap="BaseResultMap"  parameterType="com.jd.platform.hotkey.dashboard.common.domain.SearchDto">
     select
     <include refid="Base_Column_List" />
     from hk_key_record
+    where 1=1
+    <if test="appName !=null and appName !=''">
+      and app_name = #{appName}
+    </if >
   </select>
 
 </mapper>

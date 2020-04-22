@@ -65,7 +65,7 @@ public class RuleController extends BaseController {
 
 	@GetMapping("/edit/{id}")
     public String edit(@PathVariable("id") Integer id, ModelMap modelMap){
-		modelMap.put("user", ruleService.selectByPrimaryKey(id));
+		modelMap.put("rule", ruleService.selectByPrimaryKey(id));
         return prefix + "/edit";
     }
 	

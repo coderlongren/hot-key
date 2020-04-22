@@ -1,9 +1,12 @@
 package com.jd.platform.hotkey.dashboard.service;
 
 import com.github.pagehelper.PageInfo;
+import com.jd.platform.hotkey.dashboard.common.domain.KeyVo;
 import com.jd.platform.hotkey.dashboard.common.domain.PageParam;
 import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
 import com.jd.platform.hotkey.dashboard.model.KeyRecord;
+
+import java.util.concurrent.ExecutionException;
 
 /**
  * @ProjectName: hotkey
@@ -23,4 +26,5 @@ public interface KeyService {
 
     int updateKeyRecord(KeyRecord record);
 
+    KeyVo listKeyRecord(SearchDto param) ;
 }

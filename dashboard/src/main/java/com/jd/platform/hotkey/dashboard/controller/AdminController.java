@@ -56,16 +56,13 @@ public class AdminController extends BaseController {
 	@ResponseBody
 	public Result login(User param,HttpServletResponse response) {
 		User user = userService.findByNameAndPwd(param);
-		if(user == null){
-			return Result.error(ResultEnum.PWD_ERROR);
-		}
+		if(user == null) return Result.error(ResultEnum.PWD_ERROR);
 		String token = JwtTokenUtil.createJWT(user.getId(), user.getUserName(), user.getRole(), user.getAppName());
 		Cookie cookie = new Cookie("token", JwtTokenUtil.TOKEN_PREFIX + token);
 		cookie.setMaxAge(3600);
 		cookie.setDomain("localhost");
 		cookie.setPath("/");
 		response.addCookie(cookie);
-		//response.setHeader(JwtTokenUtil.AUTH_HEADER_KEY, JwtTokenUtil.TOKEN_PREFIX + token);
 		return  Result.success(token);
 	}
 	

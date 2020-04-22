@@ -2,19 +2,22 @@ package com.jd.platform.hotkey.dashboard.mapper;
 
 import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
 import com.jd.platform.hotkey.dashboard.model.KeyRecord;
+import com.jd.platform.hotkey.dashboard.model.KeyTimely;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
 @Mapper
-public interface KeyRecordMapper {
+public interface KeyTimelyMapper {
+
     int deleteByPrimaryKey(Long id);
 
-    int insertSelective(KeyRecord record);
+    int insertSelective(KeyTimely record);
 
-    KeyRecord selectByPrimaryKey(Long id);
+    KeyTimely selectByPrimaryKey(Long id);
 
-    int updateByPk(KeyRecord record);
+    int updateByPk(KeyTimely record);
 
-    List<KeyRecord> listKeyRecord(SearchDto param);
+    List<KeyTimely> listKeyTimely(SearchDto param);
+
 }
