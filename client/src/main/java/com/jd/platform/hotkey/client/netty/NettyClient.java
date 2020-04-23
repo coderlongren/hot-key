@@ -13,6 +13,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
+import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.timeout.IdleStateHandler;
 
 import java.util.List;
@@ -54,9 +55,10 @@ public class NettyClient {
                     protected void initChannel(SocketChannel ch) {
                         ByteBuf delimiter = Unpooled.copiedBuffer(Constant.DELIMITER.getBytes());
                         ch.pipeline()
-                                .addLast(new DelimiterBasedFrameDecoder(8192, delimiter))
-                                .addLast(codec.newEncoder())
-                                .addLast(codec.newDecoder())
+                                .addLast(new DelimiterBasedFrameDecoder(Constant.MAX_LENGTH, delimiter))
+//                                .addLast(codec.newEncoder())
+//                                .addLast(codec.newDecoder())
+                                .addLast(new StringDecoder())
                                 //10秒没消息时，就发心跳包过去
                                 .addLast(new IdleStateHandler(0, 0, 10))
                                 .addLast(nettyClientHandler);

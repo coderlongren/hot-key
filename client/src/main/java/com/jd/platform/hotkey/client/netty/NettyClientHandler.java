@@ -7,6 +7,7 @@ import com.jd.platform.hotkey.client.log.JdLogger;
 import com.jd.platform.hotkey.client.netty.event.ChannelInactiveEvent;
 import com.jd.platform.hotkey.common.model.HotKeyModel;
 import com.jd.platform.hotkey.common.model.HotKeyMsg;
+import com.jd.platform.hotkey.common.model.MsgBuilder;
 import com.jd.platform.hotkey.common.model.typeenum.MessageType;
 import com.jd.platform.hotkey.common.tool.Constant;
 import com.jd.platform.hotkey.common.tool.FastJsonUtils;
@@ -21,7 +22,7 @@ import io.netty.handler.timeout.IdleStateEvent;
  * @author wuweifeng wrote on 2019-11-05.
  */
 @ChannelHandler.Sharable
-public class NettyClientHandler extends SimpleChannelInboundHandler<HotKeyMsg> {
+public class NettyClientHandler extends SimpleChannelInboundHandler<String> {
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
@@ -30,7 +31,7 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<HotKeyMsg> {
 
             if (idleStateEvent.state() == IdleState.ALL_IDLE) {
                 //向服务端发送消息
-                ctx.writeAndFlush(new HotKeyMsg(MessageType.PING, Constant.PING));
+                ctx.writeAndFlush(MsgBuilder.buildMsg(new HotKeyMsg(MessageType.PING, Constant.PING)));
             }
         }
 
@@ -40,7 +41,7 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<HotKeyMsg> {
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         JdLogger.info(getClass(), "channelActive:" + ctx.name());
-        ctx.writeAndFlush(new HotKeyMsg(MessageType.APP_NAME, Context.APP_NAME));
+        ctx.writeAndFlush(MsgBuilder.buildMsg(new HotKeyMsg(MessageType.APP_NAME, Context.APP_NAME)));
     }
 
     @Override
@@ -56,7 +57,8 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<HotKeyMsg> {
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, HotKeyMsg msg) {
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, String message) {
+        HotKeyMsg msg = FastJsonUtils.toBean(message, HotKeyMsg.class);
         if (MessageType.PONG == msg.getMessageType()) {
             JdLogger.info(getClass(), "heart beat");
             return;
