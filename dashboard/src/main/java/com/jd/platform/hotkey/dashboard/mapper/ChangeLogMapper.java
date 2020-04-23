@@ -8,15 +8,10 @@ import java.util.List;
 
 @Mapper
 public interface ChangeLogMapper {
-    int deleteByPrimaryKey(Integer id);
-
-    int insert(ChangeLog record);
 
     int insertSelective(ChangeLog record);
 
     ChangeLog selectByPrimaryKey(Integer id);
-
-    int updateByPk(ChangeLog record);
 
     List<ChangeLog> listChangeLog(SearchDto param);
 }

@@ -13,7 +13,26 @@ public class Worker {
 
     private Date updateTime;
 
-    private Byte state;
+    private String updateUser;
+
+    private Integer state;
+
+    public Worker() {
+    }
+
+
+    public Worker(String name, String ipPort) {
+        this.name = name;
+        String[] arr = ipPort.split(":");
+        this.ip = arr[0];
+        this.port = Integer.valueOf(arr[1]);
+    }
+
+    public Worker(String name, Integer state,String updateUser) {
+        this.name = name;
+        this.updateUser = updateUser;
+        this.state = state;
+    }
 
     public Integer getId() {
         return id;
@@ -55,11 +74,19 @@ public class Worker {
         this.updateTime = updateTime;
     }
 
-    public Byte getState() {
+    public String getUpdateUser() {
+        return updateUser;
+    }
+
+    public void setUpdateUser(String updateUser) {
+        this.updateUser = updateUser;
+    }
+
+    public Integer getState() {
         return state;
     }
 
-    public void setState(Byte state) {
+    public void setState(Integer state) {
         this.state = state;
     }
 }

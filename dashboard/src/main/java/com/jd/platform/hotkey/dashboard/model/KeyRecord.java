@@ -12,12 +12,12 @@ public class KeyRecord implements Serializable {
 
     private String appName;
 
-    private Integer count;
+    private String val;
 
     /**
      * 缓存时间
      */
-    private Integer duration;
+    private Long duration;
 
     /**
      * 来源： SYSTEM 系统探测；USERNAME创建人
@@ -25,13 +25,26 @@ public class KeyRecord implements Serializable {
     private String source;
 
     /**
-     * 事件类型： 1：新增； 2删除
+     * 事件类型： 0 PUT； 1 删除
      */
     private Integer type;
 
     private Date createTime;
 
-    private boolean dir;
+    public KeyRecord() {
+    }
+
+    public KeyRecord(String key,String val, String appName, Long duration, String source, Integer type, Date createTime) {
+        this.key = key;
+        this.val = val;
+        this.appName = appName;
+        this.duration = duration;
+        this.source = source;
+        this.type = type;
+        this.createTime = createTime;
+    }
+
+  /*private boolean dir;
 
     private String value;
 
@@ -41,7 +54,7 @@ public class KeyRecord implements Serializable {
 
     private String parentKey;
 
-    private List<KeyRecord> nodes;
+    private List<KeyRecord> nodes;*/
 
     public Long getId() {
         return id;
@@ -67,19 +80,19 @@ public class KeyRecord implements Serializable {
         this.appName = appName == null ? null : appName.trim();
     }
 
-    public Integer getCount() {
-        return count;
+    public String getVal() {
+        return val;
     }
 
-    public void setCount(Integer count) {
-        this.count = count;
+    public void setVal(String val) {
+        this.val = val;
     }
 
-    public Integer getDuration() {
+    public Long getDuration() {
         return duration;
     }
 
-    public void setDuration(Integer duration) {
+    public void setDuration(Long duration) {
         this.duration = duration;
     }
 
@@ -107,51 +120,4 @@ public class KeyRecord implements Serializable {
         this.createTime = createTime;
     }
 
-    public boolean isDir() {
-        return dir;
-    }
-
-    public void setDir(boolean dir) {
-        this.dir = dir;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public Long getTtl() {
-        return ttl;
-    }
-
-    public void setTtl(Long ttl) {
-        this.ttl = ttl;
-    }
-
-    public Date getExpiration() {
-        return expiration;
-    }
-
-    public void setExpiration(Date expiration) {
-        this.expiration = expiration;
-    }
-
-    public String getParentKey() {
-        return parentKey;
-    }
-
-    public void setParentKey(String parentKey) {
-        this.parentKey = parentKey;
-    }
-
-    public List<KeyRecord> getNodes() {
-        return nodes;
-    }
-
-    public void setNodes(List<KeyRecord> nodes) {
-        this.nodes = nodes;
-    }
 }

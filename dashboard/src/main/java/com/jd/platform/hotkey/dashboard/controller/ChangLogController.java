@@ -42,38 +42,11 @@ public class ChangLogController extends BaseController {
 	}
 
 
-    @GetMapping("/add")
-    public String add(){
-        return prefix + "/add";
-    }
-
-	@PostMapping("/add")
-	@ResponseBody
-	public Result add(ChangeLog log){
-		int b=logService.insertChangeLog(log);
-		return b == 0 ? Result.fail():Result.success();
-	}
-
-	@PostMapping("/remove")
-	@ResponseBody
-	public Result remove(int id){
-		int b=logService.deleteByPrimaryKey(id);
-		return b == 0 ? Result.fail():Result.success();
-	}
-
-
 	@GetMapping("/edit/{id}")
-    public String edit(@PathVariable("id") Integer id, ModelMap modelMap){
+	public String edit(@PathVariable("id") Integer id, ModelMap modelMap){
 		modelMap.put("changeLog", logService.selectByPrimaryKey(id));
-        return prefix + "/edit";
-    }
-	
-
-    @PostMapping("/edit")
-    @ResponseBody
-    public Result editSave(ChangeLog log) {
-        return Result.success(logService.updateChangeLog(log));
-    }
+		return prefix + "/edit";
+	}
 
 }
 

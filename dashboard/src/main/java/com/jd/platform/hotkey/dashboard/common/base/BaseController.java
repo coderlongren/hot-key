@@ -29,6 +29,12 @@ public class BaseController {
         binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
     }
 
+
+    public String userName(){
+        String token = this.request.getHeader("token");
+        return JwtTokenUtil.getUsername(token);
+    }
+
     public User loginUser(){
         String token = this.request.getHeader("token");
         String userId = JwtTokenUtil.getUserId(token);

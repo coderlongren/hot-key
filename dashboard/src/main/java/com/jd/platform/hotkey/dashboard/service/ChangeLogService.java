@@ -13,14 +13,9 @@ import com.jd.platform.hotkey.dashboard.model.ChangeLog;
  * @Date: 2020/4/17 16:29
  */
 public interface ChangeLogService {
+
     PageInfo<ChangeLog> pageChangeLog(PageParam page, SearchDto param);
 
-    int insertChangeLog(ChangeLog log);
-
-    int deleteByPrimaryKey(int id);
-
     ChangeLog selectByPrimaryKey(int id);
-
-    int updateChangeLog(ChangeLog log);
 
 }

@@ -50,21 +50,22 @@ public class WorkerController extends BaseController {
 	@PostMapping("/add")
 	@ResponseBody
 	public Result add(Worker worker){
-		int b=workerService.insertWorker(worker);
+		worker.setUpdateUser(userName());
+		int b=workerService.insertWorkerByUser(worker);
 		return b == 0 ? Result.fail():Result.success();
 	}
 
 	@PostMapping("/remove")
 	@ResponseBody
-	public Result remove(int id){
-		int b=workerService.deleteByPrimaryKey(id);
+	public Result remove(String key){
+		int b=workerService.delWorkerByUser(new Worker(key,-1,userName()));
 		return b == 0 ? Result.fail():Result.success();
 	}
 
 
-	@GetMapping("/edit/{id}")
-    public String edit(@PathVariable("id") Integer id, ModelMap modelMap){
-		modelMap.put("worker", workerService.selectByPrimaryKey(id));
+	@GetMapping("/edit/{key}")
+    public String edit(@PathVariable("key") String key, ModelMap modelMap){
+		modelMap.put("worker", workerService.selectByKey(key));
         return prefix + "/edit";
     }
 	
@@ -72,7 +73,8 @@ public class WorkerController extends BaseController {
     @PostMapping("/edit")
     @ResponseBody
     public Result editSave(Worker worker) {
-        return Result.success(workerService.updateWorker(worker));
+		worker.setUpdateUser(userName());
+		return Result.success(workerService.updateWorkerByUser(worker));
     }
 
 }

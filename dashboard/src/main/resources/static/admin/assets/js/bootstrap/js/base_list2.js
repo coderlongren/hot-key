@@ -1,8 +1,3 @@
-/**
- * 用户管理JS
- * 
- * @Author fc
- */
 window.isexpandAll=false;
 (function($) {
 	$.extend({
@@ -31,12 +26,10 @@ window.isexpandAll=false;
 			            pageList: [10, 25, 50, 100],    //可供选择的每页的行数（*）
 			            strictSearch: true,
 			            clickToSelect: false,        //是否启用点击选中行
-			           // height: 460,            //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
 			            uniqueId: "id",           //每一行的唯一标识，一般为主键列
 			            queryParamsType: "",//参数类型  为null 后台用pageHelp  默认为limit
 			            search: !0,
 			            showRefresh: !0,//刷新按钮
-			            showToggle: !0,//排版按钮
 			            showColumns: !0,//显示列按钮
 			            columns:parms.dataColumns,
 			            showToggle : false, //是否显示详细视图和列表视图的切换按钮
@@ -49,7 +42,7 @@ window.isexpandAll=false;
 			            //指定父id列
 			            parentIdField: 'pid',
 			            //导出excel表格设置<<<<<<<<<<<<<<<<
-			            
+
 			            onLoadSuccess: function(){  //加载成功时执行
 			                console.info("加载成功");
 			                $('#dataTable').treegrid({

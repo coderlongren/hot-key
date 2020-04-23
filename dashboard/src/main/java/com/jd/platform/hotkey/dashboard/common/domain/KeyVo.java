@@ -1,12 +1,13 @@
 package com.jd.platform.hotkey.dashboard.common.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 public class KeyVo implements Serializable {
+
+    private Integer id;
 
     private String key;
 
@@ -18,10 +19,12 @@ public class KeyVo implements Serializable {
 
     private Date expiration;
 
-    @JsonIgnore
     private String parentKey;
 
+    private Integer parentId;
+
     private List<KeyVo> nodes;
+
 
     public String getKey() {
         return key;
@@ -69,6 +72,22 @@ public class KeyVo implements Serializable {
 
     public void setParentKey(String parentKey) {
         this.parentKey = parentKey;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Integer parentId) {
+        this.parentId = parentId;
     }
 
     public List<KeyVo> getNodes() {

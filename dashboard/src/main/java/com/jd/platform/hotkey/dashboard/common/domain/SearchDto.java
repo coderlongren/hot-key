@@ -24,6 +24,8 @@ public class SearchDto implements Serializable {
 
     private Integer bizId;
 
+    private Integer bizType;
+
     private String appName;
 
     private String key;
@@ -58,6 +60,14 @@ public class SearchDto implements Serializable {
 
     public void setBizId(Integer bizId) {
         this.bizId = bizId;
+    }
+
+    public Integer getBizType() {
+        return bizType;
+    }
+
+    public void setBizType(Integer bizType) {
+        this.bizType = bizType;
     }
 
     public String getAppName() {

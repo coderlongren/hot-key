@@ -3,12 +3,12 @@
 <mapper namespace="com.jd.platform.hotkey.dashboard.mapper.KeyTimelyMapper">
   <resultMap id="BaseResultMap" type="com.jd.platform.hotkey.dashboard.model.KeyTimely">
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="key_name" jdbcType="VARCHAR" property="keyName" />
+    <result column="key_name" jdbcType="VARCHAR" property="key" />
     <result column="val" jdbcType="VARCHAR" property="val" />
     <result column="parent_key" jdbcType="VARCHAR" property="parentKey" />
     <result column="app_name" jdbcType="VARCHAR" property="appName" />
-    <result column="duration" jdbcType="INTEGER" property="duration" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="duration" jdbcType="BIGINT" property="duration" />
+    <result column="create_time" jdbcType="BIGINT" property="createTime" />
   </resultMap>
   <sql id="Base_Column_List">
     id, key_name, val, parent_key, app_name, duration, create_time
@@ -19,9 +19,9 @@
     from hk_key_timely
     where id = #{id,jdbcType=BIGINT}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+  <delete id="deleteByKey" parameterType="java.lang.Long">
     delete from hk_key_timely
-    where id = #{id,jdbcType=BIGINT}
+    where key_name = #{key}
   </delete>
 
   <insert id="insertSelective" parameterType="com.jd.platform.hotkey.dashboard.model.KeyTimely">
@@ -30,7 +30,7 @@
       <if test="id != null">
         id,
       </if>
-      <if test="keyName != null">
+      <if test="key != null">
         key_name,
       </if>
       <if test="val != null">
@@ -53,8 +53,8 @@
       <if test="id != null">
         #{id,jdbcType=BIGINT},
       </if>
-      <if test="keyName != null">
-        #{keyName,jdbcType=VARCHAR},
+      <if test="key != null">
+        #{key,jdbcType=VARCHAR},
       </if>
       <if test="val != null">
         #{val,jdbcType=VARCHAR},
@@ -66,10 +66,10 @@
         #{appName,jdbcType=VARCHAR},
       </if>
       <if test="duration != null">
-        #{duration,jdbcType=INTEGER},
+        #{duration,jdbcType=BIGINT},
       </if>
       <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
+        #{createTime,jdbcType=LONG},
       </if>
     </trim>
   </insert>
@@ -77,8 +77,8 @@
   <update id="updateByPk" parameterType="com.jd.platform.hotkey.dashboard.model.KeyTimely">
     update hk_key_timely
     <set>
-      <if test="keyName != null">
-        key_name = #{keyName,jdbcType=VARCHAR},
+      <if test="key != null">
+        key_name = #{key,jdbcType=VARCHAR},
       </if>
       <if test="val != null">
         val = #{val,jdbcType=VARCHAR},
@@ -90,13 +90,13 @@
         app_name = #{appName,jdbcType=VARCHAR},
       </if>
       <if test="duration != null">
-        duration = #{duration,jdbcType=INTEGER},
+        duration = #{duration,jdbcType=BIGINT},
       </if>
       <if test="createTime != null">
-        create_time = #{createTime,jdbcType=TIMESTAMP},
+        create_time = #{createTime,jdbcType=LONG},
       </if>
     </set>
-    where id = #{id,jdbcType=BIGINT}
+    where key_name = #{key}
   </update>
 
   <select id="listKeyTimely"  resultMap="BaseResultMap"  parameterType="com.jd.platform.hotkey.dashboard.common.domain.SearchDto">
@@ -106,6 +106,9 @@
     where 1=1
     <if test="appName !=null and appName !=''">
        and app_name = #{appName}
+    </if >
+    <if test="key !=null and key !=''">
+      and key_name = #{key}
     </if >
   </select>
 </mapper>

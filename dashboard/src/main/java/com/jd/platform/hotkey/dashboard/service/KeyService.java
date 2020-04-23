@@ -5,7 +5,9 @@ import com.jd.platform.hotkey.dashboard.common.domain.KeyVo;
 import com.jd.platform.hotkey.dashboard.common.domain.PageParam;
 import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
 import com.jd.platform.hotkey.dashboard.model.KeyRecord;
+import com.jd.platform.hotkey.dashboard.model.KeyTimely;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -16,15 +18,21 @@ import java.util.concurrent.ExecutionException;
  * @Date: 2020/4/17 16:28
  */
 public interface KeyService {
+
+
     PageInfo<KeyRecord> pageKeyRecord(PageParam page, SearchDto param);
 
-    int insertKeyRecord(KeyRecord record);
+    int insertKeyTimely(KeyTimely keyTimely);
 
-    int deleteByPrimaryKey(int id);
+    int insertKeyByUser(KeyTimely keyTimely);
 
-    KeyRecord selectByPrimaryKey(int id);
+    int updateKeyByUser(KeyTimely keyTimely);
 
-    int updateKeyRecord(KeyRecord record);
+    int delKeyByUser(KeyTimely keyTimely);
 
-    KeyVo listKeyRecord(SearchDto param) ;
+    KeyTimely selectByKey(String key);
+
+    int updateKeyTimely(KeyTimely keyTimely);
+
+    List<KeyVo> listKeyTimely(SearchDto param) ;
 }

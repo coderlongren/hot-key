@@ -10,13 +10,15 @@ import java.util.List;
 @Mapper
 public interface KeyTimelyMapper {
 
-    int deleteByPrimaryKey(Long id);
+    int deleteByKey(String key);
 
-    int insertSelective(KeyTimely record);
+    int insertSelective(KeyTimely key);
 
     KeyTimely selectByPrimaryKey(Long id);
 
-    int updateByPk(KeyTimely record);
+    KeyTimely selectByKey(String key);
+
+    int updateByPk(KeyTimely key);
 
     List<KeyTimely> listKeyTimely(SearchDto param);
 

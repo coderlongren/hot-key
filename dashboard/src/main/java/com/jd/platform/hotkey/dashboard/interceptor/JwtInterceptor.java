@@ -19,15 +19,11 @@ public class JwtInterceptor extends HandlerInterceptorAdapter{
             response.setStatus(HttpServletResponse.SC_OK);
             return true;
         }
-        if(1==1){
-            return true;
-        }
-
         //判断是否为ajax请求，默认不是
         boolean isAjaxRequest = false;
         if(!StringUtils.isEmpty(request.getHeader("x-requested-with"))
                 && request.getHeader("x-requested-with").equals("XMLHttpRequest")){
-            isAjaxRequest = true;
+            isAjaxRequest = false;
         }
 
         if(isAjaxRequest){

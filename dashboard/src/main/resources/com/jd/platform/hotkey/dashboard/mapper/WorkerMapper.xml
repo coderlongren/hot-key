@@ -7,21 +7,32 @@
     <result column="ip" jdbcType="VARCHAR" property="ip" />
     <result column="port" jdbcType="INTEGER" property="port" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="update_user" jdbcType="VARCHAR" property="updateUser" />
     <result column="state" jdbcType="TINYINT" property="state" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, name, ip, port, update_time, state
+    id, name, ip, port,update_user, update_time, state
   </sql>
+
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from hk_worker
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from hk_worker
+
+  <select id="selectByKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from hk_worker
+    where name = #{name}
+  </select>
+
+  <update id="logicDeleteByKey" parameterType="java.lang.Integer">
+    update hk_worker set state = -1
     where id = #{id,jdbcType=INTEGER}
-  </delete>
+  </update>
+
   <insert id="insertSelective" parameterType="com.jd.platform.hotkey.dashboard.model.Worker">
     insert into hk_worker
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -36,6 +47,9 @@
       </if>
       <if test="port != null">
         port,
+      </if>
+      <if test="updateUser != null">
+        update_user,
       </if>
       <if test="updateTime != null">
         update_time,
@@ -57,6 +71,9 @@
       <if test="port != null">
         #{port,jdbcType=INTEGER},
       </if>
+      <if test="updateUser != null">
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
       <if test="updateTime != null">
         #{updateTime,jdbcType=TIMESTAMP},
       </if>
@@ -65,7 +82,8 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPk" parameterType="com.jd.platform.hotkey.dashboard.model.Worker">
+
+  <update id="updateByKey" parameterType="com.jd.platform.hotkey.dashboard.model.Worker">
     update hk_worker
     <set>
       <if test="name != null">
@@ -77,6 +95,9 @@
       <if test="port != null">
         port = #{port,jdbcType=INTEGER},
       </if>
+      <if test="updateUser != null">
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
       <if test="updateTime != null">
         update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
@@ -84,18 +105,13 @@
         state = #{state,jdbcType=TINYINT},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
+    where name = #{name}
   </update>
-
 
   <select id="listWorker"  parameterType="com.jd.platform.hotkey.dashboard.common.domain.SearchDto"  resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from hk_worker
-    where 1=1
-    <if test="appName !=null and appName !=''">
-      and app_name = #{appName}
-    </if >
   </select>
 
 </mapper>

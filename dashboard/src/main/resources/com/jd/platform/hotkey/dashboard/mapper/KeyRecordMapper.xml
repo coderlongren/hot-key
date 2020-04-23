@@ -5,14 +5,14 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="key_name" jdbcType="VARCHAR" property="key" />
     <result column="app_name" jdbcType="VARCHAR" property="appName" />
-    <result column="count" jdbcType="INTEGER" property="count" />
+    <result column="val" jdbcType="VARCHAR" property="val" />
     <result column="source" jdbcType="VARCHAR" property="source" />
-    <result column="duration" jdbcType="INTEGER" property="duration" />
+    <result column="duration" jdbcType="BIGINT" property="duration" />
     <result column="type" jdbcType="INTEGER" property="type" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, key_name, app_name, count, duration,source,type,create_time
+    id, key_name, app_name, val, duration,source,type,create_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -36,9 +36,9 @@
       <if test="appName != null">
         app_name,
       </if>
-      <if test="count != null">
-        count,
-      </if>
+      <if test="val != null">
+        val,
+    </if>
       <if test="source != null">
         source,
       </if>
@@ -62,14 +62,14 @@
       <if test="appName != null">
         #{appName,jdbcType=VARCHAR},
       </if>
-      <if test="count != null">
-        #{count,jdbcType=INTEGER},
+      <if test="val != null">
+        #{val,jdbcType=VARCHAR},
       </if>
       <if test="source != null">
         #{source,jdbcType=VARCHAR},
       </if>
       <if test="duration != null">
-        #{duration,jdbcType=INTEGER},
+        #{duration,jdbcType=BIGINT},
       </if>
       <if test="type != null">
         #{type,jdbcType=INTEGER},
@@ -88,14 +88,14 @@
       <if test="appName != null">
         app_name = #{appName,jdbcType=VARCHAR},
       </if>
-      <if test="count != null">
-        count = #{count,jdbcType=INTEGER},
+      <if test="val != null">
+        val = #{val,jdbcType=VARCHAR},
       </if>
       <if test="source != null">
         source = #{source,jdbcType=VARCHAR},
       </if>
       <if test="duration != null">
-        duration = #{duration,jdbcType=INTEGER},
+        duration = #{duration,jdbcType=BIGINT},
       </if>
       <if test="type != null">
         type = #{type,jdbcType=INTEGER},
@@ -116,6 +116,10 @@
     <if test="appName !=null and appName !=''">
       and app_name = #{appName}
     </if >
+    <if test="startTime != null">
+      <![CDATA[ create_time >= #{startTime,jdbcType=TIMESTAMP}
+             AND create_time < #{endTime,jdbcType=TIMESTAMP}]]>
+    </if>
   </select>
 
 </mapper>

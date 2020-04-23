@@ -1,10 +1,15 @@
 package com.jd.platform.hotkey.dashboard.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
 import com.jd.platform.hotkey.dashboard.common.domain.PageParam;
 import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
+import com.jd.platform.hotkey.dashboard.mapper.ChangeLogMapper;
 import com.jd.platform.hotkey.dashboard.mapper.WorkerMapper;
+import com.jd.platform.hotkey.dashboard.model.ChangeLog;
+import com.jd.platform.hotkey.dashboard.model.KeyRule;
 import com.jd.platform.hotkey.dashboard.model.Worker;
 import com.jd.platform.hotkey.dashboard.service.WorkerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +29,14 @@ import java.util.List;
 public class WorkerServiceImpl implements WorkerService {
 
     @Resource
+    private IConfigCenter configCenter;
+
+    @Resource
     private WorkerMapper workerMapper;
+
+    @Resource
+    private ChangeLogMapper changeLogMapper;
+
 
     @Override
     public PageInfo<Worker> pageWorker(PageParam page, SearchDto param) {
@@ -33,14 +45,23 @@ public class WorkerServiceImpl implements WorkerService {
         return new PageInfo<>(workers);
     }
 
+
     @Override
-    public int insertWorker(Worker worker) {
-        return workerMapper.insertSelective(worker);
+    public int insertWorkerByUser(Worker worker) {
+        configCenter.put(worker.getName(),worker.getIp()+worker.getPort());
+        return this.insertWorkerBySys(worker);
+    }
+
+    @Override
+    public int insertWorkerBySys(Worker worker) {
+        int workerId = workerMapper.insertSelective(worker);
+        String to = JSON.toJSONString(worker);
+        return changeLogMapper.insertSelective(new ChangeLog(workerId,2,"",to,worker.getUpdateUser()));
     }
 
     @Override
     public int deleteByPrimaryKey(int id) {
-        return workerMapper.deleteByPrimaryKey(id);
+        return workerMapper.logicDeleteByKey(id,"");
     }
 
     @Override
@@ -49,7 +70,28 @@ public class WorkerServiceImpl implements WorkerService {
     }
 
     @Override
+    public int updateWorkerByUser(Worker worker) {
+        configCenter.put(worker.getName(),worker.getIp()+worker.getPort());
+        return this.updateWorker(worker);
+    }
+
+    @Override
+    public int delWorkerByUser(Worker worker) {
+        configCenter.delete(worker.getName());
+        return this.updateWorker(worker);
+    }
+
+    @Override
     public int updateWorker(Worker worker) {
-        return workerMapper.updateByPk(worker);
+        Worker oldWorker = workerMapper.selectByKey(worker.getName());
+        String from = JSON.toJSONString(oldWorker);
+        String to = JSON.toJSONString(worker);
+        changeLogMapper.insertSelective(new ChangeLog(worker.getId(),2,from,to,worker.getUpdateUser()));
+        return workerMapper.updateByKey(worker);
+    }
+
+    @Override
+    public Worker selectByKey(String key) {
+        return workerMapper.selectByKey(key);
     }
 }

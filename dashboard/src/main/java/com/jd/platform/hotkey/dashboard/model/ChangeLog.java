@@ -14,9 +14,33 @@ public class ChangeLog implements Serializable {
 
     private String to;
 
+    private String appName;
+
     private String updateUser;
 
     private Date createTime;
+
+    public ChangeLog() {
+    }
+
+    public ChangeLog(Integer bizId, Integer bizType, String from, String to, String updateUser) {
+        this.bizId = bizId;
+        this.bizType = bizType;
+        this.from = from;
+        this.to = to;
+        this.updateUser = updateUser;
+        this.createTime = new Date();
+    }
+
+    public ChangeLog(Integer bizId, Integer bizType, String from, String to, String updateUser, String appName) {
+        this.bizId = bizId;
+        this.bizType = bizType;
+        this.from = from;
+        this.to = to;
+        this.updateUser = updateUser;
+        this.appName = appName;
+        this.createTime = new Date();
+    }
 
     public Integer getId() {
         return id;
@@ -56,6 +80,14 @@ public class ChangeLog implements Serializable {
 
     public void setTo(String to) {
         this.to = to == null ? null : to.trim();
+    }
+
+    public String getAppName() {
+        return appName;
+    }
+
+    public void setAppName(String appName) {
+        this.appName = appName;
     }
 
     public String getUpdateUser() {

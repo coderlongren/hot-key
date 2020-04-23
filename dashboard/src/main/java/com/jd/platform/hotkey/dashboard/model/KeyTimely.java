@@ -1,21 +1,54 @@
 package com.jd.platform.hotkey.dashboard.model;
 
-import java.util.Date;
+import java.io.Serializable;
 
-public class KeyTimely {
+public class KeyTimely implements Serializable {
+
+
     private Long id;
 
-    private String keyName;
-
-    private String val;
-
-    private String parentKey;
+    private String key;
 
     private String appName;
 
-    private Integer duration;
+    private String val;
 
-    private Date createTime;
+    /**
+     * 缓存时间
+     */
+    private Long duration;
+
+    /**
+     * 来源： SYSTEM 系统探测；USERNAME创建人
+     */
+    private String source;
+
+    /**
+     * 事件类型： 0 PUT； 1 删除
+     */
+    private Integer type;
+
+    private Long createTime;
+
+    private String parentKey;
+
+
+    public KeyTimely() {
+    }
+
+    public KeyTimely(String key, String source) {
+        this.key = key;
+        this.source = source;
+    }
+
+    public KeyTimely(String key, String val, String appName, Long duration, String parentKey, Long createTime) {
+        this.key = key;
+        this.val = val;
+        this.parentKey = parentKey;
+        this.appName = appName;
+        this.duration = duration;
+        this.createTime = createTime;
+    }
 
     public Long getId() {
         return id;
@@ -25,12 +58,20 @@ public class KeyTimely {
         this.id = id;
     }
 
-    public String getKeyName() {
-        return keyName;
+    public String getKey() {
+        return key;
     }
 
-    public void setKeyName(String keyName) {
-        this.keyName = keyName == null ? null : keyName.trim();
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getAppName() {
+        return appName;
+    }
+
+    public void setAppName(String appName) {
+        this.appName = appName;
     }
 
     public String getVal() {
@@ -41,35 +82,43 @@ public class KeyTimely {
         this.val = val;
     }
 
+    public Long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Long duration) {
+        this.duration = duration;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public Long getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Long createTime) {
+        this.createTime = createTime;
+    }
+
     public String getParentKey() {
         return parentKey;
     }
 
     public void setParentKey(String parentKey) {
-        this.parentKey = parentKey == null ? null : parentKey.trim();
-    }
-
-    public String getAppName() {
-        return appName;
-    }
-
-    public void setAppName(String appName) {
-        this.appName = appName == null ? null : appName.trim();
-    }
-
-    public Integer getDuration() {
-        return duration;
-    }
-
-    public void setDuration(Integer duration) {
-        this.duration = duration;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
+        this.parentKey = parentKey;
     }
 }

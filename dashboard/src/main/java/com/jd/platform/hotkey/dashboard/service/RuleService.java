@@ -5,6 +5,7 @@ import com.jd.platform.hotkey.dashboard.common.domain.PageParam;
 import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
 import com.jd.platform.hotkey.dashboard.model.KeyRule;
 import com.jd.platform.hotkey.dashboard.model.User;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @ProjectName: hotkey
@@ -16,12 +17,15 @@ import com.jd.platform.hotkey.dashboard.model.User;
 public interface RuleService {
     PageInfo<KeyRule> pageKeyRule(PageParam page, SearchDto param);
 
-    int insertRule(KeyRule rule);
+    int insertRuleByUser(KeyRule rule);
 
-    int deleteByPrimaryKey(int id);
+    int insertRuleBySys(KeyRule rule);
 
-    KeyRule selectByPrimaryKey(int id);
+    KeyRule selectByKey(String key);
+
+    int updateRuleByUser(KeyRule rule);
+
+    int delRuleByUser(KeyRule rule);
 
     int updateRule(KeyRule rule);
-
 }

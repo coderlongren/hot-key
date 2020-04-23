@@ -18,16 +18,21 @@
     id, key_name, prefix, intervals, threshold, duration, app_name, state, update_user, update_time,
     version
   </sql>
+
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from hk_key_rule
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from hk_key_rule
-    where id = #{id,jdbcType=INTEGER}
-  </delete>
+
+  <select id="selectByKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from hk_key_rule
+    where key_name = #{key}
+  </select>
+
   <insert id="insertSelective" parameterType="com.jd.platform.hotkey.dashboard.model.KeyRule">
     insert into hk_key_rule
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -101,7 +106,8 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPk" parameterType="com.jd.platform.hotkey.dashboard.model.KeyRule">
+
+  <update id="updateByKey" parameterType="com.jd.platform.hotkey.dashboard.model.KeyRule">
     update hk_key_rule
     <set>
       <if test="key != null">
@@ -135,15 +141,14 @@
         version = #{version,jdbcType=INTEGER},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
+    where key_name = #{key}
   </update>
-
 
   <select id="listRule"  parameterType="com.jd.platform.hotkey.dashboard.common.domain.SearchDto"  resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from hk_key_rule
-    where 1=1
+    where state=1
     <if test="appName !=null and appName !=''">
       and app_name = #{appName}
     </if >

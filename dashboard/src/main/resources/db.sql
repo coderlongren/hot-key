@@ -41,7 +41,7 @@ CREATE TABLE `hk_key_rule`  (
   `update_time` datetime(0)  NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
   `version` int(0) NOT NULL COMMENT '数据版本',
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `uniq_key`(`key`) USING BTREE COMMENT '唯一索引'
+  UNIQUE INDEX `uniq_key`(`key_name`) USING BTREE COMMENT '唯一索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Dynamic;
 
 
@@ -52,7 +52,7 @@ CREATE TABLE `hk_key_record`  (
   `key_name` varchar(128) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT 'key',
   `app_name` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '所属appName',
   `count` int(0) NOT NULL DEFAULT 1 COMMENT 'key出现的数量',
-  `duration` int(0) NOT NULL DEFAULT 60 COMMENT '缓存时间',
+  `duration` bigint(0) NOT NULL DEFAULT 60 COMMENT '缓存时间',
   `source` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '来源',
   `type`  int(0) NOT NULL DEFAULT 1 COMMENT '记录类型：1put；2del',
   `create_time` datetime(0)  NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时间',
@@ -81,7 +81,7 @@ CREATE TABLE `hk_key_timely`  (
   `val` varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT 'value',
   `parent_key` varchar(128) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '父级KEY',
   `app_name` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '所属appName',
-  `duration` int(0) NOT NULL DEFAULT 0 COMMENT '缓存时间',
+  `duration` bigint(0) NOT NULL DEFAULT 0 COMMENT '缓存时间',
   `create_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Dynamic;

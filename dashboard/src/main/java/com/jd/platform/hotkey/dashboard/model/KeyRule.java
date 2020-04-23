@@ -3,16 +3,28 @@ package com.jd.platform.hotkey.dashboard.model;
 import java.util.Date;
 
 public class KeyRule {
+
     private Integer id;
 
+    /**
+     * key的前缀，也可以完全和key相同。为"*"时代表通配符
+     */
     private String key;
-
-    private Integer prefix;
-
+    /**
+     * 是否是前缀，true是前缀
+     */
+    private Boolean prefix;
+    /**
+     * 间隔时间（秒）
+     */
     private Integer interval;
-
+    /**
+     * 累计数量
+     */
     private Integer threshold;
-
+    /**
+     * 变热key后，本地、etcd缓存它多久。单位（秒），默认60
+     */
     private Integer duration;
 
     private String appName;
@@ -24,6 +36,15 @@ public class KeyRule {
     private Date updateTime;
 
     private Integer version;
+
+    public KeyRule() {
+    }
+
+    public KeyRule(String key, Integer state,String updateUser) {
+        this.key = key;
+        this.state = state;
+        this.updateUser = updateUser;
+    }
 
     public Integer getId() {
         return id;
@@ -38,14 +59,14 @@ public class KeyRule {
     }
 
     public void setKey(String key) {
-        this.key = key == null ? null : key.trim();
+        this.key = key;
     }
 
-    public Integer getPrefix() {
+    public Boolean getPrefix() {
         return prefix;
     }
 
-    public void setPrefix(Integer prefix) {
+    public void setPrefix(Boolean prefix) {
         this.prefix = prefix;
     }
 

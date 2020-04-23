@@ -907,6 +907,7 @@
     // 展开所有的行
     BootstrapTreeTable.prototype.expandAll = function() {
         var self = this;
+        alert("expandAll");
         if(self.hasFixedColumn && self.expandColumnIsFixed){
             self.$leftBox.find("tbody").find("tr").find(".treetable-expander").each(function(i, n) {
                 var _isCollapsed = $(n).hasClass(self.options.expanderCollapsedClass);
@@ -930,6 +931,7 @@
     // 折叠所有的行
     BootstrapTreeTable.prototype.collapseAll = function() {
         var self = this;
+        alert("collapseAll");
         if(self.hasFixedColumn && self.expandColumnIsFixed){
             self.$leftBox.find("tbody").find("tr").find(".treetable-expander").each(function(i, n) {
             var _isExpanded = $(n).hasClass(self.options.expanderExpandedClass);

@@ -15,11 +15,19 @@ import com.jd.platform.hotkey.dashboard.model.Worker;
 public interface WorkerService {
     PageInfo<Worker> pageWorker(PageParam page, SearchDto param);
 
-    int insertWorker(Worker worker);
+    int insertWorkerByUser(Worker worker);
+
+    int insertWorkerBySys(Worker worker);
 
     int deleteByPrimaryKey(int id);
 
     Worker selectByPrimaryKey(int id);
 
+    int updateWorkerByUser(Worker worker);
+
+    int delWorkerByUser(Worker worker);
+
     int updateWorker(Worker worker);
+
+    Worker selectByKey(String key);
 }

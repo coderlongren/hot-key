@@ -31,6 +31,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByNameAndPwd(User user) {
+        user.setPwd(DigestUtils.md5DigestAsHex(user.getPwd().getBytes()));
         return userMapper.findByNameAndPwd(user);
     }
 

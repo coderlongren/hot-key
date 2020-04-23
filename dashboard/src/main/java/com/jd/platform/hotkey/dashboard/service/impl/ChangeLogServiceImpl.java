@@ -37,22 +37,8 @@ public class ChangeLogServiceImpl implements ChangeLogService {
     }
 
     @Override
-    public int insertChangeLog(ChangeLog log) {
-        return changeLogMapper.insertSelective(log);
-    }
-
-    @Override
-    public int deleteByPrimaryKey(int id) {
-        return changeLogMapper.deleteByPrimaryKey(id);
-    }
-
-    @Override
     public ChangeLog selectByPrimaryKey(int id) {
         return changeLogMapper.selectByPrimaryKey(id);
     }
 
-    @Override
-    public int updateChangeLog(ChangeLog log) {
-        return changeLogMapper.updateByPk(log);
-    }
 }
