@@ -17,7 +17,7 @@ public class CaffeineBuilder {
         return Caffeine.newBuilder()
                 .initialCapacity(1024)//初始大小
                 .maximumSize(20000000)//最大数量
-                .expireAfterWrite(10, TimeUnit.MINUTES)//过期时间
+                .expireAfterWrite(2, TimeUnit.MINUTES)//过期时间
                 .build();
     }
 
