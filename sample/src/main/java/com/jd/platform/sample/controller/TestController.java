@@ -64,4 +64,10 @@ public class TestController {
     }
 
 
+    @RequestMapping("hot")
+    public Object hot(Integer count) {
+        cache.get("key" + count);
+
+        return 1;
+    }
 }

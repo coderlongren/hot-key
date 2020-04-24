@@ -49,13 +49,22 @@ public class TurnKeyCollector implements IKeyCollector {
             return;
         }
         if (atomicLong.get() % 2 == 0) {
-            HotKeyModel model = map0.getOrDefault(key, hotKeyModel);
-            model.setCount(model.getCount() + 1);
-            map0.put(key, model);
+            HotKeyModel model = map0.get(key);
+            if (model == null) {
+                map0.put(key, hotKeyModel);
+            } else {
+                model.setCount(model.getCount() + hotKeyModel.getCount());
+                map0.put(key, model);
+            }
+
         } else {
-            HotKeyModel model = map1.getOrDefault(key, hotKeyModel);
-            model.setCount(model.getCount() + 1);
-            map1.put(key, model);
+            HotKeyModel model = map1.get(key);
+            if (model == null) {
+                map1.put(key, hotKeyModel);
+            } else {
+                model.setCount(model.getCount() + hotKeyModel.getCount());
+                map1.put(key, model);
+            }
         }
 
     }

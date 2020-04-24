@@ -23,6 +23,7 @@ public class Cache {
     public String get(String key) {
         //如果已经缓存过了
         if (JdHotKeyStore.isValueCached(key)) {
+            System.out.println("1");
             return JdHotKeyStore.getValue(key).toString();
         } else {
             String value = getFromRedis(key);
