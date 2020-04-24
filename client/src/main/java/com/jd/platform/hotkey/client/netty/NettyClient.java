@@ -67,7 +67,7 @@ public class NettyClient {
         return bootstrap;
     }
 
-    public boolean connect(List<String> addresses) {
+    public synchronized boolean connect(List<String> addresses) {
         boolean allSuccess = true;
         for (String address : addresses) {
             String[] ss = address.split(":");

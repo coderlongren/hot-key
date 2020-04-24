@@ -37,7 +37,7 @@ public class WorkerInfoHolder {
      * 将新的worker信息和当前的进行合并，并且连接新的address
      * address例子：10.12.139.152:11111
      */
-    public static void mergeAndConnectNew(List<String> allAddresses) {
+    public synchronized static void mergeAndConnectNew(List<String> allAddresses) {
         synchronized (WORKER_HOLDER) {
             removeNoneUsed(allAddresses);
 
@@ -55,7 +55,7 @@ public class WorkerInfoHolder {
      * 处理某个worker的channel断线事件
      * 如果etcd里已经没有了，就从holder里remove掉，如果etcd里还有，就去重连
      */
-    public static boolean dealChannelInactive(String address) {
+    public synchronized static boolean dealChannelInactive(String address) {
         synchronized (WORKER_HOLDER) {
             Iterator<Server> it = WORKER_HOLDER.iterator();
             boolean exist = false;
