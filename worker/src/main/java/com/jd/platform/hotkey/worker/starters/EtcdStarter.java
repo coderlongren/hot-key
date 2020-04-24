@@ -1,9 +1,6 @@
 package com.jd.platform.hotkey.worker.starters;
 
-import com.ibm.etcd.api.Event;
 import com.ibm.etcd.api.KeyValue;
-import com.ibm.etcd.client.kv.KvClient;
-import com.ibm.etcd.client.kv.WatchUpdate;
 import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
 import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
 import com.jd.platform.hotkey.common.rule.KeyRule;
@@ -14,8 +11,6 @@ import io.grpc.StatusRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -56,24 +51,24 @@ public class EtcdStarter {
     /**
      * 启动回调监听器
      */
-    @EventListener(ApplicationReadyEvent.class)
-    @Async
-    public void watch() {
-        KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.hotKeyPath);
-        while (watchIterator.hasNext()) {
-            WatchUpdate watchUpdate = watchIterator.next();
-            List<Event> eventList = watchUpdate.getEvents();
-
-            System.out.println("even list size-> "+eventList.size());
-            System.err.println("kv--> "+eventList.get(0).getKv());
-            //包含put、delete
-            Event.EventType eventType = eventList.get(0).getType();
-
-            System.out.println("eventType--> "+eventType);
-
-        }
-
-    }
+//    @EventListener(ApplicationReadyEvent.class)
+//    @Async
+//    public void watch() {
+//        KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.hotKeyPath);
+//        while (watchIterator.hasNext()) {
+//            WatchUpdate watchUpdate = watchIterator.next();
+//            List<Event> eventList = watchUpdate.getEvents();
+//
+//            System.out.println("even list size-> "+eventList.size());
+//            System.err.println("kv--> "+eventList.get(0).getKv());
+//            //包含put、delete
+//            Event.EventType eventType = eventList.get(0).getType();
+//
+//            System.out.println("eventType--> "+eventType);
+//
+//        }
+//
+//    }
 
     /**
      * 每隔1分钟拉取一次，所有的app的rule

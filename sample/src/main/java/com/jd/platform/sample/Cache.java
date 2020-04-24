@@ -39,4 +39,5 @@ public class Cache {
         JdHotKeyStore.remove(key);
         //do your job
     }
+
 }

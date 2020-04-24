@@ -12,11 +12,11 @@ import java.util.concurrent.TimeUnit;
 public class CaffeineBuilder {
 
     public static Cache<String, Object> cache(int duration) {
-        return cache(512, 10000000, duration);
+        return cache(128, 10000, duration);
     }
 
     public static Cache<String, Object> cache() {
-        return cache(512, 10000000, 60);
+        return cache(128, 10000, 60);
     }
 
     /**
