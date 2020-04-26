@@ -289,10 +289,10 @@
                     url = "404.html";
                 }
                 if ($.common.isEmpty(width)) {
-                    width = 800;
+                    width = 600;
                 }
                 if ($.common.isEmpty(height)) {
-                    height = ($(window).height() - 50);
+                    height = ($(window).height() - 200);
                 }
                 layer.open({
                     type: 2,
@@ -301,7 +301,11 @@
                     maxmin: true,
                     shade: 0.3,
                     title: title,
-                    content: url
+                    content: url,
+                    success:function(dom){
+                        let $iframeDom=$(dom[0]).find("iframe").eq(0).contents();
+                        $iframeDom.find("#test").html("我是从父级传来的值哟……")
+                    }
                 })
             },
             openFull: function(title, url, width, height) {
@@ -509,6 +513,17 @@ function changeDateFormat(cellval) {
         var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
         return date.getFullYear() + "-" + month + "-" + currentDate;
     }
+}
+
+function timestampToTime(timestamp) {
+    var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+    var Y = date.getFullYear() + '-';
+    var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+    var D = date.getDate() + ' ';
+    var h = date.getHours() + ':';
+    var m = date.getMinutes() + ':';
+    var s = date.getSeconds();
+    return Y + M + D + h + m + s;
 }
 
 

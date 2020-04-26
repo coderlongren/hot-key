@@ -40,16 +40,17 @@ public class KeyController extends BaseController {
 
 
 	@GetMapping("/viewTimely")
-	public String timelyview(){
+	public String viewTimely(){
 		System.out.println("============viewTimely==========");
 		return prefix + "/listtimely";
 	}
 
 	@PostMapping("/listTimely")
 	@ResponseBody
-	public List<KeyVo> realTimeList(String searchText){
+	public Page<KeyTimely> listTimely(PageParam page,String searchText){
 		System.out.println("searchText-->  "+searchText);
-		return keyService.listKeyTimely(param(searchText));
+		PageInfo<KeyTimely> info = keyService.pageKeyTimely(page, param(searchText));
+		return new Page<>(info.getPageNum(),(int)info.getTotal(),info.getList());
 	}
 
 

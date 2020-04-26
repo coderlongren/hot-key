@@ -6,7 +6,7 @@ import java.util.Date;
 public class ChangeLog implements Serializable {
     private Integer id;
 
-    private Integer bizId;
+    private String key;
 
     private Integer bizType;
 
@@ -20,26 +20,30 @@ public class ChangeLog implements Serializable {
 
     private Date createTime;
 
+    private String uuid;
+
     public ChangeLog() {
     }
 
-    public ChangeLog(Integer bizId, Integer bizType, String from, String to, String updateUser) {
-        this.bizId = bizId;
+    public ChangeLog(String key, Integer bizType, String from, String to, String updateUser,String uuid) {
+        this.key = key;
         this.bizType = bizType;
         this.from = from;
         this.to = to;
         this.updateUser = updateUser;
         this.createTime = new Date();
+        this.uuid = uuid;
     }
 
-    public ChangeLog(Integer bizId, Integer bizType, String from, String to, String updateUser, String appName) {
-        this.bizId = bizId;
+    public ChangeLog(String key, Integer bizType, String from, String to, String updateUser, String appName,String uuid) {
+        this.key = key;
         this.bizType = bizType;
         this.from = from;
         this.to = to;
         this.updateUser = updateUser;
         this.appName = appName;
         this.createTime = new Date();
+        this.uuid = uuid;
     }
 
     public Integer getId() {
@@ -50,12 +54,12 @@ public class ChangeLog implements Serializable {
         this.id = id;
     }
 
-    public Integer getBizId() {
-        return bizId;
+    public String getKey() {
+        return key;
     }
 
-    public void setBizId(Integer bizId) {
-        this.bizId = bizId;
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public Integer getBizType() {
@@ -104,5 +108,13 @@ public class ChangeLog implements Serializable {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 }

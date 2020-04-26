@@ -1688,7 +1688,7 @@ output {
 }
 .form-control {
   display: block;
-  width: 100%;
+  width: 90%;
   height: 34px;
   padding: 6px 12px;
   font-size: 14px;
@@ -2074,6 +2074,7 @@ fieldset[disabled] .btn-default.active {
   background-color: #333;
 }
 .btn-primary {
+  margin-left: 40%;
   color: #fff;
   background-color: #428bca;
   border-color: #357ebd;

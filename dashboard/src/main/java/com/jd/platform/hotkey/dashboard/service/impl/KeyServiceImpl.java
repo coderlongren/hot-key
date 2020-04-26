@@ -4,6 +4,7 @@ package com.jd.platform.hotkey.dashboard.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.SystemClock;
+import cn.hutool.core.map.multi.SetValueMap;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -12,6 +13,7 @@ import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
 import com.jd.platform.hotkey.dashboard.common.domain.KeyVo;
 import com.jd.platform.hotkey.dashboard.common.domain.PageParam;
 import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
+import com.jd.platform.hotkey.dashboard.mapper.ChangeLogMapper;
 import com.jd.platform.hotkey.dashboard.mapper.KeyRecordMapper;
 import com.jd.platform.hotkey.dashboard.mapper.KeyTimelyMapper;
 import com.jd.platform.hotkey.dashboard.model.KeyRecord;
@@ -47,20 +49,11 @@ public class KeyServiceImpl implements KeyService {
 
 
     @Override
-    public List<KeyVo> listKeyTimely(SearchDto param) {
-        // ALL_KEYS
-        List<KeyTimely> keyTimely = keyTimelyMapper.listKeyTimely(param);
-        if (CollectionUtil.isEmpty(keyTimely)) {
-            return null;
-        }
-        KeyTimely kv = new KeyTimely();
-        kv.setKey("/jd/hotkeys/");
-        kv.setId(4L);
-        keyTimely.add(kv);
-      //  buildTree(kv, keyVos);
-        return convert(keyTimely);
+    public PageInfo<KeyTimely> pageKeyTimely(PageParam page, SearchDto param) {
+        PageHelper.startPage(page.getPageNum(), page.getPageSize());
+        List<KeyTimely> listKey = keyTimelyMapper.listKeyTimely(param);
+        return new PageInfo<>(listKey);
     }
-
 
 
     @Override
@@ -108,6 +101,7 @@ public class KeyServiceImpl implements KeyService {
     public int updateKeyTimely(KeyTimely key) {
         return keyTimelyMapper.updateByPk(key);
     }
+
 
 
     private List<KeyVo> convert(List<KeyTimely> keyValues) {

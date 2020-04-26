@@ -39,22 +39,12 @@ public class BaseController {
         return JwtTokenUtil.getUsername(token);
     }
 
-    /*public User loginUser(){
-        final String authHeader = request.getHeader(JwtTokenUtil.AUTH_HEADER_KEY);
-        final String token = authHeader.substring(2);
-        String userId = JwtTokenUtil.getUserId(token);
-        String name = JwtTokenUtil.getUsername(token);
-        String appName = JwtTokenUtil.getAppName(token);
-        String role = JwtTokenUtil.getRole(token);
-        return new User(Integer.valueOf(userId),name,role,appName);
-    }*/
-
 
     public SearchDto param(String text){
         String authHeader = request.getHeader(JwtTokenUtil.AUTH_HEADER_KEY);
         SearchDto dto = JSON.parseObject(text, SearchDto.class);
         if(dto == null){ dto = new SearchDto(); }
-       // dto.setAppName(JwtTokenUtil.getAppName(authHeader.substring(2)));
+        dto.setAppName(JwtTokenUtil.getAppName(authHeader.substring(2)));
         return dto;
     }
    

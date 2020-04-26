@@ -1,8 +1,12 @@
 package com.jd.platform.hotkey.dashboard.service.impl;
 
+import cn.hutool.core.date.SystemClock;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.github.pagehelper.util.StringUtil;
+import com.ibm.etcd.api.KeyValue;
+import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
 import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
 import com.jd.platform.hotkey.dashboard.common.domain.PageParam;
 import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
@@ -11,10 +15,13 @@ import com.jd.platform.hotkey.dashboard.mapper.KeyRuleMapper;
 import com.jd.platform.hotkey.dashboard.model.ChangeLog;
 import com.jd.platform.hotkey.dashboard.model.KeyRule;
 import com.jd.platform.hotkey.dashboard.service.RuleService;
+import com.jd.platform.hotkey.dashboard.util.CommonUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,10 +46,61 @@ public class RuleServiceImpl implements RuleService {
 
     @Override
     public PageInfo<KeyRule> pageKeyRule(PageParam page, SearchDto param) {
-        PageHelper.startPage(page.getPageNum(),page.getPageSize());
-        List<KeyRule> rules = ruleMapper.listRule(param);
+
+        String appName = param.getAppName();
+        String prefix = StringUtil.isEmpty(appName)?ConfigConstant.rulePath:ConfigConstant.rulePath+"/"+appName;
+        List<KeyValue> keyValues = configCenter.getPrefix(prefix);
+        List<KeyRule> rules = new ArrayList<>();
+        for (KeyValue kv : keyValues) {
+            String v = kv.getValue().toStringUtf8();
+            KeyRule rule = JSON.parseObject(v, KeyRule.class);
+            if(rule != null){ rules.add(rule); }
+        }
         return new PageInfo<>(rules);
     }
+
+
+    @Override
+    public KeyRule selectByKey(String key) {
+        key = key.replace("_","/");
+        KeyValue keyValue = configCenter.getKv(ConfigConstant.rulePath + key);
+        String val = keyValue.getValue().toStringUtf8();
+        KeyRule rule = JSON.parseObject(val, KeyRule.class);
+        rule.setVersion((int)keyValue.getModRevision());
+        return rule;
+    }
+
+
+    /**
+     * 系统的更新值记录to
+     * @param rule
+     * @return
+     */
+    @Override
+    public int updateRule(KeyRule rule) {
+        String to = JSON.toJSONString(rule);
+        String key = rule.getKey();
+        return changeLogMapper.insertSelective(new ChangeLog(key,1,"",
+                to,"SYSTEM",rule.getAppName(),key+"_"+rule.getVersion()));
+    }
+
+    /**
+     * 手动更新记录 from - to
+     * @param rule
+     * @return
+     */
+    @Override
+    public int updateRuleByUser(KeyRule rule) {
+        String from = rule.getOldRule();
+        rule.setOldRule(null);
+        String to = JSON.toJSONString(rule);
+        String etcdKey = ConfigConstant.rulePath + rule.getAppName() + "/" + rule.getKey();
+        String uuid = rule.getKey()+"_"+rule.getVersion();
+        changeLogMapper.insertSelective(new ChangeLog(rule.getKey(),1,
+                from,to,rule.getUpdateUser(),rule.getAppName(),uuid));
+        return (int)configCenter.putAndGrant(etcdKey,JSON.toJSONString(rule),rule.getDuration());
+    }
+
 
     @Override
     public int insertRuleByUser(KeyRule rule) {
@@ -53,21 +111,11 @@ public class RuleServiceImpl implements RuleService {
     @Transactional
     @Override
     public int insertRuleBySys(KeyRule rule) {
-        int ruleId = ruleMapper.insertSelective(rule);
-        return changeLogMapper.insertSelective(new ChangeLog(ruleId,1,"",JSON.toJSONString(rule),rule.getUpdateUser(),rule.getAppName()));
+        String uuid = rule.getKey()+"_"+rule.getVersion();
+        return changeLogMapper.insertSelective(new ChangeLog(rule.getKey(),1,"",
+                JSON.toJSONString(rule),rule.getUpdateUser(),rule.getAppName(),uuid));
     }
 
-    @Override
-    public KeyRule selectByKey(String key) {
-        return ruleMapper.selectByKey(key);
-    }
-
-
-    @Override
-    public int updateRuleByUser(KeyRule rule) {
-        configCenter.put(rule.getKey(),JSON.toJSONString(rule));
-        return this.updateRule(rule);
-    }
 
     @Override
     public int delRuleByUser(KeyRule rule) {
@@ -75,13 +123,5 @@ public class RuleServiceImpl implements RuleService {
         return this.updateRule(rule);
     }
 
-    @Transactional
-    @Override
-    public int updateRule(KeyRule rule) {
-        KeyRule oldRule = ruleMapper.selectByKey(rule.getKey());
-        String from = JSON.toJSONString(oldRule);
-        String to = JSON.toJSONString(rule);
-        changeLogMapper.insertSelective(new ChangeLog(rule.getId(),1,from,to,rule.getUpdateUser(),rule.getAppName()));
-        return ruleMapper.updateByKey(rule);
-    }
+
 }

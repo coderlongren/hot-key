@@ -30,6 +30,8 @@ public class SearchDto implements Serializable {
 
     private String key;
 
+    private String name;
+
     public Date getStartTime() {
         return startTime;
     }
@@ -84,5 +86,13 @@ public class SearchDto implements Serializable {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

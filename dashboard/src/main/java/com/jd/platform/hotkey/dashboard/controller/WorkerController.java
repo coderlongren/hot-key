@@ -28,9 +28,9 @@ public class WorkerController extends BaseController {
 	private WorkerService workerService;
 
 	@GetMapping("/view")
-    public String view()
-    {	
-        return prefix + "/list";
+    public String view(ModelMap modelMap){
+		modelMap.put("title","节点信息");
+    	return prefix + "/list";
     }
 
 

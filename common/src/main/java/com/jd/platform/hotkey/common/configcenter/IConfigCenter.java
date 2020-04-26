@@ -1,6 +1,7 @@
 package com.jd.platform.hotkey.common.configcenter;
 
 import com.ibm.etcd.api.KeyValue;
+import com.ibm.etcd.api.Kv;
 import com.ibm.etcd.client.kv.KvClient;
 
 import java.util.List;
@@ -79,4 +80,10 @@ public interface IConfigCenter {
      * 判断剩余的过期时间
      */
     long timeToLive(long leaseId);
+
+    /**
+     * 根据key，获取value
+     */
+    KeyValue getKv(String key);
+
 }

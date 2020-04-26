@@ -3,6 +3,7 @@ package com.jd.platform.hotkey.common.configcenter.etcd;
 import cn.hutool.core.collection.CollectionUtil;
 import com.google.protobuf.ByteString;
 import com.ibm.etcd.api.KeyValue;
+import com.ibm.etcd.api.Kv;
 import com.ibm.etcd.api.LeaseGrantResponse;
 import com.ibm.etcd.api.RangeResponse;
 import com.ibm.etcd.client.KvStoreClient;
@@ -35,6 +36,7 @@ public class JdEtcdClient implements IConfigCenter {
         this.leaseClient = kvStoreClient.getLeaseClient();
         this.lockClient = kvStoreClient.getLockClient();
     }
+
 
     public LeaseClient getLeaseClient() {
         return leaseClient;
@@ -89,10 +91,21 @@ public class JdEtcdClient implements IConfigCenter {
     public String get(String key) {
         RangeResponse rangeResponse = kvClient.get(ByteString.copyFromUtf8(key)).sync();
         List<KeyValue> keyValues = rangeResponse.getKvsList();
+
         if (CollectionUtil.isEmpty(keyValues)) {
             return null;
         }
         return keyValues.get(0).getValue().toStringUtf8();
+    }
+
+    @Override
+    public KeyValue getKv(String key) {
+        RangeResponse rangeResponse = kvClient.get(ByteString.copyFromUtf8(key)).sync();
+        List<KeyValue> keyValues = rangeResponse.getKvsList();
+        if (CollectionUtil.isEmpty(keyValues)) {
+            return null;
+        }
+        return keyValues.get(0);
     }
 
     @Override

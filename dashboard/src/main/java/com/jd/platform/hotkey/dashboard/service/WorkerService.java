@@ -19,8 +19,6 @@ public interface WorkerService {
 
     int insertWorkerBySys(Worker worker);
 
-    int deleteByPrimaryKey(int id);
-
     Worker selectByPrimaryKey(int id);
 
     int updateWorkerByUser(Worker worker);

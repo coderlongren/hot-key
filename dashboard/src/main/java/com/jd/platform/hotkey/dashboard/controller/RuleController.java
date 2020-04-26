@@ -1,5 +1,6 @@
 package com.jd.platform.hotkey.dashboard.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.jd.platform.hotkey.dashboard.common.base.BaseController;
 import com.jd.platform.hotkey.dashboard.common.domain.Page;
@@ -61,7 +62,10 @@ public class RuleController extends BaseController {
 
 	@GetMapping("/edit/{key}")
     public String edit(@PathVariable("key") String key, ModelMap modelMap){
-		modelMap.put("rule", ruleService.selectByKey(key));
+		KeyRule rule = ruleService.selectByKey(key);
+		rule.setOldRule(JSON.toJSONString(rule));
+		System.out.println("rule-->  "+JSON.toJSONString(rule));
+		modelMap.put("rule", rule);
         return prefix + "/edit";
     }
 	
@@ -69,6 +73,7 @@ public class RuleController extends BaseController {
     @PostMapping("/edit")
     @ResponseBody
     public Result editSave(KeyRule rule) {
+		System.out.println("rule--->  "+JSON.toJSONString(rule));
 		return Result.success(ruleService.updateRuleByUser(rule));
     }
 

@@ -47,7 +47,7 @@ public class EtcdMonitor {
 
     @PostConstruct
     public void watchHotKey() {
-        System.out.println("======== EtcdMonitor =======");
+        System.out.println("======== watchHotKey =======");
         CompletableFuture.runAsync(() -> {
             KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.hotKeyPath);
             while (watchIterator.hasNext()) {
@@ -64,7 +64,7 @@ public class EtcdMonitor {
                 System.out.println("v-> "+v);
                 long ttl = configCenter.timeToLive(kv.getLease());
                 String appName = CommonUtil.appName(k);
-                if(eventType.equals(Event.EventType.PUT)){
+                if(eventType.equals(Event.EventType.PUT) && !v.equals("1")){
                     keyTimelyMapper.insertSelective(new KeyTimely(k,v,appName,ttl,CommonUtil.parentK(k),SystemClock.now()));
                 }else if(eventType.equals(Event.EventType.DELETE)){
                     keyTimelyMapper.deleteByKey(k);
@@ -78,7 +78,7 @@ public class EtcdMonitor {
 
     @PostConstruct
     public void watchRules() {
-        System.out.println("======== EtcdMonitor =======");
+        System.out.println("======== watchRules =======");
         CompletableFuture.runAsync(() -> {
             KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.rulePath);
             while (watchIterator.hasNext()) {
@@ -91,14 +91,16 @@ public class EtcdMonitor {
                 String k = kv.getKey().toStringUtf8();
                 String v = kv.getValue().toStringUtf8();
                 System.out.println(JSON.toJSONString(eventType));
+                long version = kv.getModRevision();
                 System.out.println("k-> "+k);
                 System.out.println("v-> "+v);
                 KeyRule rule = JSON.parseObject(v, KeyRule.class);
+                rule.setVersion((int)version);
+                rule.setAppName(CommonUtil.appName(k));
                 if(eventType.equals(Event.EventType.PUT)){
-                    rule.setAppName(CommonUtil.appName(k));
                     ruleService.insertRuleBySys(rule);
                 }else if(eventType.equals(Event.EventType.DELETE)){
-                    rule.setState(-1);
+                    rule.setState(0);
                     ruleService.updateRule(rule);
                 }
             }
@@ -128,7 +130,7 @@ public class EtcdMonitor {
                 if(eventType.equals(Event.EventType.PUT)){
                     workerService.insertWorkerBySys(worker);
                 }else if(eventType.equals(Event.EventType.DELETE)){
-                    worker.setState(-1);
+                    worker.setState(0);
                     workerService.updateWorker(worker);
                 }
             }

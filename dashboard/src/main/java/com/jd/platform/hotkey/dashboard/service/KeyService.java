@@ -34,5 +34,6 @@ public interface KeyService {
 
     int updateKeyTimely(KeyTimely keyTimely);
 
-    List<KeyVo> listKeyTimely(SearchDto param) ;
+    PageInfo<KeyTimely> pageKeyTimely(PageParam page, SearchDto param);
+
 }

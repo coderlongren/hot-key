@@ -120,6 +120,7 @@
       <![CDATA[ create_time >= #{startTime,jdbcType=TIMESTAMP}
              AND create_time < #{endTime,jdbcType=TIMESTAMP}]]>
     </if>
+    order by id
   </select>
 
 </mapper>

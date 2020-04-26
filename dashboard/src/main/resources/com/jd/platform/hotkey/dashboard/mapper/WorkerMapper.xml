@@ -29,7 +29,7 @@
   </select>
 
   <update id="logicDeleteByKey" parameterType="java.lang.Integer">
-    update hk_worker set state = -1
+    update hk_worker set state = 0
     where id = #{id,jdbcType=INTEGER}
   </update>
 
@@ -112,6 +112,7 @@
     select
     <include refid="Base_Column_List" />
     from hk_worker
+    order by id
   </select>
 
 </mapper>

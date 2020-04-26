@@ -37,6 +37,8 @@ public class KeyRule {
 
     private Integer version;
 
+    private String oldRule;
+
     public KeyRule() {
     }
 
@@ -132,5 +134,13 @@ public class KeyRule {
 
     public void setVersion(Integer version) {
         this.version = version;
+    }
+
+    public String getOldRule() {
+        return oldRule;
+    }
+
+    public void setOldRule(String oldRule) {
+        this.oldRule = oldRule;
     }
 }
