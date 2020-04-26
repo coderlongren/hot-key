@@ -6,12 +6,15 @@ import com.ibm.etcd.api.KeyValue;
 import com.ibm.etcd.client.kv.KvClient;
 import com.ibm.etcd.client.kv.WatchUpdate;
 import com.jd.platform.hotkey.client.Context;
+import com.jd.platform.hotkey.client.callback.JdHotKeyStore;
+import com.jd.platform.hotkey.client.callback.ReceiveNewKeyEvent;
 import com.jd.platform.hotkey.client.core.eventbus.EventBusCenter;
 import com.jd.platform.hotkey.client.core.rule.KeyRuleInfoChangeEvent;
 import com.jd.platform.hotkey.client.core.worker.WorkerInfoChangeEvent;
 import com.jd.platform.hotkey.client.log.JdLogger;
 import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
 import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
+import com.jd.platform.hotkey.common.model.HotKeyModel;
 import com.jd.platform.hotkey.common.rule.KeyRule;
 import com.jd.platform.hotkey.common.tool.FastJsonUtils;
 import io.grpc.StatusRuntimeException;
@@ -44,7 +47,7 @@ public class EtcdStarter {
         //监听热key事件，worker探测出来后也会推给etcd，到时client会收到来自于worker和来自于etcd的两个热key事件，如果是新增，
         //就只处理worker的就行。如果是删除，可能是etcd的热key过期删除，也可能是手工删除的
         //只监听手工的增删？
-//        startWatchHotKey();
+        startWatchHotKey();
     }
 
     /**
@@ -100,6 +103,56 @@ public class EtcdStarter {
 
     private void notifyRuleChange(List<KeyRule> rules) {
         EventBusCenter.getInstance().post(new KeyRuleInfoChangeEvent(rules));
+    }
+
+    /**
+     * 异步开始监听热key变化信息
+     */
+    private void startWatchHotKey() {
+        CompletableFuture.runAsync(() -> {
+            JdLogger.info(getClass(), "--- begin watch hotKey change ----");
+            IConfigCenter configCenter = EtcdConfigFactory.configCenter();
+            try {
+                KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.hotKeyPath + Context.APP_NAME);
+                //如果有新事件，即新key产生或删除
+                while (watchIterator.hasNext()) {
+                    WatchUpdate watchUpdate = watchIterator.next();
+
+                    List<Event> eventList = watchUpdate.getEvents();
+                    KeyValue keyValue = eventList.get(0).getKv();
+                    Event.EventType eventType = eventList.get(0).getType();
+                    try {
+                        String key = keyValue.getKey().toStringUtf8().replace(ConfigConstant.hotKeyPath + Context.APP_NAME + "/", "");
+
+                        //如果是删除key，就立刻删除
+                        if (Event.EventType.DELETE == eventType) {
+                            HotKeyModel model = new HotKeyModel();
+                            model.setRemove(true);
+                            model.setKey(key);
+                            EventBusCenter.getInstance().post(new ReceiveNewKeyEvent(model));
+                        } else {
+                            //如果已经是热key了，就不处理
+                            if (JdHotKeyStore.isHotKey(key)) {
+                                return;
+                            }
+                            JdLogger.info(getClass(), "receive new key : " + key);
+                            //如果不是，那就是手工添加的
+                            HotKeyModel model = new HotKeyModel();
+                            model.setRemove(false);
+                            model.setCreateTime(Long.valueOf(keyValue.getValue().toStringUtf8()));
+                            model.setKey(key);
+                            EventBusCenter.getInstance().post(new ReceiveNewKeyEvent(model));
+                        }
+                    } catch (Exception e) {
+                        JdLogger.error(getClass(), "new key err ：" + keyValue);
+                    }
+
+                }
+            } catch (Exception e) {
+                JdLogger.error(getClass(), "watch err");
+            }
+        });
+
     }
 
     /**
