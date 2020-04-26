@@ -14,8 +14,8 @@ public abstract class AbsReceiveNewKey implements ReceiveNewKeyListener {
     @Override
     public void newKey(HotKeyModel hotKeyModel) {
         long now = System.currentTimeMillis();
-        //如果key到达时已经过去5秒了，记录一下
-        if (Math.abs(now - hotKeyModel.getCreateTime()) > 5000) {
+        //如果key到达时已经过去5秒了，记录一下。手工删除key时，没有CreateTime
+        if (hotKeyModel.getCreateTime() != 0 && Math.abs(now - hotKeyModel.getCreateTime()) > 5000) {
             JdLogger.warn(getClass(), "the key comes too last : " + hotKeyModel);
         }
         if (hotKeyModel.isRemove()) {
