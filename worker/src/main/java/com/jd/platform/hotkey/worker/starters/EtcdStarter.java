@@ -1,6 +1,9 @@
 package com.jd.platform.hotkey.worker.starters;
 
+import com.ibm.etcd.api.Event;
 import com.ibm.etcd.api.KeyValue;
+import com.ibm.etcd.client.kv.KvClient;
+import com.ibm.etcd.client.kv.WatchUpdate;
 import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
 import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
 import com.jd.platform.hotkey.common.rule.KeyRule;
@@ -11,7 +14,6 @@ import io.grpc.StatusRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -20,6 +22,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -49,26 +52,24 @@ public class EtcdStarter {
     //Close：貌似是关闭当前客户端建立的所有租约。
 
     /**
-     * 启动回调监听器
+     * 启动回调监听器，监听rule变化
      */
-//    @EventListener(ApplicationReadyEvent.class)
-//    @Async
-//    public void watch() {
-//        KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.hotKeyPath);
-//        while (watchIterator.hasNext()) {
-//            WatchUpdate watchUpdate = watchIterator.next();
-//            List<Event> eventList = watchUpdate.getEvents();
-//
-//            System.out.println("even list size-> "+eventList.size());
-//            System.err.println("kv--> "+eventList.get(0).getKv());
-//            //包含put、delete
-//            Event.EventType eventType = eventList.get(0).getType();
-//
-//            System.out.println("eventType--> "+eventType);
-//
-//        }
-//
-//    }
+    @PostConstruct
+    public void watch() {
+        CompletableFuture.runAsync(() -> {
+            KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.rulePath);
+            while (watchIterator.hasNext()) {
+                WatchUpdate watchUpdate = watchIterator.next();
+                List<Event> eventList = watchUpdate.getEvents();
+
+                KeyValue keyValue = eventList.get(0).getKv();
+                logger.info("rule changed : " + keyValue);
+
+                ruleChange(keyValue);
+            }
+        });
+
+    }
 
     /**
      * 每隔1分钟拉取一次，所有的app的rule
@@ -87,11 +88,18 @@ public class EtcdStarter {
             return;
         }
         for (KeyValue keyValue : keyValues) {
-            String appName = keyValue.getKey().toStringUtf8().replace(ConfigConstant.rulePath, "");
-            String ruleJson = keyValue.getValue().toStringUtf8();
-            List<KeyRule> keyRules = FastJsonUtils.toList(ruleJson, KeyRule.class);
-            KeyRuleHolder.put(appName, keyRules);
+            ruleChange(keyValue);
         }
+    }
+
+    /**
+     * rule发生变化时，更新缓存的rule
+     */
+    private synchronized void ruleChange(KeyValue keyValue) {
+        String appName = keyValue.getKey().toStringUtf8().replace(ConfigConstant.rulePath, "");
+        String ruleJson = keyValue.getValue().toStringUtf8();
+        List<KeyRule> keyRules = FastJsonUtils.toList(ruleJson, KeyRule.class);
+        KeyRuleHolder.put(appName, keyRules);
     }
 
     @PreDestroy
@@ -111,7 +119,6 @@ public class EtcdStarter {
      * 启动后，上传自己的信息到etcd，并维持心跳包
      */
     @PostConstruct
-    @Async
     public void upload() {
         //开启上传worker信息
         ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
