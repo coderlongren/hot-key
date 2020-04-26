@@ -69,7 +69,7 @@
         #{duration,jdbcType=BIGINT},
       </if>
       <if test="createTime != null">
-        #{createTime,jdbcType=LONG},
+        #{createTime,jdbcType=BIGINT},
       </if>
     </trim>
   </insert>

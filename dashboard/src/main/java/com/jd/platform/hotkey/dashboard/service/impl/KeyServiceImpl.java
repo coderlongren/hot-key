@@ -3,6 +3,8 @@ package com.jd.platform.hotkey.dashboard.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.date.SystemClock;
+import cn.hutool.core.map.multi.SetValueMap;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -77,7 +79,9 @@ public class KeyServiceImpl implements KeyService {
 
     @Override
     public int insertKeyByUser(KeyTimely key) {
-        configCenter.put(key.getKey(),key.getVal(),key.getDuration());
+        key.setVal("123123124233val");
+        key.setCreateTime(SystemClock.now());
+        configCenter.putAndGrant(key.getKey(),key.getVal(),key.getDuration());
         return this.insertKeyTimely(key);
     }
 

@@ -62,7 +62,7 @@ public class KeyController extends BaseController {
 	@ResponseBody
 	public Result add(KeyTimely key){
 		key.setType(1);
-		key.setSource(loginUser().getUserName());
+		key.setSource(userName());
 		int b = keyService.insertKeyByUser(key);
 		return b == 0 ? Result.fail():Result.success();
 	}

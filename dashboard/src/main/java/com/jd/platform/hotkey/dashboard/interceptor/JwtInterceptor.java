@@ -4,6 +4,7 @@ package com.jd.platform.hotkey.dashboard.interceptor;
 import com.jd.platform.hotkey.dashboard.common.eunm.ResultEnum;
 import com.jd.platform.hotkey.dashboard.common.ex.BizException;
 import com.jd.platform.hotkey.dashboard.util.JwtTokenUtil;
+import io.jsonwebtoken.Claims;
 import org.springframework.http.HttpMethod;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -23,10 +24,13 @@ public class JwtInterceptor extends HandlerInterceptorAdapter{
         boolean isAjaxRequest = false;
         if(!StringUtils.isEmpty(request.getHeader("x-requested-with"))
                 && request.getHeader("x-requested-with").equals("XMLHttpRequest")){
-            isAjaxRequest = false;
+            isAjaxRequest = true;
         }
-
+        String url = request.getRequestURI();
         if(isAjaxRequest){
+            if(url.contains("listTimely")){
+                return true;
+            }
             final String authHeader = request.getHeader(JwtTokenUtil.AUTH_HEADER_KEY);
             if (StringUtils.isEmpty(authHeader)
                     || !authHeader.startsWith(JwtTokenUtil.TOKEN_PREFIX)) {
@@ -34,10 +38,8 @@ public class JwtInterceptor extends HandlerInterceptorAdapter{
                 throw new BizException(ResultEnum.NO_LOGIN);
              }
             final String token = authHeader.substring(2);
-            // 验证token是否有效--无效已做异常抛出，由全局异常处理后返回对应信息
-            JwtTokenUtil.parseJWT(token);
-            String role = JwtTokenUtil.getRole(token);
-            String url = request.getRequestURI();
+            Claims claims = JwtTokenUtil.parseJWT(token);
+            String role = claims.get("role", String.class);
             if(role.equals("ADMIN") || role.equals("APPADMIN")){
                 return true;
             }

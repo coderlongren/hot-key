@@ -5,11 +5,14 @@ import java.util.Date;
 
 import com.alibaba.fastjson.JSON;
 import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
+import com.jd.platform.hotkey.dashboard.common.eunm.ResultEnum;
+import com.jd.platform.hotkey.dashboard.common.ex.BizException;
 import com.jd.platform.hotkey.dashboard.model.User;
 import com.jd.platform.hotkey.dashboard.util.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 
@@ -31,25 +34,27 @@ public class BaseController {
 
 
     public String userName(){
-        String token = this.request.getHeader("token");
+        final String authHeader = request.getHeader(JwtTokenUtil.AUTH_HEADER_KEY);
+        final String token = authHeader.substring(2);
         return JwtTokenUtil.getUsername(token);
     }
 
-    public User loginUser(){
-        String token = this.request.getHeader("token");
+    /*public User loginUser(){
+        final String authHeader = request.getHeader(JwtTokenUtil.AUTH_HEADER_KEY);
+        final String token = authHeader.substring(2);
         String userId = JwtTokenUtil.getUserId(token);
         String name = JwtTokenUtil.getUsername(token);
         String appName = JwtTokenUtil.getAppName(token);
         String role = JwtTokenUtil.getRole(token);
         return new User(Integer.valueOf(userId),name,role,appName);
-    }
+    }*/
 
 
     public SearchDto param(String text){
-        String authHeader = this.request.getHeader(JwtTokenUtil.AUTH_HEADER_KEY);
+        String authHeader = request.getHeader(JwtTokenUtil.AUTH_HEADER_KEY);
         SearchDto dto = JSON.parseObject(text, SearchDto.class);
         if(dto == null){ dto = new SearchDto(); }
-      //  dto.setAppName(JwtTokenUtil.getAppName(authHeader.substring(2)));
+       // dto.setAppName(JwtTokenUtil.getAppName(authHeader.substring(2)));
         return dto;
     }
    

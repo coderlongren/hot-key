@@ -29,6 +29,7 @@ public class JwtTokenUtil {
      */
     public static Claims parseJWT(String jsonWebToken) {
         try {
+            System.out.println("jsonWebToken-->  "+jsonWebToken);
             return Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(SECRET)).parseClaimsJws(jsonWebToken).getBody();
         } catch (ExpiredJwtException  eje) {
             log.error("===== Token过期 =====", eje);
