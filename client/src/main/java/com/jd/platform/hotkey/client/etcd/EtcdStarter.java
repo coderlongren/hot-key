@@ -40,6 +40,8 @@ public class EtcdStarter {
 
         fetchRule();
 
+        fetchExistHotKey();
+
         startWatchWorker();
 
         startWatchRule();
@@ -48,6 +50,30 @@ public class EtcdStarter {
         //就只处理worker的就行。如果是删除，可能是etcd的热key过期删除，也可能是手工删除的
         //只监听手工的增删？
         startWatchHotKey();
+    }
+
+    /**
+     * 启动后先拉取已存在的热key
+     */
+    private void fetchExistHotKey() {
+        JdLogger.info(getClass(), "--- begin fetch exist hotKey from etcd ----");
+        IConfigCenter configCenter = EtcdConfigFactory.configCenter();
+        try {
+            //获取所有热key
+            List<KeyValue> keyValues = configCenter.getPrefix(ConfigConstant.hotKeyPath + Context.APP_NAME);
+
+            for (KeyValue keyValue : keyValues) {
+                String key = keyValue.getKey().toStringUtf8().replace(ConfigConstant.hotKeyPath + Context.APP_NAME + "/", "");
+                HotKeyModel model = new HotKeyModel();
+                model.setRemove(false);
+                model.setKey(key);
+                EventBusCenter.getInstance().post(new ReceiveNewKeyEvent(model));
+            }
+        } catch (StatusRuntimeException ex) {
+            //etcd连不上
+            JdLogger.error(getClass(), "etcd connected fail. Check the etcd address!!!");
+        }
+
     }
 
     /**
