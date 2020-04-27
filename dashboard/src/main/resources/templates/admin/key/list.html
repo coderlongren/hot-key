@@ -144,6 +144,12 @@ var options = {
             { field: 'appName', title: '所属APP'},
             { field: 'duration', title: '缓存时间'},
             { field: 'source', title: '来源'},
+            { field: 'type', title: '操作类型',
+                formatter:function (val) {
+                    if(val == 0){ return "PUT"}
+                    if(val == 1){ return "DELETED"}
+                }
+            },
             { field: 'createTime', title: '创建时间'/*,
                 formatter:function (val,row,index) {
                     return changeDateFormat(val);

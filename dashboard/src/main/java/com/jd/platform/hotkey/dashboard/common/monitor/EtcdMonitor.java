@@ -73,7 +73,7 @@ public class EtcdMonitor {
                         keyTimelyMapper.updateByKey(new KeyTimely(arr[1],ttl));
                     }
                 }else if(eventType.equals(Event.EventType.DELETE)){
-                    keyTimelyMapper.deleteByKey(arr[1]);
+                    keyTimelyMapper.deleteByKey(k);
                 }
                 keyRecordMapper.insertSelective(new KeyRecord(arr[1],v,arr[0],ttl, "SYSTEM", eventType.getNumber(),new Date()));
             }

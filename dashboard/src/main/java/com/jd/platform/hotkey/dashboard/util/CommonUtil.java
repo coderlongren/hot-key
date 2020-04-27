@@ -32,4 +32,13 @@ public class CommonUtil {
 		return null;
 	}
 
+
+
+	public static String keyName(String k){
+		int index = k.lastIndexOf("/");
+		return k.substring(index+1);
+	}
+
+
+
 }

@@ -48,10 +48,14 @@ public class KeyServiceImpl implements KeyService {
 
 
 
+
     @Override
     public PageInfo<KeyTimely> pageKeyTimely(PageParam page, SearchDto param) {
         PageHelper.startPage(page.getPageNum(), page.getPageSize());
         List<KeyTimely> listKey = keyTimelyMapper.listKeyTimely(param);
+        for (KeyTimely timely : listKey) {
+            timely.setKey(CommonUtil.keyName(timely.getKey()));
+        }
         return new PageInfo<>(listKey);
     }
 

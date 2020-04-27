@@ -47,16 +47,11 @@ public class WorkerServiceImpl implements WorkerService {
     private ChangeLogMapper changeLogMapper;
 
     public static void main(String[] args) {
-        String a="/jd/workers/catr1WORKER";
-        KeyRule rule = new KeyRule();
-        rule.setKey("k1");
-        rule.setState(0);
-        rule.setAppName("app1");
-        rule.setThreshold(100);
-        rule.setDuration(2000);
-        rule.setInterval(50010);
-        System.out.println(JSON.toJSONString(rule));
-        System.out.println(JSON.toJSONString(rule).hashCode());
+        String a="/jd/workers/catr/WORKER";
+        int index = a.lastIndexOf("/");
+        String aa = a.substring(index+1);
+        System.out.println(JSON.toJSONString(aa));
+        System.out.println(JSON.toJSONString(index).hashCode());
 
     }
 
