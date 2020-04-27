@@ -1,16 +1,18 @@
-
-DROP TABLE IF EXISTS `hk_worker`;
-CREATE TABLE `hk_worker`  (
+DROP TABLE IF EXISTS `hk_change_log`;
+CREATE TABLE `hk_change_log`  (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `name` varchar(128) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '节点名称',
-  `ip` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT 'ip',
-  `port` int(11) NOT NULL COMMENT 'port',
+  `biz_key` varchar(128) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '业务key',
+  `biz_type` int(11) NOT NULL COMMENT '业务类型：1规则变更；2worker变更',
+  `from_str` varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '原始值',
+  `to_str` varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '目标值',
+  `app_name` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '数据所属APP',
   `update_user` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '修改人',
-  `update_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
-  `state` tinyint(4) NOT NULL COMMENT '状态:1 可用，0不可用',
+  `create_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时间',
+  `uuid` varchar(128) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '防重ID',
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `uniq_name`(`name`) USING BTREE COMMENT '实例名称唯一索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Compact;
+  UNIQUE INDEX `uniq_uuid`(`uuid`) USING BTREE COMMENT '防重索引'
+) ENGINE = InnoDB AUTO_INCREMENT = 29 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Compact;
+
 
 
 DROP TABLE IF EXISTS `hk_user`;
@@ -76,7 +78,7 @@ INSERT INTO `hk_key_record` VALUES (2, '123', '123', '123123124233val', 123, 'ly
 DROP TABLE IF EXISTS `hk_change_log`;
 CREATE TABLE `hk_change_log`  (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `biz_id` int(11) NOT NULL COMMENT '业务ID',
+  `biz_key` varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT ''  COMMENT '业务ID',
   `biz_type` int(11) NOT NULL COMMENT '业务类型：1规则变更；2worker变更',
   `from_str` varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '原始值',
   `to_str` varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '目标值',
