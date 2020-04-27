@@ -4,6 +4,7 @@ import cn.hutool.core.date.SystemClock;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.github.pagehelper.util.StringUtil;
 import com.google.protobuf.ByteString;
 import com.ibm.etcd.api.KeyValue;
 import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +62,18 @@ public class WorkerServiceImpl implements WorkerService {
 
     @Override
     public PageInfo<Worker> pageWorker(PageParam page, SearchDto param) {
+        List<KeyValue> keyValues = configCenter.getPrefix(ConfigConstant.workersPath);
+        List<Worker> workers = new ArrayList<>();
+        for (KeyValue kv : keyValues) {
+            String k = kv.getKey().toStringUtf8();
+            String v = kv.getValue().toStringUtf8();
+            if(v.contains(":")){
+                workers.add(new Worker(k,v));
+            }
+        }
+        return new PageInfo<>(workers);
+
+/*
         PageHelper.startPage(page.getPageNum(),page.getPageSize());
         List<Worker> workers = workerMapper.listWorker(param);
         List<KeyValue> list = configCenter.getPrefix(ConfigConstant.workersPath);
@@ -77,7 +91,7 @@ public class WorkerServiceImpl implements WorkerService {
                 }
             }
         }
-        return new PageInfo<>(workers);
+        return new PageInfo<>(workers);*/
     }
 
 

@@ -8,12 +8,7 @@ $("#form-edit").validate({
 function edit() {
 	var oldRuleStr = $("#oldRule").val();
 	var dataFormJson = $("#form-edit").serialize();
-	alert("oldRuleStr--> "+oldRuleStr);
-	alert("dataForm--> "+dataFormJson);
-
-	if(oldRuleStr == dataFormJson){
-		return false;
-	}
+	if(oldRuleStr == dataFormJson){ return false; }
 
 	$.ajax({
 		cache : true,

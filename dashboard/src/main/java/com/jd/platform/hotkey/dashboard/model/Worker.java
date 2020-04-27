@@ -26,6 +26,7 @@ public class Worker {
         String[] arr = ipPort.split(":");
         this.ip = arr[0];
         this.port = Integer.valueOf(arr[1]);
+        this.state = 1;
     }
 
     public Worker(String name, Integer state,String updateUser) {

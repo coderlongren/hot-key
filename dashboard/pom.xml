@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.jd.platform.hotkey</groupId>
     <artifactId>dashboard</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2-SNAPSHOT</version>
     <name>dashboard</name>
     <description>Demo project for Spring Boot</description>
 
@@ -51,7 +51,7 @@
         <dependency>
             <groupId>com.jd.platform.hotkey</groupId>
             <artifactId>common</artifactId>
-            <version>${project.version}</version>
+            <version>0.0.2-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
 

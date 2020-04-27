@@ -8,6 +8,7 @@ import com.github.pagehelper.util.StringUtil;
 import com.ibm.etcd.api.KeyValue;
 import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
 import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
+import com.jd.platform.hotkey.common.configcenter.etcd.JdEtcdClient;
 import com.jd.platform.hotkey.dashboard.common.domain.PageParam;
 import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
 import com.jd.platform.hotkey.dashboard.mapper.ChangeLogMapper;
