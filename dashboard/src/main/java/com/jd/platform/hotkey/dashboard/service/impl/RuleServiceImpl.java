@@ -1,14 +1,11 @@
 package com.jd.platform.hotkey.dashboard.service.impl;
 
-import cn.hutool.core.date.SystemClock;
 import com.alibaba.fastjson.JSON;
-import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.github.pagehelper.util.StringUtil;
 import com.ibm.etcd.api.KeyValue;
 import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
 import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
-import com.jd.platform.hotkey.common.configcenter.etcd.JdEtcdClient;
+import com.jd.platform.hotkey.common.tool.FastJsonUtils;
 import com.jd.platform.hotkey.dashboard.common.domain.PageParam;
 import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
 import com.jd.platform.hotkey.dashboard.mapper.ChangeLogMapper;
@@ -16,10 +13,8 @@ import com.jd.platform.hotkey.dashboard.mapper.KeyRuleMapper;
 import com.jd.platform.hotkey.dashboard.model.ChangeLog;
 import com.jd.platform.hotkey.dashboard.model.KeyRule;
 import com.jd.platform.hotkey.dashboard.service.RuleService;
-import com.jd.platform.hotkey.dashboard.util.CommonUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -47,15 +42,17 @@ public class RuleServiceImpl implements RuleService {
 
     @Override
     public PageInfo<KeyRule> pageKeyRule(PageParam page, SearchDto param) {
-
-        String appName = param.getAppName();
-        String prefix = StringUtil.isEmpty(appName)?ConfigConstant.rulePath:ConfigConstant.rulePath+"/"+appName;
-        List<KeyValue> keyValues = configCenter.getPrefix(prefix);
+        List<KeyValue> keyValues = configCenter.getPrefix(ConfigConstant.rulePath);
         List<KeyRule> rules = new ArrayList<>();
         for (KeyValue kv : keyValues) {
+            String key = kv.getKey().toStringUtf8();
+            String app = key.replace(ConfigConstant.rulePath, "");
             String v = kv.getValue().toStringUtf8();
-            KeyRule rule = JSON.parseObject(v, KeyRule.class);
-            if(rule != null){ rules.add(rule); }
+            List<KeyRule> rule = FastJsonUtils.toList(v, KeyRule.class);
+            for (KeyRule keyRule : rule) {
+                keyRule.setAppName(app);
+            }
+            rules.addAll(rule);
         }
         return new PageInfo<>(rules);
     }
