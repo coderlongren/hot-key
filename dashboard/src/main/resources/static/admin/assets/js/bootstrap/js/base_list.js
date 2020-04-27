@@ -129,6 +129,7 @@
                     url: url,
                     type: type,
                     dataType: dataType,
+                    headers: {"Authorization": getCookie("token")},
                     data: data,
                     success: function(result) {
                         $.operate.ajaxSuccess(result)
@@ -508,15 +509,16 @@ function getCookie(cname){
 //修改——转换日期格式(时间戳转换为datetime格式)
 function changeDateFormat(cellval) {
     if (cellval != null) {
+     //   alert(cellval)
         var date = new Date(parseInt(cellval.replace("/Date(", "").replace(")/", ""), 10));
         var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
         var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
-        return date.getFullYear() + "-" + month + "-" + currentDate;
+        return cellval;
     }
 }
 
 function timestampToTime(timestamp) {
-    var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+    var date = new Date(timestamp);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
     var Y = date.getFullYear() + '-';
     var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
     var D = date.getDate() + ' ';

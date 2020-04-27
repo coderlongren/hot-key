@@ -2,6 +2,8 @@ package com.jd.platform.hotkey.dashboard.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
+import com.github.pagehelper.util.StringUtil;
+import com.google.protobuf.ByteString;
 import com.ibm.etcd.api.KeyValue;
 import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
 import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
@@ -13,11 +15,13 @@ import com.jd.platform.hotkey.dashboard.mapper.KeyRuleMapper;
 import com.jd.platform.hotkey.dashboard.model.ChangeLog;
 import com.jd.platform.hotkey.dashboard.model.KeyRule;
 import com.jd.platform.hotkey.dashboard.service.RuleService;
+import com.jd.platform.hotkey.dashboard.util.CommonUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -35,20 +39,19 @@ public class RuleServiceImpl implements RuleService {
     private IConfigCenter configCenter;
 
     @Resource
-    private KeyRuleMapper ruleMapper;
-
-    @Resource
     private ChangeLogMapper changeLogMapper;
 
     @Override
     public PageInfo<KeyRule> pageKeyRule(PageParam page, SearchDto param) {
-        List<KeyValue> keyValues = configCenter.getPrefix(ConfigConstant.rulePath);
+        String appName = param.getAppName();
+        List<KeyValue> keyValues = configCenter.getPrefix(StringUtil.isEmpty(appName)?ConfigConstant.rulePath:ConfigConstant.rulePath+appName);
         List<KeyRule> rules = new ArrayList<>();
         for (KeyValue kv : keyValues) {
             String key = kv.getKey().toStringUtf8();
-            String app = key.replace(ConfigConstant.rulePath, "");
+            String app = key.replace(ConfigConstant.rulePath,"");
             String v = kv.getValue().toStringUtf8();
-            List<KeyRule> rule = FastJsonUtils.toList(v, KeyRule.class);
+            if(StringUtil.isEmpty(v)){ continue; }
+            List<KeyRule> rule = JSON.parseArray(v,KeyRule.class);
             for (KeyRule keyRule : rule) {
                 keyRule.setAppName(app);
             }
@@ -60,27 +63,22 @@ public class RuleServiceImpl implements RuleService {
 
     @Override
     public KeyRule selectByKey(String key) {
-        key = key.replace("_","/");
-        KeyValue keyValue = configCenter.getKv(ConfigConstant.rulePath + key);
-        String val = keyValue.getValue().toStringUtf8();
-        KeyRule rule = JSON.parseObject(val, KeyRule.class);
-        rule.setVersion((int)keyValue.getModRevision());
-        return rule;
+        String[] arr = key.split("_");
+        List<KeyValue> keyValues = configCenter.getPrefix(ConfigConstant.rulePath + arr[0]);
+        for (KeyValue keyValue : keyValues) {
+            String val = keyValue.getValue().toStringUtf8();
+            if(StringUtil.isEmpty(val)){ continue; }
+            List<KeyRule> rules = JSON.parseArray(val, KeyRule.class);
+            for (KeyRule rule : rules) {
+                if(rule.getKey().equals(arr[1])){
+                    rule.setAppName(arr[0]);
+                    return rule;
+                }
+            }
+        }
+        return new KeyRule();
     }
 
-
-    /**
-     * 系统的更新值记录to
-     * @param rule
-     * @return
-     */
-    @Override
-    public int updateRule(KeyRule rule) {
-        String to = JSON.toJSONString(rule);
-        String key = rule.getKey();
-        return changeLogMapper.insertSelective(new ChangeLog(key,1,"",
-                to,"SYSTEM",rule.getAppName(),key+"_"+rule.getVersion()));
-    }
 
     /**
      * 手动更新记录 from - to
@@ -88,37 +86,38 @@ public class RuleServiceImpl implements RuleService {
      * @return
      */
     @Override
-    public int updateRuleByUser(KeyRule rule) {
-        String from = rule.getOldRule();
-        rule.setOldRule(null);
-        String to = JSON.toJSONString(rule);
-        String etcdKey = ConfigConstant.rulePath + rule.getAppName() + "/" + rule.getKey();
-        String uuid = rule.getKey()+"_"+rule.getVersion();
-        changeLogMapper.insertSelective(new ChangeLog(rule.getKey(),1,
-                from,to,rule.getUpdateUser(),rule.getAppName(),uuid));
-        return (int)configCenter.putAndGrant(etcdKey,JSON.toJSONString(rule),rule.getDuration());
+    public int updateRule(KeyRule rule) {
+        String ruleKey = rule.getKey();
+        String app = rule.getAppName();
+        String etcdKey = ConfigConstant.rulePath + app;
+        List<KeyValue> keyValues = configCenter.getPrefix(etcdKey);
+        KeyValue keyValue = keyValues.get(0);
+        String val = keyValue.getValue().toStringUtf8();
+        List<KeyRule> rules = JSON.parseArray(val, KeyRule.class);
+        for (KeyRule keyRule : rules) {
+            if(keyRule.getKey().equals(ruleKey)){
+                keyRule.setInterval(rule.getInterval());
+                keyRule.setDuration(rule.getDuration());
+                keyRule.setThreshold(rule.getThreshold());
+                keyRule.setPrefix(rule.getPrefix());
+            }
+        }
+        configCenter.put(etcdKey,JSON.toJSONString(rules));
+        return 1;
     }
 
 
     @Override
-    public int insertRuleByUser(KeyRule rule) {
-        configCenter.put(rule.getKey(),JSON.toJSONString(rule));
-        return this.insertRuleBySys(rule);
-    }
-
-    @Transactional
-    @Override
-    public int insertRuleBySys(KeyRule rule) {
-        String uuid = rule.getKey()+"_"+rule.getVersion();
-        return changeLogMapper.insertSelective(new ChangeLog(rule.getKey(),1,"",
-                JSON.toJSONString(rule),rule.getUpdateUser(),rule.getAppName(),uuid));
-    }
-
-
-    @Override
-    public int delRuleByUser(KeyRule rule) {
-        configCenter.delete(rule.getKey());
-        return this.updateRule(rule);
+    public int insertRule(KeyRule rule) {
+        String app = rule.getAppName();
+        String etcdKey = ConfigConstant.rulePath + app;
+        List<KeyValue> keyValues = configCenter.getPrefix(etcdKey);
+        KeyValue keyValue = keyValues.get(0);
+        String val = keyValue.getValue().toStringUtf8();
+        List<KeyRule> rules = JSON.parseArray(val, KeyRule.class);
+        rules.add(rule);
+        configCenter.put(etcdKey,JSON.toJSONString(rules));
+        return 1;
     }
 
 

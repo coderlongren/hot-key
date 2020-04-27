@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -39,9 +40,8 @@ public class EtcdMonitor {
     private KeyRecordMapper keyRecordMapper;
     @Resource
     private KeyTimelyMapper keyTimelyMapper;
-
     @Resource
-    private RuleService ruleService;
+    private ChangeLogMapper logMapper;
     @Resource
     private WorkerService workerService;
 
@@ -63,13 +63,19 @@ public class EtcdMonitor {
                 System.out.println("k-> "+k);
                 System.out.println("v-> "+v);
                 long ttl = configCenter.timeToLive(kv.getLease());
-                String appName = CommonUtil.appName(k);
-                if(eventType.equals(Event.EventType.PUT) && !v.equals("1")){
-                    keyTimelyMapper.insertSelective(new KeyTimely(k,v,appName,ttl,CommonUtil.parentK(k),SystemClock.now()));
+                String appKey = k.replace(ConfigConstant.hotKeyPath, "");
+                String[] arr = appKey.split("/");
+                System.out.println("arr-> "+JSON.toJSONString(arr));
+                if(eventType.equals(Event.EventType.PUT)){
+                    if(v.equals("1")){
+                        keyTimelyMapper.insertSelective(new KeyTimely(arr[1],v,arr[0],ttl));
+                    }else if(v.equals("UPDATE")){
+                        keyTimelyMapper.updateByKey(new KeyTimely(arr[1],ttl));
+                    }
                 }else if(eventType.equals(Event.EventType.DELETE)){
-                    keyTimelyMapper.deleteByKey(k);
+                    keyTimelyMapper.deleteByKey(arr[1]);
                 }
-                keyRecordMapper.insertSelective(new KeyRecord(k,v,appName,ttl, "SYSTEM", eventType.getNumber(),new Date()));
+                keyRecordMapper.insertSelective(new KeyRecord(arr[1],v,arr[0],ttl, "SYSTEM", eventType.getNumber(),new Date()));
             }
         });
 
@@ -94,14 +100,12 @@ public class EtcdMonitor {
                 long version = kv.getModRevision();
                 System.out.println("k-> "+k);
                 System.out.println("v-> "+v);
-                KeyRule rule = JSON.parseObject(v, KeyRule.class);
-                rule.setVersion((int)version);
-                rule.setAppName(CommonUtil.appName(k));
+                String app = k.replace(ConfigConstant.rulePath,"");
+                String uuid = app+"_"+version;
                 if(eventType.equals(Event.EventType.PUT)){
-                    ruleService.insertRuleBySys(rule);
+                    logMapper.insertSelective(new ChangeLog(app,1,"",v,"SYSTEM",app,uuid));
                 }else if(eventType.equals(Event.EventType.DELETE)){
-                    rule.setState(0);
-                    ruleService.updateRule(rule);
+                    logMapper.insertSelective(new ChangeLog(app,1,v,"","SYSTEM",app,uuid));
                 }
             }
         });

@@ -62,7 +62,7 @@ public class KeyController extends BaseController {
 	@PostMapping("/add")
 	@ResponseBody
 	public Result add(KeyTimely key){
-		key.setType(1);
+		key.setType(0);
 		key.setSource(userName());
 		int b = keyService.insertKeyByUser(key);
 		return b == 0 ? Result.fail():Result.success();
@@ -70,15 +70,15 @@ public class KeyController extends BaseController {
 
 	@PostMapping("/remove")
 	@ResponseBody
-	public Result remove(String key){
-		int b = keyService.delKeyByUser(new KeyTimely(key,userName()));
+	public Result remove(String ids){
+		int b = keyService.delKeyByUser(new KeyTimely(ids,userName()));
 		return b == 0 ? Result.fail():Result.success();
 	}
 
 
-	@GetMapping("/edit/{key}")
-    public String edit(@PathVariable("key") String key, ModelMap modelMap){
-		modelMap.put("key", keyService.selectByKey(key));
+	@GetMapping("/edit/{id}")
+    public String edit(@PathVariable("id") Long id, ModelMap modelMap){
+		modelMap.put("key", keyService.selectByPk(id));
         return prefix + "/edit";
     }
 	

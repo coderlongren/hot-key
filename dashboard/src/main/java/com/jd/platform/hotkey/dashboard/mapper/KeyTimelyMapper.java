@@ -18,7 +18,7 @@ public interface KeyTimelyMapper {
 
     KeyTimely selectByKey(String key);
 
-    int updateByPk(KeyTimely key);
+    int updateByKey(KeyTimely key);
 
     List<KeyTimely> listKeyTimely(SearchDto param);
 

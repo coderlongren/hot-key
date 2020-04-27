@@ -63,33 +63,29 @@ public class KeyServiceImpl implements KeyService {
         return new PageInfo<>(listKey);
     }
 
-    @Transactional
-    @Override
-    public int insertKeyTimely(KeyTimely key) {
-        recordMapper.insertSelective(buildRecord(key));
-        return keyTimelyMapper.insertSelective(key);
-    }
-
 
     @Override
     public int insertKeyByUser(KeyTimely key) {
-        key.setVal(SystemClock.now() + "");
+        key.setVal("ADD");
         key.setCreateTime(SystemClock.now());
         key.setKey(ConfigConstant.hotKeyPath + key.getAppName() + "/" + key.getKey());
         configCenter.putAndGrant(key.getKey(),key.getVal(),key.getDuration());
-        return this.insertKeyTimely(key);
+        return keyTimelyMapper.insertSelective(key);
     }
 
     @Override
     public int updateKeyByUser(KeyTimely key) {
-        configCenter.put(key.getKey(),key.getVal(),key.getDuration());
-        return this.updateKeyTimely(key);
+        String ectdKey = ConfigConstant.hotKeyPath+key.getAppName() +"/"+key.getKey();
+        configCenter.putAndGrant(ectdKey,"UPDATE",key.getDuration());
+        return 1;
     }
 
     @Override
-    public int delKeyByUser(KeyTimely key) {
-        configCenter.delete(key.getKey());
-        return keyTimelyMapper.deleteByKey(key.getKey());
+    public int delKeyByUser(KeyTimely keyTimely) {
+        String[] arr = keyTimely.getKey().split("_");
+        String ectdKey = ConfigConstant.hotKeyPath+arr[0] +"/"+arr[1];
+        configCenter.delete(ectdKey);
+        return 1;
     }
 
     @Override
@@ -98,169 +94,14 @@ public class KeyServiceImpl implements KeyService {
     }
 
     @Override
+    public KeyTimely selectByPk(Long id) {
+        return keyTimelyMapper.selectByPrimaryKey(id);
+    }
+
+    @Override
     public int updateKeyTimely(KeyTimely key) {
-        return keyTimelyMapper.updateByPk(key);
+        return keyTimelyMapper.updateByKey(key);
     }
-
-
-
-    private List<KeyVo> convert(List<KeyTimely> keyValues) {
-        List<KeyVo> records = new ArrayList<>();
-        for (KeyTimely keyTimely : keyValues) {
-            String key = keyTimely.getKey();
-            KeyVo vo = new KeyVo();
-            vo.setId(keyTimely.getId().intValue());
-            vo.setDir(key.endsWith("/"));
-            vo.setKey(key);
-            vo.setValue(keyTimely.getVal());
-            Long createTime = keyTimely.getCreateTime();
-            Long ttl = keyTimely.getDuration();
-            vo.setTtl(ttl);
-            if(createTime!=null && ttl!=null){
-                vo.setExpiration(new Date(createTime + ttl));
-            }
-            vo.setParentKey(keyTimely.getParentKey());
-            vo.setParentId(getPid(keyValues,keyTimely.getParentKey()));
-            records.add(vo);
-        }
-        return records;
-    }
-
-
-    private Integer getPid(List<KeyTimely> keyValues,String parentKey){
-
-        for (KeyTimely kv : keyValues) {
-            if (kv.getKey().equals(parentKey)) {
-                return kv.getId().intValue();
-            }
-        }
-        return null;
-    }
-
-
-
-    private static KeyVo buildTree(KeyVo pNode, List<KeyVo> recordList) {
-        List<KeyVo> childMenus = new ArrayList<>();
-        for (KeyVo vo : recordList) {
-            if (vo.getParentKey().equals(pNode.getKey())) {
-                vo.setParentId(pNode.getId());
-                childMenus.add(buildTree(vo, recordList));
-            }
-        }
-        pNode.setNodes(childMenus);
-        return pNode;
-    }
-
-
-    private KeyRecord buildRecord(KeyTimely keyTimely) {
-        KeyRecord record = new KeyRecord();
-        BeanUtil.copyProperties(keyTimely,record);
-        return record;
-    }
-
-
-    public static class Kv {
-        private String pk;
-        private String k;
-        private String v;
-        private Long lease;
-        private boolean isDir;
-        private List<Kv> nodes;
-
-        public Kv(String k) {
-            this.k = k;
-        }
-
-        public Kv(String k, String v) {
-            this.k = k;
-            this.v = v;
-        }
-
-        public Kv(String k, String v, Long lease) {
-            this.k = k;
-            this.v = v;
-            this.lease = lease;
-        }
-
-        public String getK() {
-            return k;
-        }
-
-        public void setK(String k) {
-            this.k = k;
-        }
-
-        public String getV() {
-            return v;
-        }
-
-        public void setV(String v) {
-            this.v = v;
-        }
-
-        public Long getLease() {
-            return lease;
-        }
-
-        public void setLease(Long lease) {
-            this.lease = lease;
-        }
-
-        public String getPk() {
-            return pk;
-        }
-
-        public void setPk(String pk) {
-            this.pk = pk;
-        }
-
-        public boolean isDir() {
-            return isDir;
-        }
-
-        public void setDir(boolean dir) {
-            isDir = dir;
-        }
-
-        public List<Kv> getNodes() {
-            return nodes;
-        }
-
-        public void setNodes(List<Kv> nodes) {
-            this.nodes = nodes;
-        }
-    }
-
-    public static List<Kv> getList() {
-        List<Kv> kvList = new ArrayList<>();
-        Kv kv1 = new Kv("/jd/");
-        Kv kv2 = new Kv("/jd/hotkeys/");
-        Kv kv3 = new Kv("/jd/hotkeys/0420-k111", "0420-v111");
-        Kv kv4 = new Kv("/jd/hotkeys/app1/");
-        Kv kv5 = new Kv("/jd/hotkeys/app1/hk1", "hk1val", 7587845841961209272L);
-        Kv kv6 = new Kv("/jd/rules/");
-        Kv kv7 = new Kv("/jd/rules/app1/");
-        Kv kv8 = new Kv("/jd/rules/app1/rule111", "rule222", 7587845841961209320L);
-        Kv kv9 = new Kv("/jd/rules/app1/rule222", "rule222val", 7587845841961209326L);
-        kvList.add(kv1);
-        kvList.add(kv2);
-        kvList.add(kv3);
-        kvList.add(kv4);
-        kvList.add(kv5);
-        kvList.add(kv6);
-        kvList.add(kv7);
-        kvList.add(kv8);
-        kvList.add(kv9);
-        for (Kv kv : kvList) {
-            String k = kv.getK();
-            kv.setDir(k.endsWith("/"));
-            kv.setPk(CommonUtil.parentK(k));
-        }
-        System.out.println(JSON.toJSONString(kvList));
-        return kvList;
-    }
-
-
 
 }
 

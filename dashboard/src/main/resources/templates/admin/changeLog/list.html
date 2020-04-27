@@ -4,19 +4,22 @@
 <head th:replace="admin/common/html/head :: head_Normal(~{::title},~{::link},~{::style})">
 
 <title th:text=${title}></title>
-<!-- 这儿引用单独的css link -->
-<!-- Ladda for Bootstrap 3按钮加载进度插件 -->
+
 <link rel="stylesheet" th:href="@{/static/admin/assets/js/button/ladda/ladda.min.css}">
 <!-- bootstrap-table表单样式 -->
 <link th:href="@{/static/admin/assets/js/bootstrap/css/bootstrap-table/bootstrap-table.min.css}" rel="stylesheet"/>
 
 <style type="text/css">
-/**
-*这里写单独的css样式
-*/
+
 .select-list ul li{
 	list-style-type: none;
 	float: left;
+}
+
+.colStyle{
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 </style>
 
@@ -55,13 +58,13 @@
 
                             <div class="body-nest" id="search_div"  style="display: none">
                                 <div class="form_left">
-                                    <form role="form" class="form-inline">
+                                   <!-- <form role="form" class="form-inline">
                                         <div class="form-group">
                                             <label  class="sr-only">用户名字</label>
                                             <input type="text" name="searchText" placeholder="用户名字"class="form-control">
                                         </div>
                                         <button onclick="$.table.search(this)" class="btn btn-success" type="button"><i class="fa fa-search"></i>&nbsp;搜索</button>
-                                    </form>
+                                    </form>-->
                                 </div>
                             </div>
                         </div>
@@ -85,12 +88,12 @@
                         <div class="body-nest" id="Blank_Page_Content">
                             <!-- 工具条 -->
                             <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">
-                            	<button onclick="$.operate.add()" type="button" class="btn btn-primary">
+                            	<!--<button onclick="$.operate.add()" type="button" class="btn btn-primary">
                                     <span class="entypo-plus-squared"></span>&nbsp;&nbsp;新增
                                 </button>
                                <button onclick="$.operate.batRemove()" type="button" class="btn btn-info">
                                     <span class="entypo-trash"></span>&nbsp;&nbsp;删除
-                               </button>
+                               </button>-->
 
                            </div>
                             <!-- 工具条 end-->
@@ -129,14 +132,12 @@ var dataUrl="/changeLog/list";
 var removeUrl="/changeLog/remove";
 var createUrl="/changeLog/add";
 var updateUrl="/changeLog/edit/{id}";
-var exportUrl="/changeLog/export";
 var options = {
 		dataUrl: dataUrl,
         createUrl: createUrl,
         updateUrl: updateUrl,
         removeUrl:removeUrl,
-        exportUrl: exportUrl,
-        sortName: "roleSort",
+        sortName: "id",
         modalName: "变更记录",
         search: false,
 	    dataColumns: [
@@ -148,20 +149,59 @@ var options = {
 			    title: '序号'
 			}, 
 			{
-			    field: 'bizId',
-			    title: '业务ID'
+			    field: 'bizKey',
+			    title: '业务Key'
 			},
 			{
 			    field: 'bizType',
-			    title: '业务类型'
+			    title: '业务类型',
+                formatter: function (value) {
+			        if(value == 1){
+                        return "规则变更";
+                    }
+                    return "worker变更";
+                }
 			},
             {
                 field: 'from',
-                title: '初始值'
+                title: '初始值',
+                formatter: function (value, row, index) {
+                    var span = document.createElement('span');
+                    span.setAttribute('title', value);
+                    span.innerHTML = value;
+                    return span.outerHTML;
+                },
+                cellStyle : function() {
+                    return {
+                        css: {
+                            'max-width':'200px',
+                            'text-overflow': 'ellipsis',
+                            'overflow': 'hidden',
+                            'white-space': 'nowrap',
+                        }
+                    }
+                }
             },
             {
                 field: 'to',
-                title: '变更值'
+                title: '变更值',
+                formatter: function (value, row, index) {
+                    var span = document.createElement('span');
+                    span.setAttribute('title', value);
+                    span.innerHTML = value;
+                    return span.outerHTML;
+
+                },
+                cellStyle : function() {
+                    return {
+                        css: {
+                            'max-width':'200px',
+                            'text-overflow': 'ellipsis',
+                            'overflow': 'hidden',
+                            'white-space': 'nowrap',
+                        }
+                    }
+                }
             },
             {
 			    title: '操作',
@@ -173,6 +213,7 @@ var options = {
 			    }
 			}]
   };
+
 $(function(){
 	var oTab=$.table.oTableInit(options);
 	oTab.Init();

@@ -14,12 +14,18 @@
     id, key_name, val, parent_key, app_name, duration, create_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from hk_key_timely
     where id = #{id,jdbcType=BIGINT}
   </select>
-  <delete id="deleteByKey" parameterType="java.lang.Long">
+  <select id="selectByKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from hk_key_timely
+    where key_name = #{key}
+  </select>
+  <delete id="deleteByKey" parameterType="java.lang.String">
     delete from hk_key_timely
     where key_name = #{key}
   </delete>
@@ -74,7 +80,7 @@
     </trim>
   </insert>
 
-  <update id="updateByPk" parameterType="com.jd.platform.hotkey.dashboard.model.KeyTimely">
+  <update id="updateByKey" parameterType="com.jd.platform.hotkey.dashboard.model.KeyTimely">
     update hk_key_timely
     <set>
       <if test="key != null">

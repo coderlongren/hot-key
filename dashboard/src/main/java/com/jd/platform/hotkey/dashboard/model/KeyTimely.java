@@ -1,5 +1,7 @@
 package com.jd.platform.hotkey.dashboard.model;
 
+import cn.hutool.core.date.SystemClock;
+
 import java.io.Serializable;
 
 public class KeyTimely implements Serializable {
@@ -41,13 +43,18 @@ public class KeyTimely implements Serializable {
         this.source = source;
     }
 
-    public KeyTimely(String key, String val, String appName, Long duration, String parentKey, Long createTime) {
+    public KeyTimely(String key, Long duration) {
+        this.key = key;
+        this.duration = duration;
+    }
+
+
+    public KeyTimely(String key, String val, String appName, Long duration) {
         this.key = key;
         this.val = val;
-        this.parentKey = parentKey;
         this.appName = appName;
         this.duration = duration;
-        this.createTime = createTime;
+        this.createTime = SystemClock.now();
     }
 
     public Long getId() {

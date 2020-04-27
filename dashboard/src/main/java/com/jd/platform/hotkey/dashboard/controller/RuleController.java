@@ -48,24 +48,22 @@ public class RuleController extends BaseController {
 	@ResponseBody
 	public Result add(KeyRule rule){
 		rule.setUpdateUser(userName());
-		int b = ruleService.insertRuleByUser(rule);
+		int b = ruleService.insertRule(rule);
 		return b == 0 ? Result.fail():Result.success();
 	}
 
 	@PostMapping("/remove")
 	@ResponseBody
 	public Result remove(String key){
-		int b = ruleService.delRuleByUser(new KeyRule(key,-1,userName()));
+		int b = ruleService.updateRule(new KeyRule(key,0,userName()));
 		return b == 0 ? Result.fail():Result.success();
 	}
 
 
 	@GetMapping("/edit/{key}")
     public String edit(@PathVariable("key") String key, ModelMap modelMap){
-		KeyRule rule = ruleService.selectByKey(key);
-		rule.setOldRule(JSON.toJSONString(rule));
-		System.out.println("rule-->  "+JSON.toJSONString(rule));
-		modelMap.put("rule", rule);
+		System.out.println("key-->  "+key);
+		modelMap.put("rule", ruleService.selectByKey(key));
         return prefix + "/edit";
     }
 	
@@ -74,7 +72,7 @@ public class RuleController extends BaseController {
     @ResponseBody
     public Result editSave(KeyRule rule) {
 		System.out.println("rule--->  "+JSON.toJSONString(rule));
-		return Result.success(ruleService.updateRuleByUser(rule));
+		return Result.success(ruleService.updateRule(rule));
     }
 
 }
