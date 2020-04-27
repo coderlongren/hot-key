@@ -25,11 +25,10 @@ public class RuleController extends BaseController {
 	private RuleService ruleService;
 
 	@GetMapping("/view")
-    public String view()
-    {	
-        return prefix + "/list";
-    }
-
+	public String view(ModelMap modelMap){
+		modelMap.put("title","规则配置");
+		return prefix + "/list";
+	}
 
 	@PostMapping("/list")
 	@ResponseBody
@@ -62,7 +61,6 @@ public class RuleController extends BaseController {
 
 	@GetMapping("/edit/{key}")
     public String edit(@PathVariable("key") String key, ModelMap modelMap){
-		System.out.println("key-->  "+key);
 		modelMap.put("rule", ruleService.selectByKey(key));
         return prefix + "/edit";
     }
@@ -71,7 +69,6 @@ public class RuleController extends BaseController {
     @PostMapping("/edit")
     @ResponseBody
     public Result editSave(KeyRule rule) {
-		System.out.println("rule--->  "+JSON.toJSONString(rule));
 		return Result.success(ruleService.updateRule(rule));
     }
 

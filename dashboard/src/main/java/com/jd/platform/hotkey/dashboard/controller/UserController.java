@@ -27,8 +27,8 @@ public class UserController extends BaseController {
 	private UserService userService;
 
 	@GetMapping("/view")
-    public String view()
-    {	
+    public String view(ModelMap modelMap){
+		modelMap.put("title","用户管理");
         return prefix + "/list";
     }
 

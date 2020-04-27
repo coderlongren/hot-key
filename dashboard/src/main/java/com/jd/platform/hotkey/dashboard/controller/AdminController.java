@@ -8,6 +8,7 @@ import com.jd.platform.hotkey.dashboard.common.domain.Result;
 import com.jd.platform.hotkey.dashboard.common.eunm.ResultEnum;
 import com.jd.platform.hotkey.dashboard.model.User;
 import com.jd.platform.hotkey.dashboard.service.UserService;
+import com.jd.platform.hotkey.dashboard.util.CommonUtil;
 import com.jd.platform.hotkey.dashboard.util.JwtTokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,14 @@ public class AdminController extends BaseController {
 	private String prefix = "admin";
 	
 	@GetMapping("/index")
-	public String index() {
+	public String index(String text,ModelMap modelMap) {
+		try {
+			String info = CommonUtil.decoder(text);
+			String[] arr = info.split("_");
+			modelMap.put("name",arr[0]);
+			modelMap.put("role",arr[1]);
+		}catch (Exception e){
+		}
 		return prefix+"/index";
 	}
 
@@ -51,7 +59,6 @@ public class AdminController extends BaseController {
     }
 
 
-
 	@PostMapping("/login")
 	@ResponseBody
 	public Result login(User param,HttpServletResponse response) {
@@ -63,7 +70,7 @@ public class AdminController extends BaseController {
 		cookie.setDomain("localhost");
 		cookie.setPath("/");
 		response.addCookie(cookie);
-		return  Result.success(token);
+		return  Result.success(CommonUtil.encoder(user.getNickName()+"_"+user.getRole()));
 	}
 	
 

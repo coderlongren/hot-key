@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 public class JwtInterceptor extends HandlerInterceptorAdapter{
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         if (HttpMethod.OPTIONS.equals(request.getMethod())) {
             response.setStatus(HttpServletResponse.SC_OK);
             return true;
@@ -36,6 +36,9 @@ public class JwtInterceptor extends HandlerInterceptorAdapter{
                     || !authHeader.startsWith(JwtTokenUtil.TOKEN_PREFIX)) {
               //  response.sendRedirect("login");
                 throw new BizException(ResultEnum.NO_LOGIN);
+             //   response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+              //  return false;
+              //  throw new RuntimeException("NO_LOGIN");
              }
             final String token = authHeader.substring(2);
             Claims claims = JwtTokenUtil.parseJWT(token);
@@ -48,6 +51,9 @@ public class JwtInterceptor extends HandlerInterceptorAdapter{
                 return true;
             }
             throw new BizException(ResultEnum.NO_PERMISSION);
+           // throw new RuntimeException("NO_PERMISSION");
+           // response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+           // return  false;
         }
         return true;
     }

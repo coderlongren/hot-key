@@ -10,6 +10,8 @@ import java.util.List;
 @Mapper
 public interface KeyTimelyMapper {
 
+    int clear();
+
     int deleteByKey(String key);
 
     int insertSelective(KeyTimely key);
@@ -22,4 +24,5 @@ public interface KeyTimelyMapper {
 
     List<KeyTimely> listKeyTimely(SearchDto param);
 
+    void batchInsert(List<KeyTimely> list);
 }

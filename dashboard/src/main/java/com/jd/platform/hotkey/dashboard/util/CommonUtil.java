@@ -1,6 +1,11 @@
 package com.jd.platform.hotkey.dashboard.util;
 
 
+import cn.hutool.core.convert.Convert;
+import org.springframework.util.DigestUtils;
+
+import java.io.UnsupportedEncodingException;
+import java.util.Base64;
 
 public class CommonUtil {
 
@@ -39,6 +44,27 @@ public class CommonUtil {
 		return k.substring(index+1);
 	}
 
+
+
+	public static String encoder(String text) {
+		try {
+			return Base64.getEncoder().encodeToString(text.getBytes("utf-8"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return "";
+	}
+
+
+	public static String decoder(String text) {
+		byte[] bytes=Base64.getDecoder().decode(text);
+		try {
+			return new String(bytes,"utf-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		};
+		return "";
+	}
 
 
 }

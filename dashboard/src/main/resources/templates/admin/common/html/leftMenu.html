@@ -12,7 +12,6 @@
 	    </div>
 	    <div class="search-hover">
 	        <form id="demo-2">
-	            <input type="search" placeholder="Search4 Menu..." class="id_search">
 	        </form>
 	    </div>
 
@@ -54,7 +53,7 @@
 								<i class="fa fa-retweet"></i>
 								<span>变更记录</span>
 							</a>
-							<a class="tooltip-tip" href="/user/view"
+							<a class="tooltip-tip" href="/user/view" th:if="${role eq 'ADMIN'|| role eq 'APPADMIN' }"
 							   target="mainFrame">
 								<i class="icon icon-user"></i>
 								<span>用户管理</span>

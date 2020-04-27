@@ -27,11 +27,12 @@ public class ChangLogController extends BaseController {
 	@Resource
 	private ChangeLogService logService;
 
+
 	@GetMapping("/view")
-    public String view()
-    {	
-        return prefix + "/list";
-    }
+	public String view(ModelMap modelMap){
+		modelMap.put("title","变更记录");
+		return prefix + "/list";
+	}
 
 
 	@PostMapping("/list")

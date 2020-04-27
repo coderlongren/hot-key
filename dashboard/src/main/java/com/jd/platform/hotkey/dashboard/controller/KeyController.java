@@ -25,11 +25,13 @@ public class KeyController extends BaseController {
 	@Resource
 	private KeyService keyService;
 
+
 	@GetMapping("/view")
-    public String view()
-    {	
-        return prefix + "/list";
-    }
+	public String view(ModelMap modelMap){
+		modelMap.put("title","热点记录");
+		return prefix + "/list";
+	}
+
 
 	@PostMapping("/list")
 	@ResponseBody
@@ -38,12 +40,12 @@ public class KeyController extends BaseController {
 		return new Page<>(info.getPageNum(),(int)info.getTotal(),info.getList());
 	}
 
-
 	@GetMapping("/viewTimely")
-	public String viewTimely(){
-		System.out.println("============viewTimely==========");
+	public String viewTimely(ModelMap modelMap){
+		modelMap.put("title","实时热点");
 		return prefix + "/listtimely";
 	}
+
 
 	@PostMapping("/listTimely")
 	@ResponseBody

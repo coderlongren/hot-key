@@ -30,6 +30,29 @@
     where key_name = #{key}
   </delete>
 
+  <delete id="clear">
+    delete from hk_key_timely
+  </delete>
+
+
+  <insert id="batchInsert">
+    INSERT INTO
+        hk_key_timely(
+        key_name,
+        val,
+        app_name,
+        duration,
+        create_time)
+    VALUES
+    <foreach collection="list" item="k" separator=",">
+      (#{k.key},
+      #{k.val},
+      #{k.appName},
+      #{k.duration},
+      #{k.createTime})
+    </foreach>
+  </insert>
+
   <insert id="insertSelective" parameterType="com.jd.platform.hotkey.dashboard.model.KeyTimely">
     insert into hk_key_timely
     <trim prefix="(" suffix=")" suffixOverrides=",">

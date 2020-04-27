@@ -1,4 +1,3 @@
-//jquery form序列化转换为json对象
 (function($) {
 	$.fn.serializeJson = function() {
 		var serializeObj = {};

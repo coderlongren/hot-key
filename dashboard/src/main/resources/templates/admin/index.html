@@ -35,7 +35,6 @@ height: calc(100vh - 139px);overflow-x: hidden;
 <div class="wrap-fluid">
      <div style="background-color: aliceblue;">
        <iframe  width="100%"   id="mainFrame" name="mainFrame" th:src="@{'/admin/main'}" frameborder="0" marginheight="0" marginwidth="0" border="false"  ></iframe>
-  
      </div>
       
      <!-- 页脚 通用-->
@@ -44,12 +43,6 @@ height: calc(100vh - 139px);overflow-x: hidden;
      <!-- 结束页脚通用 -->
 </div>
 <!-- 结束右边内容 -->
-
-
-<!-- 右侧隐藏滑块内容 -->
-<div th:include="admin/common/html/rightHide :: rightHide">
-</div>
-   <!-- END 右侧隐藏滑块内容-->
 
 <!-- 通用js -->
 <div th:include="admin/common/html/js :: onload_js"> 
