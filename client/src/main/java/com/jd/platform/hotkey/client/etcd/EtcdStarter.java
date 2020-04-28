@@ -11,6 +11,7 @@ import com.jd.platform.hotkey.client.callback.ReceiveNewKeyEvent;
 import com.jd.platform.hotkey.client.core.eventbus.EventBusCenter;
 import com.jd.platform.hotkey.client.core.rule.KeyRuleInfoChangeEvent;
 import com.jd.platform.hotkey.client.core.worker.WorkerInfoChangeEvent;
+import com.jd.platform.hotkey.client.core.worker.WorkerInfoHolder;
 import com.jd.platform.hotkey.client.log.JdLogger;
 import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
 import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
@@ -42,13 +43,13 @@ public class EtcdStarter {
 
         fetchExistHotKey();
 
-        startWatchWorker();
+//        startWatchWorker();
 
         startWatchRule();
 
         //监听热key事件，worker探测出来后也会推给etcd，到时client会收到来自于worker和来自于etcd的两个热key事件，如果是新增，
         //就只处理worker的就行。如果是删除，可能是etcd的热key过期删除，也可能是手工删除的
-        //只监听手工的增删？
+        //只监听手工的增删？算了，还是监听所有的吧，重复的就return
         startWatchHotKey();
     }
 
@@ -76,20 +77,43 @@ public class EtcdStarter {
 
     }
 
+//    /**
+//     * 异步开始监听worker变化信息
+//     */
+//    private void startWatchWorker() {
+//        CompletableFuture.runAsync(() -> {
+//            JdLogger.info(getClass(), "--- begin watch worker change ----");
+//            IConfigCenter configCenter = EtcdConfigFactory.configCenter();
+//            try {
+//                KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.workersPath);
+//                //如果有新事件，即worker的变更，就重新拉取所有的信息
+//                while (watchIterator.hasNext()) {
+//                    JdLogger.info(getClass(), "worker info changed. begin to fetch new infos");
+//                    WatchUpdate watchUpdate = watchIterator.next();
+//                    List<Event> eventList = watchUpdate.getEvents();
+//                    System.err.println(eventList.get(0).getKv());
+//
+//                    //全量拉取worker信息
+//                    fetch();
+//                }
+//            } catch (Exception e) {
+//                JdLogger.error(getClass(), "watch err");
+//            }
+//        });
+//
+//    }
+
     /**
-     * 拉取worker信息
+     * 每隔30秒拉取worker信息
      */
     private void fetchWorkerInfo() {
         ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
         //开启拉取etcd的worker信息，如果拉取失败，则定时继续拉取
         scheduledExecutorService.scheduleAtFixedRate(() -> {
             JdLogger.info(getClass(), "trying to connect to etcd and fetch worker info");
-            boolean success = fetch();
-            if (success) {
-                scheduledExecutorService.shutdown();
-            }
+            fetch();
 
-        }, 0, 5, TimeUnit.SECONDS);
+        }, 0, 30, TimeUnit.SECONDS);
     }
 
     private synchronized boolean fetch() {
@@ -110,7 +134,8 @@ public class EtcdStarter {
                     String ipPort = keyValue.getValue().toStringUtf8();
                     addresses.add(ipPort);
                 }
-                JdLogger.info(getClass(), "worker info list is : " + addresses);
+                JdLogger.info(getClass(), "worker info list is : " + addresses + ", now addresses is "
+                        + WorkerInfoHolder.getWorkers());
                 //发布workerinfo变更信息
                 notifyWorkerChange(addresses);
                 return true;
@@ -173,32 +198,6 @@ public class EtcdStarter {
                         JdLogger.error(getClass(), "new key err ：" + keyValue);
                     }
 
-                }
-            } catch (Exception e) {
-                JdLogger.error(getClass(), "watch err");
-            }
-        });
-
-    }
-
-    /**
-     * 异步开始监听worker变化信息
-     */
-    private void startWatchWorker() {
-        CompletableFuture.runAsync(() -> {
-            JdLogger.info(getClass(), "--- begin watch worker change ----");
-            IConfigCenter configCenter = EtcdConfigFactory.configCenter();
-            try {
-                KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.workersPath);
-                //如果有新事件，即worker的变更，就重新拉取所有的信息
-                while (watchIterator.hasNext()) {
-                    JdLogger.info(getClass(), "worker info changed. begin to fetch new infos");
-                    WatchUpdate watchUpdate = watchIterator.next();
-                    List<Event> eventList = watchUpdate.getEvents();
-                    System.err.println(eventList.get(0).getKv());
-
-                    //全量拉取worker信息
-                    fetch();
                 }
             } catch (Exception e) {
                 JdLogger.error(getClass(), "watch err");

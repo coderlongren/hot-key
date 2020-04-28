@@ -9,8 +9,11 @@ import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
 import com.jd.platform.hotkey.common.rule.KeyRule;
 import com.jd.platform.hotkey.common.tool.FastJsonUtils;
 import com.jd.platform.hotkey.common.tool.IpUtils;
+import com.jd.platform.hotkey.worker.model.AppInfo;
+import com.jd.platform.hotkey.worker.netty.holder.ClientInfoHolder;
 import com.jd.platform.hotkey.worker.rule.KeyRuleHolder;
 import io.grpc.StatusRuntimeException;
+import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +25,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -89,6 +93,23 @@ public class EtcdStarter {
         }
         for (KeyValue keyValue : keyValues) {
             ruleChange(keyValue);
+        }
+    }
+
+    /**
+     * 每隔5秒上传一下client的数量到etcd中
+     */
+    @Scheduled(fixedRate = 10000)
+    public void uploadClientCount() {
+        try {
+            for (AppInfo appInfo : ClientInfoHolder.apps) {
+                String appName = appInfo.getAppName();
+                Map<String, ChannelHandlerContext> map = appInfo.getMap();
+                int count = map.values().size();
+                configCenter.putAndGrant(ConfigConstant.clientCountPath + appName + "/" + IpUtils.getIp(), count + "", 6);
+            }
+        } catch (Exception ex) {
+            logger.error("etcd is unConnected . please do something");
         }
     }
 
