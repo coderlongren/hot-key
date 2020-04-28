@@ -1,6 +1,7 @@
 package com.jd.platform.hotkey.client.core.worker;
 
 import cn.hutool.core.util.StrUtil;
+import com.jd.platform.hotkey.client.log.JdLogger;
 import com.jd.platform.hotkey.client.netty.NettyClient;
 import io.netty.channel.Channel;
 
@@ -23,7 +24,7 @@ public class WorkerInfoHolder {
 
     public static Channel chooseChannel(String key) {
         synchronized (WORKER_HOLDER) {
-            if (StrUtil.isEmpty(key)) {
+            if (StrUtil.isEmpty(key) || WORKER_HOLDER.size() == 0) {
                 return null;
             }
             int index = Math.abs(key.hashCode() % WORKER_HOLDER.size());
@@ -43,6 +44,11 @@ public class WorkerInfoHolder {
 
             //去连接那些在etcd里有，但是list里没有的
             List<String> needConnectWorkers = WorkerInfoHolder.newWorkers(allAddresses);
+            if (needConnectWorkers.size() == 0) {
+                return;
+            }
+
+            JdLogger.info(WorkerInfoHolder.class, "new workers : " + needConnectWorkers);
 
             //再连接，连上后，value就有值了
             NettyClient.getInstance().connect(needConnectWorkers);
@@ -55,30 +61,30 @@ public class WorkerInfoHolder {
      * 处理某个worker的channel断线事件
      * 如果etcd里已经没有了，就从holder里remove掉，如果etcd里还有，就去重连
      */
-    public synchronized static boolean dealChannelInactive(String address) {
-        synchronized (WORKER_HOLDER) {
-            Iterator<Server> it = WORKER_HOLDER.iterator();
-            boolean exist = false;
-            while (it.hasNext()) {
-                Server server = it.next();
-                if (address.equals(server.address)) {
-                    exist = true;
-                    break;
-                }
-            }
-            //如果holder里已经没有该worker信息里，就不用处理了
-            if (!exist) {
-                return true;
-            }
-            //如果在holder里还有，说明worker和etcd的连接还没断，就需要重连了
-            return NettyClient.getInstance().connect(Arrays.asList(address));
-        }
-    }
+//    public synchronized static boolean dealChannelInactive(String address) {
+//        synchronized (WORKER_HOLDER) {
+//            Iterator<Server> it = WORKER_HOLDER.iterator();
+//            boolean exist = false;
+//            while (it.hasNext()) {
+//                Server server = it.next();
+//                if (address.equals(server.address)) {
+//                    exist = true;
+//                    break;
+//                }
+//            }
+//            //如果holder里已经没有该worker信息里，就不用处理了
+//            if (!exist) {
+//                return true;
+//            }
+//            //如果在holder里还有，说明worker和etcd的连接还没断，就需要重连了
+//            return NettyClient.getInstance().connect(Arrays.asList(address));
+//        }
+//    }
 
     /**
      * 增加一个新的worker
      */
-    public static void put(String address, Channel channel) {
+    public synchronized static void put(String address, Channel channel) {
         Iterator<Server> it = WORKER_HOLDER.iterator();
         boolean exist = false;
         while (it.hasNext()) {
@@ -138,6 +144,7 @@ public class WorkerInfoHolder {
                 }
             }
             if (!exist) {
+                JdLogger.info(WorkerInfoHolder.class, "worker remove : " + nowAddress);
                 it.remove();
             }
         }

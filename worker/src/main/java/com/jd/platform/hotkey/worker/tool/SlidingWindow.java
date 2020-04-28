@@ -113,7 +113,11 @@ public class SlidingWindow {
             reset();
         }
 
-        return (int) (((now - beginTimestamp) / timeMillisPerSlice) % timeSliceSize);
+        int index = (int) (((now - beginTimestamp) / timeMillisPerSlice) % timeSliceSize);
+        if (index < 0) {
+            return -index;
+        }
+        return index;
     }
 
     /**

@@ -16,7 +16,7 @@ public class CaffeineBuilder {
     public static Cache<String, Object> buildAllKeyCache() {
         return Caffeine.newBuilder()
                 .initialCapacity(1024)//初始大小
-                .maximumSize(20000000)//最大数量
+                .maximumSize(5000000)//最大数量
                 .expireAfterWrite(2, TimeUnit.MINUTES)//过期时间
                 .build();
     }
@@ -27,7 +27,7 @@ public class CaffeineBuilder {
     public static Cache<String, Object> buildRecentHotKeyCache() {
         return Caffeine.newBuilder()
                 .initialCapacity(256)//初始大小
-                .maximumSize(10000000)//最大数量
+                .maximumSize(5000000)//最大数量
                 .expireAfterWrite(10, TimeUnit.SECONDS)//过期时间
                 .build();
     }

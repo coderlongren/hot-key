@@ -1,6 +1,7 @@
 package com.jd.platform.hotkey.client.core.key;
 
 import com.jd.platform.hotkey.client.core.worker.WorkerInfoHolder;
+import com.jd.platform.hotkey.client.log.JdLogger;
 import com.jd.platform.hotkey.common.model.HotKeyModel;
 import com.jd.platform.hotkey.common.model.HotKeyMsg;
 import com.jd.platform.hotkey.common.model.MsgBuilder;
@@ -8,6 +9,7 @@ import com.jd.platform.hotkey.common.model.typeenum.MessageType;
 import com.jd.platform.hotkey.common.tool.FastJsonUtils;
 import io.netty.channel.Channel;
 
+import java.net.InetSocketAddress;
 import java.util.List;
 
 /**
@@ -27,10 +29,19 @@ public class NettyKeyPusher implements IKeyPusher {
             if (channel == null) {
                 continue;
             }
-            channel.writeAndFlush(MsgBuilder.buildMsg(new HotKeyMsg(MessageType.REQUEST_NEW_KEY, FastJsonUtils.convertObjectToJSON(model))));
+            try {
+                channel.writeAndFlush(MsgBuilder.buildMsg(new HotKeyMsg(MessageType.REQUEST_NEW_KEY, FastJsonUtils.convertObjectToJSON(model))));
+            } catch (Exception e) {
+                try {
+                    InetSocketAddress insocket = (InetSocketAddress) channel.remoteAddress();
+                    JdLogger.error(getClass(),"flush error " + insocket.getAddress().getHostAddress());
+                } catch (Exception ex) {
+                    JdLogger.error(getClass(),"flush error");
+                }
+
+            }
         }
 
     }
-
 
 }

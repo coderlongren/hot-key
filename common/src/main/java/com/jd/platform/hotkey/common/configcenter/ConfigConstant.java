@@ -22,6 +22,10 @@ public interface ConfigConstant {
      */
     String rulePath = "/jd/rules/";
     /**
+     * 客户端数量，如/jd/count/cartsoa = 2900
+     */
+    String clientCountPath = "/jd/count/";
+    /**
      * 每个app的热key放这里。格式如：jd/hotkeys/app1/userA
      */
     String hotKeyPath = "/jd/hotkeys/";

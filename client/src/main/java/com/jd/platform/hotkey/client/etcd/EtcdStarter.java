@@ -42,7 +42,7 @@ public class EtcdStarter {
 
         fetchExistHotKey();
 
-        startWatchWorker();
+//        startWatchWorker();
 
         startWatchRule();
 
@@ -76,20 +76,43 @@ public class EtcdStarter {
 
     }
 
+//    /**
+//     * 异步开始监听worker变化信息
+//     */
+//    private void startWatchWorker() {
+//        CompletableFuture.runAsync(() -> {
+//            JdLogger.info(getClass(), "--- begin watch worker change ----");
+//            IConfigCenter configCenter = EtcdConfigFactory.configCenter();
+//            try {
+//                KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.workersPath);
+//                //如果有新事件，即worker的变更，就重新拉取所有的信息
+//                while (watchIterator.hasNext()) {
+//                    JdLogger.info(getClass(), "worker info changed. begin to fetch new infos");
+//                    WatchUpdate watchUpdate = watchIterator.next();
+//                    List<Event> eventList = watchUpdate.getEvents();
+//                    System.err.println(eventList.get(0).getKv());
+//
+//                    //全量拉取worker信息
+//                    fetch();
+//                }
+//            } catch (Exception e) {
+//                JdLogger.error(getClass(), "watch err");
+//            }
+//        });
+//
+//    }
+
     /**
-     * 拉取worker信息
+     * 每隔30秒拉取worker信息
      */
     private void fetchWorkerInfo() {
         ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
         //开启拉取etcd的worker信息，如果拉取失败，则定时继续拉取
         scheduledExecutorService.scheduleAtFixedRate(() -> {
             JdLogger.info(getClass(), "trying to connect to etcd and fetch worker info");
-            boolean success = fetch();
-            if (success) {
-                scheduledExecutorService.shutdown();
-            }
+            fetch();
 
-        }, 0, 5, TimeUnit.SECONDS);
+        }, 0, 30, TimeUnit.SECONDS);
     }
 
     private synchronized boolean fetch() {
@@ -173,32 +196,6 @@ public class EtcdStarter {
                         JdLogger.error(getClass(), "new key err ：" + keyValue);
                     }
 
-                }
-            } catch (Exception e) {
-                JdLogger.error(getClass(), "watch err");
-            }
-        });
-
-    }
-
-    /**
-     * 异步开始监听worker变化信息
-     */
-    private void startWatchWorker() {
-        CompletableFuture.runAsync(() -> {
-            JdLogger.info(getClass(), "--- begin watch worker change ----");
-            IConfigCenter configCenter = EtcdConfigFactory.configCenter();
-            try {
-                KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.workersPath);
-                //如果有新事件，即worker的变更，就重新拉取所有的信息
-                while (watchIterator.hasNext()) {
-                    JdLogger.info(getClass(), "worker info changed. begin to fetch new infos");
-                    WatchUpdate watchUpdate = watchIterator.next();
-                    List<Event> eventList = watchUpdate.getEvents();
-                    System.err.println(eventList.get(0).getKv());
-
-                    //全量拉取worker信息
-                    fetch();
                 }
             } catch (Exception e) {
                 JdLogger.error(getClass(), "watch err");
