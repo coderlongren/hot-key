@@ -1,8 +1,3 @@
-/**
- * 用户管理JS
- * 
- * @Author Jack
- */
 (function($) {
 	$.extend({
 		table:{

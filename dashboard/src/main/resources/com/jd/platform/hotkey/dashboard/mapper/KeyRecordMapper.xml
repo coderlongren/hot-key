@@ -116,11 +116,13 @@
     <if test="appName !=null and appName !=''">
       and app_name = #{appName}
     </if >
+    <if test="key !=null and key !=''">
+      and key_name LIKE CONCAT(CONCAT('%', #{key}), '%')
+    </if >
     <if test="startTime != null">
-      <![CDATA[ create_time >= #{startTime,jdbcType=TIMESTAMP}
-             AND create_time < #{endTime,jdbcType=TIMESTAMP}]]>
+      <![CDATA[ and create_time <= #{startTime} and create_time >= #{endTime}]]>
     </if>
-    order by id
+    order by id desc
   </select>
 
 </mapper>

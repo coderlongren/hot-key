@@ -14,6 +14,9 @@
 #mainFrame{
 height: calc(100vh - 139px);overflow-x: hidden;
 }
+.menuSelected{
+    background-color: #283452;
+}
 </style>
 
 </head>
@@ -49,6 +52,16 @@ height: calc(100vh - 139px);overflow-x: hidden;
 </div>
 <script type="text/javascript" th:src="@{/static/admin/assets/js/toggle_close.js}"></script>
 <script type="text/javascript" th:src="@{/static/admin/assets/js/main.js}"></script>
+
+<script>
+
+    $('.tooltip-tip').on('click',  function(e){
+        $(this).parent().find(".menuSelected").removeClass("menuSelected");
+        $(this).addClass("menuSelected");
+    });
+
+</script>
+
 </body>
 
 

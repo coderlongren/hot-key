@@ -112,7 +112,7 @@
     select
     <include refid="Base_Column_List" />
     from hk_worker
-    order by id
+    order by id desc
   </select>
 
 </mapper>

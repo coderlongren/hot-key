@@ -62,7 +62,7 @@ public class KeyServiceImpl implements KeyService {
 
     @Override
     public PageInfo<KeyRecord> pageKeyRecord(PageParam page, SearchDto param) {
-        PageHelper.startPage(page.getPageNum(), page.getPageSize());
+      //  PageHelper.startPage(page.getPageNum(), page.getPageSize());
         List<KeyRecord> listKey = recordMapper.listKeyRecord(param);
         return new PageInfo<>(listKey);
     }

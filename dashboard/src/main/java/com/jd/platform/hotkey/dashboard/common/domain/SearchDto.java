@@ -1,6 +1,7 @@
 package com.jd.platform.hotkey.dashboard.common.domain;
 
 import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jd.platform.hotkey.dashboard.util.JwtTokenUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,8 +17,10 @@ import java.util.Date;
  */
 public class SearchDto implements Serializable {
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date startTime;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date endTime;
 
     private Integer status;

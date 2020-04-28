@@ -1,5 +1,6 @@
 package com.jd.platform.hotkey.dashboard.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.jd.platform.hotkey.dashboard.common.base.BaseController;
 import com.jd.platform.hotkey.dashboard.common.domain.*;
@@ -35,8 +36,9 @@ public class KeyController extends BaseController {
 
 	@PostMapping("/list")
 	@ResponseBody
-	public Page<KeyRecord> list(PageParam page, String searchText){
-		PageInfo<KeyRecord> info = keyService.pageKeyRecord(page, param(searchText));
+	public Page<KeyRecord> list(PageParam page, SearchDto searchDto){
+		System.out.println("searchText--> "+ JSON.toJSONString(searchDto));
+		PageInfo<KeyRecord> info = keyService.pageKeyRecord(page, param2(searchDto));
 		return new Page<>(info.getPageNum(),(int)info.getTotal(),info.getList());
 	}
 

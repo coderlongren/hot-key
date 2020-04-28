@@ -54,5 +54,12 @@ public class BaseController {
         dto.setAppName(JwtTokenUtil.getAppName(authHeader.substring(2)));
         return dto;
     }
+
+    public SearchDto param2(SearchDto dto){
+        String authHeader = request.getHeader(JwtTokenUtil.AUTH_HEADER_KEY);
+        if(dto == null){ dto = new SearchDto(); }
+        dto.setAppName(JwtTokenUtil.getAppName(authHeader.substring(2)));
+        return dto;
+    }
    
 }

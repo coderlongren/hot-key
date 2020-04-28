@@ -102,6 +102,6 @@
     <if test="appName !=null and appName !=''">
       and app_name = #{appName}
     </if >
-    order by id
+    order by id desc
   </select>
 </mapper>
