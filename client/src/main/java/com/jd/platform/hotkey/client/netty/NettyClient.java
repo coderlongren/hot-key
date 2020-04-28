@@ -60,7 +60,7 @@ public class NettyClient {
 //                                .addLast(codec.newDecoder())
                                 .addLast(new StringDecoder())
                                 //10秒没消息时，就发心跳包过去
-                                .addLast(new IdleStateHandler(0, 0, 10))
+                                .addLast(new IdleStateHandler(0, 0, 30))
                                 .addLast(nettyClientHandler);
                     }
                 });
