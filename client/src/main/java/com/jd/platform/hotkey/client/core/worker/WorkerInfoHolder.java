@@ -33,6 +33,16 @@ public class WorkerInfoHolder {
         }
     }
 
+    public static void main(String[] args) {
+        List<String> address = Arrays.asList("10.173.111.96:11111", "10.173.255.192:11111", "10.173.255.232:11111");
+        for (String s : address) {
+            put(s, null);
+        }
+
+        List<String> news = Arrays.asList("10.173.111.96:11111", "10.173.255.192:11111", "11.17.149.157:11111", "10.173.255.232:11111");
+        mergeAndConnectNew(news);
+    }
+
     /**
      * etcd监听到worker信息变化后
      * 将新的worker信息和当前的进行合并，并且连接新的address
@@ -43,7 +53,7 @@ public class WorkerInfoHolder {
             removeNoneUsed(allAddresses);
 
             //去连接那些在etcd里有，但是list里没有的
-            List<String> needConnectWorkers = WorkerInfoHolder.newWorkers(allAddresses);
+            List<String> needConnectWorkers = newWorkers(allAddresses);
             if (needConnectWorkers.size() == 0) {
                 return;
             }
@@ -108,23 +118,18 @@ public class WorkerInfoHolder {
      * 根据传过来的所有的worker地址，返回当前尚未连接的新的worker地址集合，用以创建新连接
      */
     private static List<String> newWorkers(List<String> allAddresses) {
-        List<String> list = new ArrayList<>();
+        Set<String> set = new HashSet<>(WORKER_HOLDER.size());
+        for (Server server : WORKER_HOLDER) {
+            set.add(server.address);
+        }
 
-        Iterator<Server> it = WORKER_HOLDER.iterator();
+        List<String> list = new ArrayList<>();
         for (String s : allAddresses) {
-            boolean exist = false;
-            while (it.hasNext()) {
-                String nowAddress = it.next().address;
-                if (s.equals(nowAddress)) {
-                    exist = true;
-                    break;
-                }
-            }
-            if (!exist) {
+            if (!set.contains(s)) {
                 list.add(s);
             }
-
         }
+
         return list;
     }
 
