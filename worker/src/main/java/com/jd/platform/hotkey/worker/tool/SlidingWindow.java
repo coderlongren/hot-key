@@ -115,7 +115,7 @@ public class SlidingWindow {
 
         int index = (int) (((now - beginTimestamp) / timeMillisPerSlice) % timeSliceSize);
         if (index < 0) {
-            return -index;
+            return 0;
         }
         return index;
     }

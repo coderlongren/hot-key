@@ -6,6 +6,7 @@ import com.jd.platform.hotkey.client.core.eventbus.EventBusCenter;
 import com.jd.platform.hotkey.client.core.key.PushSchedulerStarter;
 import com.jd.platform.hotkey.client.core.rule.KeyRuleHolder;
 import com.jd.platform.hotkey.client.core.worker.WorkerChangeSubscriber;
+import com.jd.platform.hotkey.client.core.worker.WorkerRetryConnector;
 import com.jd.platform.hotkey.client.etcd.EtcdConfigFactory;
 import com.jd.platform.hotkey.client.etcd.EtcdStarter;
 import com.jd.platform.hotkey.client.log.JdLogger;
@@ -80,6 +81,8 @@ public class ClientStarter {
         EtcdConfigFactory.buildConfigCenter(etcdServer);
         //开始定时推送
         PushSchedulerStarter.startPusher(pushPeriod);
+        //开启worker重连器
+        WorkerRetryConnector.retryConnectWorkers();
 
         registEventBus();
 

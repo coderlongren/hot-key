@@ -11,6 +11,7 @@ import com.jd.platform.hotkey.client.callback.ReceiveNewKeyEvent;
 import com.jd.platform.hotkey.client.core.eventbus.EventBusCenter;
 import com.jd.platform.hotkey.client.core.rule.KeyRuleInfoChangeEvent;
 import com.jd.platform.hotkey.client.core.worker.WorkerInfoChangeEvent;
+import com.jd.platform.hotkey.client.core.worker.WorkerInfoHolder;
 import com.jd.platform.hotkey.client.log.JdLogger;
 import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
 import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
@@ -48,7 +49,7 @@ public class EtcdStarter {
 
         //监听热key事件，worker探测出来后也会推给etcd，到时client会收到来自于worker和来自于etcd的两个热key事件，如果是新增，
         //就只处理worker的就行。如果是删除，可能是etcd的热key过期删除，也可能是手工删除的
-        //只监听手工的增删？
+        //只监听手工的增删？算了，还是监听所有的吧，重复的就return
         startWatchHotKey();
     }
 
@@ -133,7 +134,8 @@ public class EtcdStarter {
                     String ipPort = keyValue.getValue().toStringUtf8();
                     addresses.add(ipPort);
                 }
-                JdLogger.info(getClass(), "worker info list is : " + addresses);
+                JdLogger.info(getClass(), "worker info list is : " + addresses + ", now addresses is "
+                        + WorkerInfoHolder.getWorkers());
                 //发布workerinfo变更信息
                 notifyWorkerChange(addresses);
                 return true;

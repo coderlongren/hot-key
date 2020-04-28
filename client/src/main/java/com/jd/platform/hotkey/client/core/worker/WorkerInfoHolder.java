@@ -22,6 +22,23 @@ public class WorkerInfoHolder {
     private WorkerInfoHolder() {
     }
 
+    public static List<Server> getWorkers() {
+        return WORKER_HOLDER;
+    }
+
+    /**
+     * 获取worker是存在，但自己没连上的address集合，供重连
+     */
+    public static List<String> getNonConnectedWorkers() {
+        List<String> list = new ArrayList<>();
+        for (Server server : WORKER_HOLDER) {
+            if (server.channel == null) {
+                list.add(server.address);
+            }
+        }
+        return list;
+    }
+
     public static Channel chooseChannel(String key) {
         synchronized (WORKER_HOLDER) {
             if (StrUtil.isEmpty(key) || WORKER_HOLDER.size() == 0) {
@@ -31,16 +48,6 @@ public class WorkerInfoHolder {
 
             return WORKER_HOLDER.get(index).channel;
         }
-    }
-
-    public static void main(String[] args) {
-        List<String> address = Arrays.asList("10.173.111.96:11111", "10.173.255.192:11111", "10.173.255.232:11111");
-        for (String s : address) {
-            put(s, null);
-        }
-
-        List<String> news = Arrays.asList("10.173.111.96:11111", "10.173.255.192:11111", "11.17.149.157:11111", "10.173.255.232:11111");
-        mergeAndConnectNew(news);
     }
 
     /**
@@ -165,6 +172,14 @@ public class WorkerInfoHolder {
         public int compareTo(Server o) {
             //按address排序
             return this.address.compareTo(o.address);
+        }
+
+        @Override
+        public String toString() {
+            return "Server{" +
+                    "address='" + address + '\'' +
+                    ", channel=" + channel +
+                    '}';
         }
     }
 }
