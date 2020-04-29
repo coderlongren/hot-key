@@ -70,6 +70,9 @@ public class NettyClient {
     public synchronized boolean connect(List<String> addresses) {
         boolean allSuccess = true;
         for (String address : addresses) {
+            if (WorkerInfoHolder.hasConnected(address)) {
+                continue;
+            }
             String[] ss = address.split(":");
             try {
                 ChannelFuture channelFuture = bootstrap.connect(ss[0], Integer.parseInt(ss[1])).sync();
