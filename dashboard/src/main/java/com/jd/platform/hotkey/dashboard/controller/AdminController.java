@@ -1,8 +1,8 @@
 package com.jd.platform.hotkey.dashboard.controller;
 
+import java.util.Collections;
 import java.util.List;
-
-import com.alibaba.fastjson.JSON;
+import com.github.pagehelper.util.StringUtil;
 import com.jd.platform.hotkey.dashboard.common.base.BaseController;
 import com.jd.platform.hotkey.dashboard.common.domain.Result;
 import com.jd.platform.hotkey.dashboard.common.eunm.ResultEnum;
@@ -12,7 +12,6 @@ import com.jd.platform.hotkey.dashboard.util.CommonUtil;
 import com.jd.platform.hotkey.dashboard.util.JwtTokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -72,14 +71,25 @@ public class AdminController extends BaseController {
 		response.addCookie(cookie);
 		return  Result.success(CommonUtil.encoder(user.getNickName()+"_"+user.getRole()));
 	}
-	
+
+
+	@ResponseBody
+	@PostMapping("/info")
+	public User info(HttpServletRequest request){
+		String authHeader = request.getHeader(JwtTokenUtil.AUTH_HEADER_KEY);
+		User userPower = JwtTokenUtil.userPower(authHeader.substring(2));
+		String appName = userPower.getAppName();
+		String role = userPower.getRole();
+		if(role.equals("ADMIN")){
+		    List<String> apps =	userService.listApp();
+			return new User(role,apps);
+		}
+		return new User(role, Collections.singletonList(appName));
+	}
+
 
 	@GetMapping("/Loginout")
 	public String LoginOut(HttpServletRequest request, HttpServletResponse response){
-		/*//在这里执行退出系统前需要清空的数据
-		Subject subject = SecurityUtils.getSubject();
-		 //注销
-        subject.logout();*/
         return "redirect:/"+prefix+"/login";
 	}
 	

@@ -28,37 +28,26 @@
 <div class="wrap-fluid">
     <div class="container-fluid paper-wrap bevel tlbr">
         <!-- 内容 -->
-        <!--标题 通用-->
-        <div th:replace="admin/common/html/title :: title(${title},${parenttitle},${isMsg},${msgHTML})">
-        </div>
-        <!-- 结束标题 通用-->
         <div class="content-wrap">
             <!-- 结束内容 -->
             <div class="row">
                 <div class="col-sm-12">
                 <!-- 搜索条件 -->
-                
+
                 	 <div class="nest" id="inlineClose">
                             <div class="title-alt">
                                 <h6>搜索条件</h6>
-                                <div class="titleClose">
-                                    <a class="gone" href="#inlineClose">
-                                        <span class="entypo-cancel"></span>
-                                    </a>
-                                </div>
-                                <div class="titleToggle">
-                                    <a class="nav-toggle-alt" href="#search_div">
-                                        <span class="entypo-down-open"></span>
-                                    </a>
-                                </div>
                             </div>
 
-                            <div class="body-nest" id="search_div"  style="display: none">
+                            <div class="body-nest" id="search_div"  style="display: block">
                                 <div class="form_left">
                                     <form role="form" class="form-inline">
-                                        <div class="form-group">
-                                            <label class="sr-only">keyName</label>
-                                            <input type="text" name="searchText" placeholder="key"class="form-control">
+                                        <div class="form-group" style="width: 16%">
+                                            <label class="control-label timeBut2" style="float: left;padding-top: 10px">所属APP：</label>
+                                            <select name="appName" class="form-control" style="width: 66%">
+                                                <option>app1</option>
+                                                <option>app2</option>
+                                            </select>
                                         </div>
                                         <button onclick="$.table.search(this)" class="btn btn-success" type="button"><i class="fa fa-search"></i>&nbsp;搜索</button>
                                     </form>
@@ -81,25 +70,19 @@
                                 </a>
                             </div>
                         </div>
-                        
+
                         <div class="body-nest" id="Blank_Page_Content">
                             <!-- 工具条 -->
                             <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">
                             	<button onclick="$.operate.add()" type="button" class="btn btn-primary">
                                     <span class="entypo-plus-squared"></span>&nbsp;&nbsp;新增
                                 </button>
-                              <!-- <button onclick="$.operate.batRemove()" type="button" class="btn btn-info">
-                                    <span class="entypo-trash"></span>&nbsp;&nbsp;删除
-                               </button>-->
-
                            </div>
                             <!-- 工具条 end-->
                            <table id="dataTable" class="table-striped footable-res footable metro-blue" data-page-size="6">
-                                   
-                                    
                            </table>
-                           
-                           
+
+
                         </div>
                     </div>
                 </div>
@@ -161,7 +144,7 @@ var options = {
 			        var id = row.id;
 			        var actions = [];
 			        actions.push('<a class="btn btn-success btn-xs"  href="#" onclick="$.operate.edit(\'' + (row.appName+'_'+row.key) + '\')"><i class="fa fa-edit"></i>编辑</a> ');
-			    /*    actions.push('<a class="btn btn-danger btn-xs" href="#" onclick="$.operate.remove(\'' + row.key + '\')"><i class="fa fa-remove"></i>删除</a>');*/
+			        actions.push('<a class="btn btn-danger btn-xs" href="#" onclick="$.operate.remove(\'' + (row.appName+'_'+row.key) + '\')"><i class="fa fa-remove"></i>删除</a>');
 			        return actions.join('');
 			    }
 			}]

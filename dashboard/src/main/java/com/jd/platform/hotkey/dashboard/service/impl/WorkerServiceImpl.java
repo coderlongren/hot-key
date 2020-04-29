@@ -74,7 +74,6 @@ public class WorkerServiceImpl implements WorkerService {
         List<KeyValue> list = configCenter.getPrefix(ConfigConstant.workersPath);
         Map<String, KeyValue> map = list.stream()
                 .collect(Collectors.toMap(kv -> kv.getKey().toStringUtf8().substring(12), kv -> kv));
-
         for (Worker worker : workers) {
             if(map.get(worker.getName()) == null){
                 worker.setState(0);
@@ -92,7 +91,7 @@ public class WorkerServiceImpl implements WorkerService {
 
     @Override
     public int insertWorkerByUser(Worker worker) {
-        configCenter.put(worker.getName(),worker.getIp()+worker.getPort());
+        configCenter.put(worker.getName(),worker.getIp()+":"+worker.getPort());
         return this.insertWorkerBySys(worker);
     }
 
@@ -105,9 +104,6 @@ public class WorkerServiceImpl implements WorkerService {
                 to,worker.getUpdateUser(), SystemClock.now()+""));
     }
 
-    /*public int deleteByPrimaryKey(int id) {
-        return workerMapper.logicDeleteByKey(id,"");
-    }*/
 
     @Override
     public Worker selectByPrimaryKey(int id) {
@@ -116,7 +112,7 @@ public class WorkerServiceImpl implements WorkerService {
 
     @Override
     public int updateWorkerByUser(Worker worker) {
-        configCenter.put(worker.getName(),worker.getIp()+worker.getPort());
+        configCenter.put(worker.getName(),worker.getIp()+":"+worker.getPort());
         return this.updateWorker(worker);
     }
 
@@ -137,6 +133,7 @@ public class WorkerServiceImpl implements WorkerService {
 
     @Override
     public Worker selectByKey(String key) {
-        return workerMapper.selectByKey(key);
+        String val = configCenter.get(key);
+        return new Worker(key,val);
     }
 }

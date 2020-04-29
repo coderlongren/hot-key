@@ -5,6 +5,8 @@ import com.jd.platform.hotkey.dashboard.common.domain.PageParam;
 import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
 import com.jd.platform.hotkey.dashboard.model.User;
 
+import java.util.List;
+
 /**
  * @ProjectName: hotkey
  * @ClassName: UserService
@@ -25,4 +27,6 @@ public interface UserService {
     User selectByPrimaryKey(int id);
 
     int updateUser(User user);
+
+    List<String> listApp();
 }

@@ -58,14 +58,14 @@ public class WorkerController extends BaseController {
 	@PostMapping("/remove")
 	@ResponseBody
 	public Result remove(String key){
-		int b=workerService.delWorkerByUser(new Worker(key,-1,userName()));
+		int b=workerService.delWorkerByUser(new Worker(key.replace("_","/"),0,userName()));
 		return b == 0 ? Result.fail():Result.success();
 	}
 
 
 	@GetMapping("/edit/{key}")
     public String edit(@PathVariable("key") String key, ModelMap modelMap){
-		modelMap.put("worker", workerService.selectByKey(key));
+		modelMap.put("worker", workerService.selectByKey(key.replace("_","/")));
         return prefix + "/edit";
     }
 	

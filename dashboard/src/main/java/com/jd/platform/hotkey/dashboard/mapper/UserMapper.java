@@ -19,4 +19,6 @@ public interface UserMapper {
     List<User> listUser(SearchDto param);
 
     User findByNameAndPwd(User user);
+
+    List<String> listApp();
 }

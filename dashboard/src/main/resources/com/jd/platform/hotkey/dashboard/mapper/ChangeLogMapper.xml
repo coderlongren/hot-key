@@ -89,12 +89,8 @@
     <include refid="Base_Column_List" />
     from hk_change_log
     where 1 = 1
-    <if test="appName !=null and appName !=''">
-      and create_time = #{appName}
-    </if >
     <if test="startTime != null">
-      <![CDATA[ create_time >= #{startTime,jdbcType=TIMESTAMP}
-             AND create_time < #{endTime,jdbcType=TIMESTAMP}]]>
+      <![CDATA[ and create_time <= #{startTime} and create_time >= #{endTime}]]>
     </if>
     <if test="bizType != null">
       and biz_type = #{bizType}

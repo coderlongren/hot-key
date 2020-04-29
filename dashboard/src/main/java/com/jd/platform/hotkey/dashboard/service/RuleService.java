@@ -25,6 +25,6 @@ public interface RuleService {
 
     int updateRule(KeyRule rule);
 
-   // int delRule(KeyRule rule);
+    int delRule(String key);
 
 }

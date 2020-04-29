@@ -38,8 +38,6 @@ public class RuleServiceImpl implements RuleService {
     @Resource
     private IConfigCenter configCenter;
 
-    @Resource
-    private ChangeLogMapper changeLogMapper;
 
     @Override
     public PageInfo<KeyRule> pageKeyRule(PageParam page, SearchDto param) {
@@ -102,6 +100,19 @@ public class RuleServiceImpl implements RuleService {
                 keyRule.setPrefix(rule.getPrefix());
             }
         }
+        configCenter.put(etcdKey,JSON.toJSONString(rules));
+        return 1;
+    }
+
+    @Override
+    public int delRule(String appKey) {
+        String [] arr = appKey.split("_");
+        String etcdKey = ConfigConstant.rulePath + arr[0];
+        List<KeyValue> keyValues = configCenter.getPrefix(etcdKey);
+        KeyValue keyValue = keyValues.get(0);
+        String val = keyValue.getValue().toStringUtf8();
+        List<KeyRule> rules = JSON.parseArray(val, KeyRule.class);
+        rules.removeIf(rule -> rule.getKey().equals(arr[1]));
         configCenter.put(etcdKey,JSON.toJSONString(rules));
         return 1;
     }

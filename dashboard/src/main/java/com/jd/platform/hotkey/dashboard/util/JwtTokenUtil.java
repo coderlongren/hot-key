@@ -1,5 +1,6 @@
 package com.jd.platform.hotkey.dashboard.util;
 
+import com.jd.platform.hotkey.dashboard.model.User;
 import io.jsonwebtoken.*;
 import org.apache.logging.log4j.util.Base64Util;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -29,7 +30,6 @@ public class JwtTokenUtil {
      */
     public static Claims parseJWT(String jsonWebToken) {
         try {
-            System.out.println("jsonWebToken-->  "+jsonWebToken);
             return Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(SECRET)).parseClaimsJws(jsonWebToken).getBody();
         } catch (ExpiredJwtException  eje) {
             log.error("===== Token过期 =====", eje);
@@ -128,6 +128,14 @@ public class JwtTokenUtil {
     public static String getUserId(String token){
         String userId = parseJWT(token).get("userId", String.class);
         return new String(Base64.decodeBase64(userId));
+    }
+
+
+    public static User userPower(String token){
+        Claims claims = parseJWT(token);
+        String role = claims.get("role",String.class);
+        String appName = claims.get("appName",String.class);
+        return new User(role,appName);
     }
 
     /**

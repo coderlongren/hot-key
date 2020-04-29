@@ -28,9 +28,6 @@ public class JwtInterceptor extends HandlerInterceptorAdapter{
         }
         String url = request.getRequestURI();
         if(isAjaxRequest){
-            if(url.contains("listTimely")){
-                return true;
-            }
             final String authHeader = request.getHeader(JwtTokenUtil.AUTH_HEADER_KEY);
             if (StringUtils.isEmpty(authHeader)
                     || !authHeader.startsWith(JwtTokenUtil.TOKEN_PREFIX)) {

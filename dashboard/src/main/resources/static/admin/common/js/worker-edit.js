@@ -6,7 +6,7 @@ $("#form-edit").validate({
 });
 
 function edit() {
-	var dataFormJson = $("#form-edit").serialize();
+	let dataFormJson = $("#form-edit").serialize();
 	$.ajax({
 		cache : true,
 		type : "POST",

@@ -60,6 +60,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<String> listApp() {
+        return userMapper.listApp();
+    }
+
+    @Override
     public PageInfo<User> pageUser(PageParam param, SearchDto dto) {
         PageHelper.startPage(param.getPageNum(),param.getPageSize());
         List<User> users = userMapper.listUser(dto);

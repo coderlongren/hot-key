@@ -54,7 +54,7 @@ public class RuleController extends BaseController {
 	@PostMapping("/remove")
 	@ResponseBody
 	public Result remove(String key){
-		int b = ruleService.updateRule(new KeyRule(key,0,userName()));
+		int b = ruleService.delRule(key);
 		return b == 0 ? Result.fail():Result.success();
 	}
 

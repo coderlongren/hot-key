@@ -51,9 +51,9 @@ public class KeyController extends BaseController {
 
 	@PostMapping("/listTimely")
 	@ResponseBody
-	public Page<KeyTimely> listTimely(PageParam page,String searchText){
-		System.out.println("searchText-->  "+searchText);
-		PageInfo<KeyTimely> info = keyService.pageKeyTimely(page, param(searchText));
+	public Page<KeyTimely> listTimely(PageParam page,SearchDto searchDto){
+		System.out.println("searchText--> "+ JSON.toJSONString(searchDto));
+		PageInfo<KeyTimely> info = keyService.pageKeyTimely(page, param2(searchDto));
 		return new Page<>(info.getPageNum(),(int)info.getTotal(),info.getList());
 	}
 
@@ -74,8 +74,8 @@ public class KeyController extends BaseController {
 
 	@PostMapping("/remove")
 	@ResponseBody
-	public Result remove(String ids){
-		int b = keyService.delKeyByUser(new KeyTimely(ids,userName()));
+	public Result remove(String key){
+		int b = keyService.delKeyByUser(new KeyTimely(key,userName()));
 		return b == 0 ? Result.fail():Result.success();
 	}
 

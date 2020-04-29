@@ -139,6 +139,11 @@
     <if test="key !=null and key !=''">
       and key_name = #{key}
     </if >
+
+    <if test="startTime != null">
+      <![CDATA[ and create_time <= #{startTime,jdbcType=TIMESTAMP}
+                and create_time >= #{endTime,jdbcType=TIMESTAMP}]]>
+    </if>
     order by id desc
   </select>
 </mapper>

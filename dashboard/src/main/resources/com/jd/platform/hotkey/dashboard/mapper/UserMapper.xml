@@ -137,6 +137,10 @@
     where state = 1 and user_name = #{userName} and pwd = #{pwd}
   </select>
 
-
+  <select id="listApp" resultType="java.lang.String">
+    select app_name
+    from hk_user
+    group by app_name
+  </select>
 
 </mapper>

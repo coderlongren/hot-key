@@ -1,6 +1,7 @@
 package com.jd.platform.hotkey.dashboard.model;
 
 import java.util.Date;
+import java.util.List;
 
 public class User {
     private Integer id;
@@ -21,7 +22,20 @@ public class User {
 
     private Integer state;
 
+    private List<String> appNames;
+
     public User() {
+    }
+
+
+    public User(String role, String appName) {
+        this.role = role;
+        this.appName = appName;
+    }
+
+    public User(String role, List<String> appNames) {
+        this.role = role;
+        this.appNames = appNames;
     }
 
     public User(Integer id, String userName, String role, String appName) {
@@ -101,5 +115,13 @@ public class User {
 
     public void setState(Integer state) {
         this.state = state;
+    }
+
+    public List<String> getAppNames() {
+        return appNames;
+    }
+
+    public void setAppNames(List<String> appNames) {
+        this.appNames = appNames;
     }
 }
