@@ -56,7 +56,6 @@ public class EtcdMonitor {
                 Event.EventType eventType = event.getType();
                 String k = kv.getKey().toStringUtf8();
                 String v = kv.getValue().toStringUtf8();
-                System.out.println(JSON.toJSONString(eventType));
                 System.out.println("k-> " + k);
                 System.out.println("v-> " + v);
                 long ttl = configCenter.timeToLive(kv.getLease());
@@ -84,20 +83,14 @@ public class EtcdMonitor {
 
     @PostConstruct
     public void watchRules() {
-        System.out.println("======== watchRules =======");
         CompletableFuture.runAsync(() -> {
             KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.rulePath);
             while (watchIterator.hasNext()) {
-                System.out.println("======== watchRules =======");
                 Event event = event(watchIterator);
                 KeyValue kv = event.getKv();
-                System.err.println(event.getKv());
                 Event.EventType eventType = event.getType();
-                System.out.println(eventType.toString());
-                ;
                 String k = kv.getKey().toStringUtf8();
                 String v = kv.getValue().toStringUtf8();
-                System.out.println(JSON.toJSONString(eventType));
                 long version = kv.getModRevision();
                 System.out.println("k-> " + k);
                 System.out.println("v-> " + v);
@@ -116,16 +109,13 @@ public class EtcdMonitor {
 
     @PostConstruct
     public void watchWorkers() {
-        System.out.println("======== EtcdMonitor =======");
         CompletableFuture.runAsync(() -> {
             KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.workersPath);
             while (watchIterator.hasNext()) {
-                System.out.println("======== watchWorkers =======");
                 Event event = event(watchIterator);
                 KeyValue kv = event.getKv();
                 System.err.println(event.getKv());
                 Event.EventType eventType = event.getType();
-                System.out.println(eventType.toString());
                 String k = kv.getKey().toStringUtf8();
                 String v = kv.getValue().toStringUtf8();
                 System.out.println(JSON.toJSONString(eventType));
