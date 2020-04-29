@@ -47,6 +47,9 @@ public class DashboardApplication implements CommandLineRunner {
             timely.setCreateTime(SystemClock.now());
             keyList.add(timely);
         }
+        if (keyList.size() == 0) {
+            return;
+        }
         timelyMapper.batchInsert(keyList);
     }
 }

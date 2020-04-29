@@ -1,19 +1,13 @@
 package com.jd.platform.hotkey.dashboard.service.impl;
 
 
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.SystemClock;
-import cn.hutool.core.map.multi.SetValueMap;
-import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
 import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
-import com.jd.platform.hotkey.dashboard.common.domain.KeyVo;
 import com.jd.platform.hotkey.dashboard.common.domain.PageParam;
 import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
-import com.jd.platform.hotkey.dashboard.mapper.ChangeLogMapper;
 import com.jd.platform.hotkey.dashboard.mapper.KeyRecordMapper;
 import com.jd.platform.hotkey.dashboard.mapper.KeyTimelyMapper;
 import com.jd.platform.hotkey.dashboard.model.KeyRecord;
@@ -21,11 +15,8 @@ import com.jd.platform.hotkey.dashboard.model.KeyTimely;
 import com.jd.platform.hotkey.dashboard.service.KeyService;
 import com.jd.platform.hotkey.dashboard.util.CommonUtil;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 
@@ -47,8 +38,6 @@ public class KeyServiceImpl implements KeyService {
     private KeyTimelyMapper keyTimelyMapper;
 
 
-
-
     @Override
     public PageInfo<KeyTimely> pageKeyTimely(PageParam page, SearchDto param) {
         PageHelper.startPage(page.getPageNum(), page.getPageSize());
@@ -62,7 +51,7 @@ public class KeyServiceImpl implements KeyService {
 
     @Override
     public PageInfo<KeyRecord> pageKeyRecord(PageParam page, SearchDto param) {
-      //  PageHelper.startPage(page.getPageNum(), page.getPageSize());
+        //  PageHelper.startPage(page.getPageNum(), page.getPageSize());
         List<KeyRecord> listKey = recordMapper.listKeyRecord(param);
         return new PageInfo<>(listKey);
     }
@@ -73,21 +62,21 @@ public class KeyServiceImpl implements KeyService {
         key.setVal("ADD");
         key.setCreateTime(SystemClock.now());
         key.setKey(ConfigConstant.hotKeyPath + key.getAppName() + "/" + key.getKey());
-        configCenter.putAndGrant(key.getKey(),key.getVal(),key.getDuration());
+        configCenter.putAndGrant(key.getKey(), SystemClock.now() + "", key.getDuration());
         return keyTimelyMapper.insertSelective(key);
     }
 
     @Override
     public int updateKeyByUser(KeyTimely key) {
-        String ectdKey = ConfigConstant.hotKeyPath+key.getAppName() +"/"+key.getKey();
-        configCenter.putAndGrant(ectdKey,"UPDATE",key.getDuration());
+        String ectdKey = ConfigConstant.hotKeyPath + key.getAppName() + "/" + key.getKey();
+        configCenter.putAndGrant(ectdKey, "UPDATE", key.getDuration());
         return 1;
     }
 
     @Override
     public int delKeyByUser(KeyTimely keyTimely) {
         String[] arr = keyTimely.getKey().split("_");
-        String ectdKey = ConfigConstant.hotKeyPath+arr[0] +"/"+arr[1];
+        String ectdKey = ConfigConstant.hotKeyPath + arr[0] + "/" + arr[1];
         configCenter.delete(ectdKey);
         return 1;
     }
