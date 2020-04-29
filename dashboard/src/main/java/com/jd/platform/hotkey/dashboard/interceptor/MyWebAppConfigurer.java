@@ -40,7 +40,9 @@ public class MyWebAppConfigurer  implements WebMvcConfigurer {
         registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
 		registry.addResourceHandler("/templates/**").addResourceLocations("classpath:/templates/");
     }
+
 	/** 默认静态资源处理器 **/
+	@Override
 	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
 		configurer.enable();
 	}

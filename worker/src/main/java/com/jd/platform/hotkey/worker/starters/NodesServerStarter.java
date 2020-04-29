@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author wuweifeng wrote on 2019-12-11
@@ -32,13 +33,19 @@ public class NodesServerStarter {
     private Codec codec;
 
     @PostConstruct
-    public void start() throws Exception {
-        logger.info("netty server is starting");
+    public void start() {
+        CompletableFuture.runAsync(() -> {
+            logger.info("netty server is starting");
 
-        NodesServer nodesServer = new NodesServer();
-        nodesServer.setClientChangeListener(iClientChangeListener);
-        nodesServer.setMessageFilters(messageFilters);
-        nodesServer.setCodec(codec);
-        nodesServer.startNettyServer(port);
+            NodesServer nodesServer = new NodesServer();
+            nodesServer.setClientChangeListener(iClientChangeListener);
+            nodesServer.setMessageFilters(messageFilters);
+            nodesServer.setCodec(codec);
+            try {
+                nodesServer.startNettyServer(port);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 }

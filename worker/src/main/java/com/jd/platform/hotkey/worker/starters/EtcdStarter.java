@@ -97,7 +97,7 @@ public class EtcdStarter {
     }
 
     /**
-     * 每隔5秒上传一下client的数量到etcd中
+     * 每隔10秒上传一下client的数量到etcd中
      */
     @Scheduled(fixedRate = 10000)
     public void uploadClientCount() {
@@ -106,7 +106,7 @@ public class EtcdStarter {
                 String appName = appInfo.getAppName();
                 Map<String, ChannelHandlerContext> map = appInfo.getMap();
                 int count = map.values().size();
-                configCenter.putAndGrant(ConfigConstant.clientCountPath + appName + "/" + IpUtils.getIp(), count + "", 6);
+                configCenter.putAndGrant(ConfigConstant.clientCountPath + appName + "/" + IpUtils.getIp(), count + "", 10);
             }
         } catch (Exception ex) {
             logger.error("etcd is unConnected . please do something");

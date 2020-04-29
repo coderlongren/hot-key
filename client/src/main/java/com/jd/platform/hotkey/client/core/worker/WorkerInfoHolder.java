@@ -27,6 +27,18 @@ public class WorkerInfoHolder {
     }
 
     /**
+     * 判断某个worker是否已经连接过了
+     */
+    public static boolean hasConnected(String address) {
+        for (Server server : WORKER_HOLDER) {
+            if (address.equals(server.address)) {
+                return server.channel != null;
+            }
+        }
+        return false;
+    }
+
+    /**
      * 获取worker是存在，但自己没连上的address集合，供重连
      */
     public static List<String> getNonConnectedWorkers() {
@@ -51,7 +63,7 @@ public class WorkerInfoHolder {
     }
 
     /**
-     * etcd监听到worker信息变化后
+     * 监听到worker信息变化后
      * 将新的worker信息和当前的进行合并，并且连接新的address
      * address例子：10.12.139.152:11111
      */
