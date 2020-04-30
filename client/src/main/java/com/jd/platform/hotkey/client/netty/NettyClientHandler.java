@@ -29,7 +29,7 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<String> {
 
             if (idleStateEvent.state() == IdleState.ALL_IDLE) {
                 //向服务端发送消息
-                ctx.writeAndFlush(MsgBuilder.buildMsg(new HotKeyMsg(MessageType.PING, Constant.PING)));
+                ctx.writeAndFlush(MsgBuilder.buildByteBuf(new HotKeyMsg(MessageType.PING, Constant.PING)));
             }
         }
 
@@ -39,7 +39,7 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<String> {
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         JdLogger.info(getClass(), "channelActive:" + ctx.name());
-        ctx.writeAndFlush(MsgBuilder.buildMsg(new HotKeyMsg(MessageType.APP_NAME, Context.APP_NAME)));
+        ctx.writeAndFlush(MsgBuilder.buildByteBuf(new HotKeyMsg(MessageType.APP_NAME, Context.APP_NAME)));
     }
 
     @Override

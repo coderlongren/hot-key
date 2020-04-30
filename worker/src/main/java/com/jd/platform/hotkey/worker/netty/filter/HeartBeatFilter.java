@@ -1,7 +1,9 @@
 package com.jd.platform.hotkey.worker.netty.filter;
 
 import com.jd.platform.hotkey.common.model.HotKeyMsg;
+import com.jd.platform.hotkey.common.model.MsgBuilder;
 import com.jd.platform.hotkey.common.model.typeenum.MessageType;
+import com.jd.platform.hotkey.common.tool.FastJsonUtils;
 import com.jd.platform.hotkey.worker.netty.flush.FlushUtil;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.core.annotation.Order;
@@ -20,7 +22,8 @@ public class HeartBeatFilter implements INettyMsgFilter {
     @Override
     public boolean chain(HotKeyMsg message, ChannelHandlerContext ctx) {
         if (MessageType.PING == message.getMessageType()) {
-            FlushUtil.flush(ctx, new HotKeyMsg(MessageType.PONG, PONG));
+            String hotMsg = FastJsonUtils.convertObjectToJSON(new HotKeyMsg(MessageType.PONG, PONG));
+            FlushUtil.flush(ctx, MsgBuilder.buildByteBuf(hotMsg));
             return false;
         }
         return true;

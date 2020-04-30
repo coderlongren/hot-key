@@ -11,7 +11,11 @@ import io.netty.buffer.Unpooled;
  * @date 2020-04-22
  */
 public class MsgBuilder {
-    public static ByteBuf buildMsg(HotKeyMsg hotKeyMsg) {
+    public static ByteBuf buildByteBuf(String msg) {
+        return Unpooled.copiedBuffer((msg + Constant.DELIMITER).getBytes());
+    }
+
+    public static ByteBuf buildByteBuf(HotKeyMsg hotKeyMsg) {
         return Unpooled.copiedBuffer((FastJsonUtils.convertObjectToJSON(hotKeyMsg) + Constant.DELIMITER).getBytes());
     }
 }

@@ -30,7 +30,7 @@ public class NettyKeyPusher implements IKeyPusher {
                 continue;
             }
             try {
-                channel.writeAndFlush(MsgBuilder.buildMsg(new HotKeyMsg(MessageType.REQUEST_NEW_KEY, FastJsonUtils.convertObjectToJSON(model))));
+                channel.writeAndFlush(MsgBuilder.buildByteBuf(new HotKeyMsg(MessageType.REQUEST_NEW_KEY, FastJsonUtils.convertObjectToJSON(model))));
             } catch (Exception e) {
                 try {
                     InetSocketAddress insocket = (InetSocketAddress) channel.remoteAddress();
