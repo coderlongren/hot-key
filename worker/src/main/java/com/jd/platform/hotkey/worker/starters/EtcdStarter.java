@@ -47,6 +47,10 @@ public class EtcdStarter {
     @Value("${netty.port}")
     private int port;
 
+    private static final String CHECK_ETCD_TRUE = "check self info exist in etcd , return true";
+    private static final String CHECK_ETCD_FALSE = "check self info exist in etcd , return false";
+    private static final String MAO = ":";
+
     //Grant：分配一个租约。
     //Revoke：释放一个租约。
     //TimeToLive：获取剩余TTL时间。
@@ -166,12 +170,11 @@ public class EtcdStarter {
 
             try {
                 String value = configCenter.get(buildKey());
-                logger.info("buildValue: " + buildValue());
                 if (!buildValue().equals(value)) {
-                    logger.info("check self info exist in etcd , return false");
+                    logger.info(CHECK_ETCD_FALSE);
                     handUpload();
                 } else {
-                    logger.info("check self info exist in etcd , return true");
+                    logger.info(CHECK_ETCD_TRUE);
                 }
             } catch (Exception e) {
                 //do nothing
@@ -207,9 +210,8 @@ public class EtcdStarter {
 
     private String buildValue() {
         String ip = IpUtils.getIp();
-        return ip + ":" + port;
+        return ip + MAO + port;
     }
-
 
     private long createLeaseId() {
         try {

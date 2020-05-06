@@ -18,13 +18,15 @@ public class CaffeineCacheHolder {
      */
     private static final Map<String, Cache<String, Object>> CACHE_MAP = new ConcurrentHashMap<>();
 
+    private static final String DEFAULT = "default";
+
     public static Cache<String, Object> getCache(String appName) {
         if (StrUtil.isEmpty(appName)) {
-            if (CACHE_MAP.get("default") == null) {
+            if (CACHE_MAP.get(DEFAULT) == null) {
                 Cache<String, Object> cache = CaffeineBuilder.buildAllKeyCache();
-                CACHE_MAP.put("default", cache);
+                CACHE_MAP.put(DEFAULT, cache);
             }
-            return CACHE_MAP.get("default");
+            return CACHE_MAP.get(DEFAULT);
         }
         if(CACHE_MAP.get(appName) == null) {
             Cache<String, Object> cache = CaffeineBuilder.buildAllKeyCache();

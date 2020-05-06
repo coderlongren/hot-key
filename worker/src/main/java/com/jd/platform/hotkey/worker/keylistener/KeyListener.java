@@ -33,6 +33,8 @@ public class KeyListener implements IKeyListener {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
+    private static final String NEW_KEY_EVENT = "new key created event, key : ";
+    private static final String DELETE_KEY_EVENT = "key delete event key : ";
 
     @Override
     public void newKey(HotKeyModel hotKeyModel, KeyEventOriginal original) {
@@ -58,7 +60,7 @@ public class KeyListener implements IKeyListener {
 
             //开启推送
             hotKeyModel.setCreateTime(SystemClock.now());
-            logger.info("new key created event key : " + hotKeyModel.toString());
+            logger.info(NEW_KEY_EVENT + hotKeyModel.getKey());
 
             for (IPusher pusher : iPushers) {
                 pusher.push(hotKeyModel);
@@ -78,7 +80,7 @@ public class KeyListener implements IKeyListener {
 
         //推送所有client删除
         hotKeyModel.setCreateTime(SystemClock.now());
-        logger.info("key delete event key : " + hotKeyModel.toString());
+        logger.info(DELETE_KEY_EVENT + hotKeyModel.getKey());
 
         for (IPusher pusher : iPushers) {
             pusher.remove(hotKeyModel);
