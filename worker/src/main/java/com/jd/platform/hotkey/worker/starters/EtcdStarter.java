@@ -50,6 +50,8 @@ public class EtcdStarter {
     private static final String CHECK_ETCD_TRUE = "check self info exist in etcd , return true";
     private static final String CHECK_ETCD_FALSE = "check self info exist in etcd , return false";
     private static final String MAO = ":";
+    private static final String ETCD_DOWN = "etcd is unConnected . please do something";
+    private static final String EMPTY_RULE = "very important warn !!! rule info is null!!!";
 
     //Grant：分配一个租约。
     //Revoke：释放一个租约。
@@ -88,11 +90,11 @@ public class EtcdStarter {
         try {
             keyValues = configCenter.getPrefix(ConfigConstant.rulePath);
         } catch (StatusRuntimeException ex) {
-            logger.error("etcd is unConnected . please do something");
+            logger.error(ETCD_DOWN);
             return;
         }
         if (CollectionUtils.isEmpty(keyValues)) {
-            logger.warn("very important warn !!! rule info is null!!!");
+            logger.warn(EMPTY_RULE);
             return;
         }
         for (KeyValue keyValue : keyValues) {
@@ -113,7 +115,7 @@ public class EtcdStarter {
                 configCenter.putAndGrant(ConfigConstant.clientCountPath + appName + "/" + IpUtils.getIp(), count + "", 10);
             }
         } catch (Exception ex) {
-            logger.error("etcd is unConnected . please do something");
+            logger.error(ETCD_DOWN);
         }
     }
 

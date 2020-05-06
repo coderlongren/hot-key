@@ -1,4 +1,4 @@
-package com.jd.platform.hotkey.worker.tool;
+package com.jd.platform.hotkey.common.tool;
 
 import io.netty.channel.ChannelHandlerContext;
 
@@ -9,7 +9,7 @@ import java.net.InetSocketAddress;
  * @version 1.0
  * @date 2020-04-27
  */
-public class ClientIpUtil {
+public class NettyIpUtil {
     /**
      * 从netty连接中读取ip地址
      */

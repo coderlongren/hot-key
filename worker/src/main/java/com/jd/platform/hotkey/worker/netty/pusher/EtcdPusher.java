@@ -18,10 +18,12 @@ public class EtcdPusher implements IPusher {
     @Resource
     private IConfigCenter iConfigCenter;
 
+    private static final String DEFAULT_VALUE = "1";
+
     @Override
     public void push(HotKeyModel model) {
         //推送到etcd
-        iConfigCenter.putAndGrant(keyPath(model), "1",
+        iConfigCenter.putAndGrant(keyPath(model), DEFAULT_VALUE,
                 KeyRuleHolder.getRuleByAppAndKey(model).getDuration());
     }
 

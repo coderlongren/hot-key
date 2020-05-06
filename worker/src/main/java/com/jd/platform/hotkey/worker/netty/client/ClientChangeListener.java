@@ -18,53 +18,44 @@ public class ClientChangeListener implements IClientChangeListener {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
+    private static final String NEW_CLIENT = "监听到事件";
+    private static final String NEW_CLIENT_JOIN = "new client join";
+    private static final String CLIENT_LOSE = "client removed";
+
     /**
      * 客户端新增
      */
     @Override
-    public void newClient(String appName, String channelId, ChannelHandlerContext ctx) {
-        logger.info("监听到事件");
+    public synchronized void newClient(String appName, String ip, ChannelHandlerContext ctx) {
+        logger.info(NEW_CLIENT);
 
         boolean appExist = false;
         for (AppInfo appInfo : ClientInfoHolder.apps) {
             if (appName.equals(appInfo.getAppName())) {
                 appExist = true;
-                appInfo.getMap().put(channelId, ctx);
-            }
-        }
-        if (!appExist) {
-            //双重确认，避免创建重复的app
-            synchronized (this) {
-                boolean exist = false;
-                AppInfo appInfo = null;
-                for (AppInfo temp : ClientInfoHolder.apps) {
-                    if (appName.equals(temp.getAppName())) {
-                        exist = true;
-                        appInfo = temp;
-                    }
-                }
-                if (!exist) {
-                    appInfo = new AppInfo();
-                    appInfo.setAppName(appName);
-                    ClientInfoHolder.apps.add(appInfo);
-                }
-                appInfo.getMap().put(channelId, ctx);
-            }
-
-        }
-
-        logger.info("new client join. channel id is : " + channelId);
-    }
-
-    @Override
-    public void loseClient(String channelId) {
-        for (AppInfo appInfo : ClientInfoHolder.apps) {
-            Map<String, ChannelHandlerContext> map = appInfo.getMap();
-            if (map.containsKey(channelId)) {
-                map.remove(channelId);
+                appInfo.getMap().put(ip, ctx);
                 break;
             }
         }
-        logger.info("client removed. channel id is : " + channelId);
+        if (!appExist) {
+            AppInfo appInfo = new AppInfo();
+            appInfo.setAppName(appName);
+            ClientInfoHolder.apps.add(appInfo);
+            appInfo.getMap().put(ip, ctx);
+        }
+
+        logger.info(NEW_CLIENT_JOIN);
+    }
+
+    @Override
+    public synchronized void loseClient(String ip) {
+        for (AppInfo appInfo : ClientInfoHolder.apps) {
+            Map<String, ChannelHandlerContext> map = appInfo.getMap();
+            if (map.containsKey(ip)) {
+                map.remove(ip);
+                break;
+            }
+        }
+        logger.info(CLIENT_LOSE);
     }
 }

@@ -2,6 +2,7 @@ package com.jd.platform.hotkey.worker.netty.server;
 
 import com.jd.platform.hotkey.common.model.HotKeyMsg;
 import com.jd.platform.hotkey.common.tool.FastJsonUtils;
+import com.jd.platform.hotkey.common.tool.NettyIpUtil;
 import com.jd.platform.hotkey.worker.netty.client.IClientChangeListener;
 import com.jd.platform.hotkey.worker.netty.filter.INettyMsgFilter;
 import io.netty.channel.ChannelHandlerContext;
@@ -49,7 +50,7 @@ public class NodesServerHandler extends SimpleChannelInboundHandler<String> {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         if (clientEventListener != null) {
-            clientEventListener.loseClient(ctx.channel().id().toString());
+            clientEventListener.loseClient(NettyIpUtil.clientIp(ctx));
         }
         ctx.close();
         super.channelInactive(ctx);
