@@ -29,6 +29,8 @@ public class KeyListener implements IKeyListener {
     @Resource
     private List<IPusher> iPushers;
 
+    private static final String SPLITER = "-";
+
     private Logger logger = LoggerFactory.getLogger(getClass());
 
 
@@ -45,6 +47,9 @@ public class KeyListener implements IKeyListener {
         SlidingWindow slidingWindow = checkWindow(hotKeyModel, key);
         //看看hot没
         boolean hot = slidingWindow.addCount(hotKeyModel.getCount());
+
+        //删掉该key
+        CaffeineCacheHolder.getCache(hotKeyModel.getAppName()).invalidate(key);
         if (!hot) {
             //如果没hot，重新put，cache会自动刷新过期时间
             CaffeineCacheHolder.getCache(hotKeyModel.getAppName()).put(key, slidingWindow);
@@ -97,7 +102,7 @@ public class KeyListener implements IKeyListener {
     }
 
     private String buildKey(HotKeyModel hotKeyModel) {
-        return Joiner.on("-").join(hotKeyModel.getAppName(), hotKeyModel.getKeyType(), hotKeyModel.getKey());
+        return Joiner.on(SPLITER).join(hotKeyModel.getAppName(), hotKeyModel.getKeyType(), hotKeyModel.getKey());
     }
 
 }

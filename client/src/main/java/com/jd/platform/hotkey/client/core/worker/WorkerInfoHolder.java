@@ -88,27 +88,21 @@ public class WorkerInfoHolder {
 
     /**
      * 处理某个worker的channel断线事件
-     * 如果etcd里已经没有了，就从holder里remove掉，如果etcd里还有，就去重连
      */
-//    public synchronized static boolean dealChannelInactive(String address) {
-//        synchronized (WORKER_HOLDER) {
-//            Iterator<Server> it = WORKER_HOLDER.iterator();
-//            boolean exist = false;
-//            while (it.hasNext()) {
-//                Server server = it.next();
-//                if (address.equals(server.address)) {
-//                    exist = true;
-//                    break;
-//                }
-//            }
-//            //如果holder里已经没有该worker信息里，就不用处理了
-//            if (!exist) {
-//                return true;
-//            }
-//            //如果在holder里还有，说明worker和etcd的连接还没断，就需要重连了
-//            return NettyClient.getInstance().connect(Arrays.asList(address));
-//        }
-//    }
+    public synchronized static boolean dealChannelInactive(String address) {
+        synchronized (WORKER_HOLDER) {
+            Iterator<Server> it = WORKER_HOLDER.iterator();
+            while (it.hasNext()) {
+                Server server = it.next();
+                if (address.equals(server.address)) {
+                    it.remove();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
 
     /**
      * 增加一个新的worker

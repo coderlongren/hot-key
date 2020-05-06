@@ -4,12 +4,14 @@ import com.jd.platform.hotkey.client.Context;
 import com.jd.platform.hotkey.client.callback.ReceiveNewKeyEvent;
 import com.jd.platform.hotkey.client.core.eventbus.EventBusCenter;
 import com.jd.platform.hotkey.client.log.JdLogger;
+import com.jd.platform.hotkey.client.netty.event.ChannelInactiveEvent;
 import com.jd.platform.hotkey.common.model.HotKeyModel;
 import com.jd.platform.hotkey.common.model.HotKeyMsg;
 import com.jd.platform.hotkey.common.model.MsgBuilder;
 import com.jd.platform.hotkey.common.model.typeenum.MessageType;
 import com.jd.platform.hotkey.common.tool.Constant;
 import com.jd.platform.hotkey.common.tool.FastJsonUtils;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -47,12 +49,12 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<String> {
         super.channelInactive(ctx);
         //断线了，可能只是client和server断了，但都和etcd没断。也可能是client自己断网了，也可能是server断了
         //发布断线事件。后续10秒后进行重连，根据etcd里的worker信息来决定是否重连，如果etcd里没了，就不重连。如果etcd里有，就重连
-//        notifyWorkerChange(ctx.channel());
+        notifyWorkerChange(ctx.channel());
     }
 
-//    private void notifyWorkerChange(Channel channel) {
-//        EventBusCenter.getInstance().post(new ChannelInactiveEvent(channel));
-//    }
+    private void notifyWorkerChange(Channel channel) {
+        EventBusCenter.getInstance().post(new ChannelInactiveEvent(channel));
+    }
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, String message) {
