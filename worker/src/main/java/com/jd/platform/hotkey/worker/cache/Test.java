@@ -4,6 +4,8 @@ import com.github.benmanes.caffeine.cache.Cache;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author wuweifeng
@@ -15,20 +17,27 @@ public class Test {
     @Resource(name = "hotKeyCache")
     private Cache<String, Object> hotCache;
 
+    public static void main(String[] args) {
+        Map map = new HashMap();
+        map.put("a", "b");
+        System.out.println(map);
+    }
+
 //    @PostConstruct
 //    public void aa() throws InterruptedException {
+//        Executor executor = Executors.newCachedThreadPool();
+//        Cache<String, Object> cache = Caffeine.newBuilder()
+//                .executor(executor)
+//                .initialCapacity(1024)//初始大小
+//                .maximumSize(5000000)//最大数量
+//                .expireAfterWrite(5, TimeUnit.MINUTES)//过期时间
+//                .softValues()
+//                .build();
 //        long i = 0;
 //        while (true) {
-////            CaffeineCacheHolder.getCache("a").put("i" + i, i);
-//            hotCache.put("i" + i, i);
+//            cache.put(UUID.randomUUID().toString(), UUID.randomUUID().toString());
+////            hotCache.put("i" + i, i);
 //            i++;
-//            if (i % 10000 == 0) {
-//                System.out.println(i);
-//                System.out.println(new Date());
-//            }
-//            for (int j = 0; j < 10000; j++) {
-//                int h = j;
-//            }
 //        }
 //    }
 }

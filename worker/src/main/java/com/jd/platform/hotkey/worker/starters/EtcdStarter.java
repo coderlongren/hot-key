@@ -9,6 +9,7 @@ import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
 import com.jd.platform.hotkey.common.rule.KeyRule;
 import com.jd.platform.hotkey.common.tool.FastJsonUtils;
 import com.jd.platform.hotkey.common.tool.IpUtils;
+import com.jd.platform.hotkey.worker.cache.CaffeineCacheHolder;
 import com.jd.platform.hotkey.worker.model.AppInfo;
 import com.jd.platform.hotkey.worker.netty.holder.ClientInfoHolder;
 import com.jd.platform.hotkey.worker.rule.KeyRuleHolder;
@@ -108,12 +109,15 @@ public class EtcdStarter {
     @Scheduled(fixedRate = 10000)
     public void uploadClientCount() {
         try {
+            String ip = IpUtils.getIp();
             for (AppInfo appInfo : ClientInfoHolder.apps) {
                 String appName = appInfo.getAppName();
                 Map<String, ChannelHandlerContext> map = appInfo.getMap();
                 int count = map.values().size();
-                configCenter.putAndGrant(ConfigConstant.clientCountPath + appName + "/" + IpUtils.getIp(), count + "", 10);
+                configCenter.putAndGrant(ConfigConstant.clientCountPath + appName + "/" + ip, count + "", 10);
             }
+
+            configCenter.putAndGrant(ConfigConstant.caffeineSizePath + ip, CaffeineCacheHolder.getSize().toString(), 10);
         } catch (Exception ex) {
             logger.error(ETCD_DOWN);
         }

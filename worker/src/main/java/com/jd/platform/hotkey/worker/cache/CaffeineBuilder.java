@@ -14,10 +14,12 @@ public class CaffeineBuilder {
      * 构建所有来的要缓存的key cache
      */
     public static Cache<String, Object> buildAllKeyCache() {
+//        Executor executor = Executors.newCachedThreadPool();
         return Caffeine.newBuilder()
+//                .executor(executor)
                 .initialCapacity(1024)//初始大小
-                .maximumSize(500000)//最大数量
-                .expireAfterWrite(30, TimeUnit.SECONDS)//过期时间
+                .maximumSize(5000000)//最大数量
+                .expireAfterWrite(1, TimeUnit.MINUTES)//过期时间
                 .softValues()
                 .build();
     }

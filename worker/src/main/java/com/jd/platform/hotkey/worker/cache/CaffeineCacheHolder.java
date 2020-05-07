@@ -2,7 +2,9 @@ package com.jd.platform.hotkey.worker.cache;
 
 import cn.hutool.core.util.StrUtil;
 import com.github.benmanes.caffeine.cache.Cache;
+import jdk.nashorn.internal.ir.debug.ObjectSizeCalculator;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -43,5 +45,19 @@ public class CaffeineCacheHolder {
             CACHE_MAP.get(appName).invalidateAll();
             CACHE_MAP.put(appName, null);
         }
+    }
+
+    /**
+     * 获取每个app的caffeine容量
+     */
+    public static Map<String, String> getSize() {
+        Map<String, String> map = new HashMap<>();
+        for (String appName : CACHE_MAP.keySet()) {
+            Map caffMap = CACHE_MAP.get(appName).asMap();
+            long bytes = ObjectSizeCalculator.getObjectSize(caffMap);
+            map.put(appName, caffMap.size() + "-" + bytes);
+
+        }
+        return map;
     }
 }

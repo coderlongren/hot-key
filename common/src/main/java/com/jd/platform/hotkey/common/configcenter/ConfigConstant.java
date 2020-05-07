@@ -29,4 +29,8 @@ public interface ConfigConstant {
      * 每个app的热key放这里。格式如：jd/hotkeys/app1/userA
      */
     String hotKeyPath = "/jd/hotkeys/";
+    /**
+     * caffeine的size
+     */
+    String caffeineSizePath = "/jd/caffeineSize/";
 }
