@@ -45,14 +45,6 @@ public class TestController {
         return 1;
     }
 
-    /**
-     * 手工注册worker到etcd去
-     */
-    @RequestMapping("regist")
-    public Object regist() {
-        return etcdStarter.handUpload();
-    }
-
 
     @RequestMapping("workersPath")
     public Object workersPath() {
