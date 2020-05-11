@@ -121,11 +121,15 @@ public class EtcdStarter {
 
         try {
             //获取所有worker的ip
-            List<KeyValue> keyValues = configCenter.getPrefix(ConfigConstant.workersPath);
-            //worker为空，可能是worker后启动。就先不管了，等待监听变化吧
+            List<KeyValue> keyValues = configCenter.getPrefix(ConfigConstant.workersPath + Context.APP_NAME);
+            //worker为空，可能该APP没有自己的worker集群，就去连默认的，如果默认的也没有，就不管了，等着心跳
             if (CollectionUtil.isEmpty(keyValues)) {
-                JdLogger.warn(getClass(), "very important warn !!! workers ip info is null!!!");
-                notifyWorkerChange(new ArrayList<>());
+                keyValues = configCenter.getPrefix(ConfigConstant.workersPath + "default");
+                if (CollectionUtil.isEmpty(keyValues)) {
+                    JdLogger.warn(getClass(), "very important warn !!! workers ip info is null!!!");
+                    notifyWorkerChange(new ArrayList<>());
+                }
+
                 return false;
             } else {
                 List<String> addresses = new ArrayList<>();
