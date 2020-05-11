@@ -56,8 +56,11 @@ public class EtcdMonitor {
                 Event.EventType eventType = event.getType();
                 String k = kv.getKey().toStringUtf8();
                 String v = kv.getValue().toStringUtf8();
+                System.out.println("watchHotKey-> " + k);
                 System.out.println("k-> " + k);
                 System.out.println("v-> " + v);
+                System.out.println("v-> " + eventType.name());
+
                 long ttl = configCenter.timeToLive(kv.getLease());
                 String appKey = k.replace(ConfigConstant.hotKeyPath, "");
                 String[] arr = appKey.split("/");
@@ -67,12 +70,14 @@ public class EtcdMonitor {
                         keyRecordMapper.insertSelective(new KeyRecord(arr[1], v, arr[0], ttl, "SYSTEM", eventType.getNumber(), new Date()));
                     } else {
                         //手工加的
-                     //   keyTimelyMapper.updateByKey(new KeyTimely(arr[1], ttl));
-                        keyTimelyMapper.insertSelective(new KeyTimely(arr[1], ttl));
+                        keyTimelyMapper.insertSelective(new KeyTimely(arr[1], v, arr[0], ttl));
                         keyRecordMapper.insertSelective(new KeyRecord(arr[1], v, arr[0], ttl, "HAND", eventType.getNumber(), new Date()));
                     }
                 } else if (eventType.equals(Event.EventType.DELETE)) {
-                    keyTimelyMapper.deleteByKey(k);
+                    System.out.println("arr[1]-> " +arr[1]);
+                    System.out.println("arr[0]-> " +arr[0]);
+
+                    keyTimelyMapper.deleteByKeyAndApp(arr[1],arr[0]);
                     keyRecordMapper.insertSelective(new KeyRecord(arr[1], v, arr[0], 0L, "SYSTEM", eventType.getNumber(), new Date()));
                 }
 

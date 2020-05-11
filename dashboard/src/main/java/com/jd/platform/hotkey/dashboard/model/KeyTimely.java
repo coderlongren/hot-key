@@ -47,6 +47,7 @@ public class KeyTimely implements Serializable {
     public KeyTimely(String key, Long duration) {
         this.key = key;
         this.duration = duration;
+        this.createTime = new Date();
     }
 
 

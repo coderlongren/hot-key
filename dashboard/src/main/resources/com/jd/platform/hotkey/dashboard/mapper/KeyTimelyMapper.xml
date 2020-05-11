@@ -25,9 +25,9 @@
     from hk_key_timely
     where key_name = #{key}
   </select>
-  <delete id="deleteByKey" parameterType="java.lang.String">
+  <delete id="deleteByKeyAndApp" parameterType="java.lang.String">
     delete from hk_key_timely
-    where key_name = #{key}
+    where key_name = #{key} and app_name = #{appName}
   </delete>
 
   <delete id="clear">

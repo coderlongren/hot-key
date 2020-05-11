@@ -12,7 +12,7 @@ public interface KeyTimelyMapper {
 
     int clear();
 
-    int deleteByKey(String key);
+    int deleteByKeyAndApp(String key,String appName);
 
     int insertSelective(KeyTimely key);
 
