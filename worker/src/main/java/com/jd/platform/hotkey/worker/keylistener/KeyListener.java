@@ -1,5 +1,6 @@
 package com.jd.platform.hotkey.worker.keylistener;
 
+import cn.hutool.core.date.SystemClock;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.google.common.base.Joiner;
 import com.jd.platform.hotkey.common.model.HotKeyModel;
@@ -8,7 +9,6 @@ import com.jd.platform.hotkey.worker.cache.CaffeineCacheHolder;
 import com.jd.platform.hotkey.worker.netty.pusher.IPusher;
 import com.jd.platform.hotkey.worker.rule.KeyRuleHolder;
 import com.jd.platform.hotkey.worker.tool.SlidingWindow;
-import com.jd.platform.hotkey.worker.tool.SystemClock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
