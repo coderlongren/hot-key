@@ -9,6 +9,7 @@ import com.google.protobuf.ByteString;
 import com.ibm.etcd.api.KeyValue;
 import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
 import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
+import com.jd.platform.hotkey.dashboard.common.domain.Constant;
 import com.jd.platform.hotkey.dashboard.common.domain.PageParam;
 import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
 import com.jd.platform.hotkey.dashboard.mapper.ChangeLogMapper;
@@ -62,7 +63,7 @@ public class WorkerServiceImpl implements WorkerService {
         for (KeyValue kv : keyValues) {
             String k = kv.getKey().toStringUtf8();
             String v = kv.getValue().toStringUtf8();
-            if(v.contains(":")){
+            if(v.contains(Constant.SPIT)){
                 workers.add(new Worker(k,v));
             }
         }
@@ -91,7 +92,7 @@ public class WorkerServiceImpl implements WorkerService {
 
     @Override
     public int insertWorkerByUser(Worker worker) {
-        configCenter.put(worker.getName(),worker.getIp()+":"+worker.getPort());
+        configCenter.put(worker.getName(),worker.getIp()+Constant.SPIT+worker.getPort());
         return this.insertWorkerBySys(worker);
     }
 
@@ -100,7 +101,7 @@ public class WorkerServiceImpl implements WorkerService {
         worker.setUpdateTime(new Date());
         workerMapper.insertSelective(worker);
         String to = JSON.toJSONString(worker);
-        return changeLogMapper.insertSelective(new ChangeLog(worker.getName(),2,"",
+        return changeLogMapper.insertSelective(new ChangeLog(worker.getName(),Constant.WORKER_CHANGE,"",
                 to,worker.getUpdateUser(), SystemClock.now()+""));
     }
 
@@ -112,7 +113,7 @@ public class WorkerServiceImpl implements WorkerService {
 
     @Override
     public int updateWorkerByUser(Worker worker) {
-        configCenter.put(worker.getName(),worker.getIp()+":"+worker.getPort());
+        configCenter.put(worker.getName(),worker.getIp() + Constant.SPIT + worker.getPort());
         return this.updateWorker(worker);
     }
 
@@ -127,7 +128,7 @@ public class WorkerServiceImpl implements WorkerService {
         Worker oldWorker = workerMapper.selectByKey(worker.getName());
         String from = JSON.toJSONString(oldWorker);
         String to = JSON.toJSONString(worker);
-        changeLogMapper.insertSelective(new ChangeLog(worker.getName(),2,from,to,worker.getUpdateUser(),SystemClock.now()+""));
+        changeLogMapper.insertSelective(new ChangeLog(worker.getName(),Constant.WORKER_CHANGE,from,to,worker.getUpdateUser(),SystemClock.now()+""));
         return workerMapper.updateByKey(worker);
     }
 

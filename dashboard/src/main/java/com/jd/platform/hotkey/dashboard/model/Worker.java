@@ -1,5 +1,7 @@
 package com.jd.platform.hotkey.dashboard.model;
 
+import com.jd.platform.hotkey.dashboard.common.domain.Constant;
+
 import java.util.Date;
 
 public class Worker {
@@ -11,11 +13,15 @@ public class Worker {
 
     private Integer port;
 
+    private Integer cliCount;
+
     private Date updateTime;
 
     private String updateUser;
 
     private Integer state;
+
+    private String uuid;
 
     public Worker() {
     }
@@ -23,10 +29,19 @@ public class Worker {
 
     public Worker(String name, String ipPort) {
         this.name = name;
-        String[] arr = ipPort.split(":");
+        String[] arr = ipPort.split(Constant.SPIT);
         this.ip = arr[0];
         this.port = Integer.valueOf(arr[1]);
         this.state = 1;
+    }
+
+    public Worker(String name, String ipPort, String uuid) {
+        this.name = name;
+        String[] arr = ipPort.split(Constant.SPIT);
+        this.ip = arr[0];
+        this.port = Integer.valueOf(arr[1]);
+        this.state = 1;
+        this.uuid = uuid;
     }
 
     public Worker(String name, Integer state,String updateUser) {
@@ -65,6 +80,22 @@ public class Worker {
 
     public void setPort(Integer port) {
         this.port = port;
+    }
+
+    public Integer getCliCount() {
+        return cliCount;
+    }
+
+    public void setCliCount(Integer cliCount) {
+        this.cliCount = cliCount;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public Date getUpdateTime() {

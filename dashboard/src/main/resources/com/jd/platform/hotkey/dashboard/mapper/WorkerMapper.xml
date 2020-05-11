@@ -5,6 +5,7 @@
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="ip" jdbcType="VARCHAR" property="ip" />
+    <result column="cli_count" jdbcType="INTEGER" property="cliCount" />
     <result column="port" jdbcType="INTEGER" property="port" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="update_user" jdbcType="VARCHAR" property="updateUser" />
@@ -48,6 +49,9 @@
       <if test="port != null">
         port,
       </if>
+      <if test="cliCount != null">
+        cli_count,
+      </if>
       <if test="updateUser != null">
         update_user,
       </if>
@@ -70,6 +74,9 @@
       </if>
       <if test="port != null">
         #{port,jdbcType=INTEGER},
+      </if>
+      <if test="cliCount != null">
+        #{cliCount,jdbcType=INTEGER},
       </if>
       <if test="updateUser != null">
         #{updateUser,jdbcType=VARCHAR},
@@ -94,6 +101,9 @@
       </if>
       <if test="port != null">
         port = #{port,jdbcType=INTEGER},
+      </if>
+      <if test="cliCount != null">
+        cli_count = #{cliCount,jdbcType=INTEGER},
       </if>
       <if test="updateUser != null">
         update_user = #{updateUser,jdbcType=VARCHAR},

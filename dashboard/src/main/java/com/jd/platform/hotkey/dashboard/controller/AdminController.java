@@ -68,7 +68,7 @@ public class AdminController extends BaseController {
 		if(user == null) return Result.error(ResultEnum.PWD_ERROR);
 		String token = JwtTokenUtil.createJWT(user.getId(), user.getUserName(), user.getRole(), user.getAppName());
 		Cookie cookie = new Cookie("token", JwtTokenUtil.TOKEN_PREFIX + token);
-		cookie.setMaxAge(3600);
+		cookie.setMaxAge(3600*24*7);
 		cookie.setDomain("localhost");
 		cookie.setPath("/");
 		response.addCookie(cookie);

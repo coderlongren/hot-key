@@ -493,12 +493,17 @@ modal_status = {
 function getCookie(cname){
     let token =  window.localStorage.getItem('token');
     if(token != null && token !==""){
+        let time = window.localStorage.getItem('time');
+        if(Date.now()-time>7*24*3600){
+            localStorage.removeItem(time);
+            return "";
+        }
         return token;
     }
-    var name = cname + "=";
-    var ca = document.cookie.split(';');
-    for(var i=0; i<ca.length; i++){
-        var c = ca[i].trim();
+    let name = cname + "=";
+    let ca = document.cookie.split(';');
+    for(let i=0; i<ca.length; i++){
+        let c = ca[i].trim();
         if (c.indexOf(name)==0) return c.substring(name.length,c.length);
     }
     return "";

@@ -10,9 +10,10 @@
     <result column="duration" jdbcType="BIGINT" property="duration" />
     <result column="type" jdbcType="INTEGER" property="type" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="uuid" jdbcType="VARCHAR" property="uuid" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, key_name, app_name, val, duration,source,type,create_time
+    id, key_name, app_name, val, duration,source,type,create_time,uuid
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -38,7 +39,10 @@
       </if>
       <if test="val != null">
         val,
-    </if>
+      </if>
+      <if test="uuid != null">
+        uuid,
+      </if>
       <if test="source != null">
         source,
       </if>
@@ -64,6 +68,9 @@
       </if>
       <if test="val != null">
         #{val,jdbcType=VARCHAR},
+      </if>
+      <if test="uuid != null">
+        #{uuid,jdbcType=VARCHAR},
       </if>
       <if test="source != null">
         #{source,jdbcType=VARCHAR},

@@ -33,7 +33,7 @@ public class KeyTimely implements Serializable {
 
     private Date createTime;
 
-    private String parentKey;
+    private String uuid;
 
 
     public KeyTimely() {
@@ -44,19 +44,14 @@ public class KeyTimely implements Serializable {
         this.source = source;
     }
 
-    public KeyTimely(String key, Long duration) {
-        this.key = key;
-        this.duration = duration;
-        this.createTime = new Date();
-    }
 
-
-    public KeyTimely(String key, String val, String appName, Long duration) {
+    public KeyTimely(String key, String val, String appName, Long duration, String uuid, Date createTime) {
         this.key = key;
         this.val = val;
+        this.uuid = uuid;
         this.appName = appName;
         this.duration = duration;
-        this.createTime = new Date();
+        this.createTime = createTime;
     }
 
     public Long getId() {
@@ -123,11 +118,11 @@ public class KeyTimely implements Serializable {
         this.createTime = createTime;
     }
 
-    public String getParentKey() {
-        return parentKey;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setParentKey(String parentKey) {
-        this.parentKey = parentKey;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 }

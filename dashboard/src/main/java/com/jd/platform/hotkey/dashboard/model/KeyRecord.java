@@ -31,30 +31,22 @@ public class KeyRecord implements Serializable {
 
     private Date createTime;
 
+    private String uuid;
+
     public KeyRecord() {
     }
 
-    public KeyRecord(String key,String val, String appName, Long duration, String source, Integer type, Date createTime) {
+    public KeyRecord(String key,String val, String appName, Long duration,
+                     String source, Integer type,String uuid, Date createTime) {
         this.key = key;
         this.val = val;
         this.appName = appName;
         this.duration = duration;
         this.source = source;
         this.type = type;
+        this.uuid = uuid;
         this.createTime = createTime;
     }
-
-  /*private boolean dir;
-
-    private String value;
-
-    private Long ttl;
-
-    private Date expiration;
-
-    private String parentKey;
-
-    private List<KeyRecord> nodes;*/
 
     public Long getId() {
         return id;
@@ -120,4 +112,11 @@ public class KeyRecord implements Serializable {
         this.createTime = createTime;
     }
 
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 }

@@ -6,9 +6,12 @@ import com.github.pagehelper.util.StringUtil;
 import com.ibm.etcd.api.KeyValue;
 import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
 import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
+import com.jd.platform.hotkey.dashboard.common.domain.Constant;
 import com.jd.platform.hotkey.dashboard.common.monitor.EtcdMonitor;
+import com.jd.platform.hotkey.dashboard.mapper.KeyRecordMapper;
 import com.jd.platform.hotkey.dashboard.mapper.KeyRuleMapper;
 import com.jd.platform.hotkey.dashboard.mapper.KeyTimelyMapper;
+import com.jd.platform.hotkey.dashboard.model.KeyRecord;
 import com.jd.platform.hotkey.dashboard.model.KeyRule;
 import com.jd.platform.hotkey.dashboard.model.KeyTimely;
 import com.jd.platform.hotkey.dashboard.util.CommonUtil;
@@ -54,19 +57,17 @@ public class DashboardApplication implements CommandLineRunner {
         List<KeyTimely> keyList = new ArrayList<>();
         Date date = new Date();
         for (KeyValue kv : keyValues) {
-            KeyTimely timely = new KeyTimely();
             String key = kv.getKey().toStringUtf8();
             String val = kv.getValue().toStringUtf8();
             if(StringUtil.isEmpty(val)){ continue; }
-            timely.setKey(key);
-            timely.setType(0);
-            timely.setVal(val);
-            timely.setAppName(CommonUtil.appName(key));
-            timely.setSource("SYSTEM");
-            timely.setDuration(configCenter.timeToLive(kv.getLease()));
-            timely.setCreateTime(date);
-            keyList.add(timely);
-        }
+            long version = kv.getModRevision();
+            String appKey = key.replace(ConfigConstant.hotKeyPath,"");
+            String app = CommonUtil.appName(key);
+            String uuid = appKey + Constant.JOIN + version;
+            long ttl = configCenter.timeToLive(kv.getLease());
+            String newKey = appKey.replace(app + "/", "");
+            keyList.add(new KeyTimely(newKey, val, app, ttl, uuid, date));
+         };
         if (keyList.size() == 0) {
             return;
         }
@@ -90,7 +91,7 @@ public class DashboardApplication implements CommandLineRunner {
             for (KeyRule rule : rules) {
                 rule.setAppName(CommonUtil.appName(key));
                 rule.setUpdateTime(date);
-                rule.setUpdateUser("SYSTEM");
+                rule.setUpdateUser(Constant.SYSTEM);
                 rule.setState(1);
             }
             keyRuleMapper.batchInsert(rules);
