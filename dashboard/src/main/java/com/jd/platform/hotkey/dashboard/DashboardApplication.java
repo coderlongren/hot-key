@@ -52,6 +52,7 @@ public class DashboardApplication implements CommandLineRunner {
         logger.info("clear db timely hotKey, effect row : {}", row);
         List<KeyValue> keyValues = configCenter.getPrefix(ConfigConstant.hotKeyPath);
         List<KeyTimely> keyList = new ArrayList<>();
+        Date date = new Date();
         for (KeyValue kv : keyValues) {
             KeyTimely timely = new KeyTimely();
             String key = kv.getKey().toStringUtf8();
@@ -63,7 +64,7 @@ public class DashboardApplication implements CommandLineRunner {
             timely.setAppName(CommonUtil.appName(key));
             timely.setSource("SYSTEM");
             timely.setDuration(configCenter.timeToLive(kv.getLease()));
-            timely.setCreateTime(SystemClock.now());
+            timely.setCreateTime(date);
             keyList.add(timely);
         }
         if (keyList.size() == 0) {

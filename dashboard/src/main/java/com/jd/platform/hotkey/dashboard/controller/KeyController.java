@@ -37,7 +37,6 @@ public class KeyController extends BaseController {
 	@PostMapping("/list")
 	@ResponseBody
 	public Page<KeyRecord> list(PageParam page, SearchDto searchDto){
-		System.out.println("searchText--> "+ JSON.toJSONString(searchDto));
 		PageInfo<KeyRecord> info = keyService.pageKeyRecord(page, param2(searchDto));
 		return new Page<>(info.getPageNum(),(int)info.getTotal(),info.getList());
 	}

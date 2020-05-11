@@ -17,6 +17,7 @@ import com.jd.platform.hotkey.dashboard.util.CommonUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 
@@ -65,7 +66,7 @@ public class KeyServiceImpl implements KeyService {
     @Override
     public int insertKeyByUser(KeyTimely key) {
         key.setVal("ADD");
-        key.setCreateTime(SystemClock.now());
+        key.setCreateTime(new Date());
         key.setKey(ConfigConstant.hotKeyPath + key.getAppName() + "/" + key.getKey());
         configCenter.putAndGrant(key.getKey(), SystemClock.now() + "", key.getDuration());
         return keyTimelyMapper.insertSelective(key);

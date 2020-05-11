@@ -8,7 +8,7 @@
     <result column="parent_key" jdbcType="VARCHAR" property="parentKey" />
     <result column="app_name" jdbcType="VARCHAR" property="appName" />
     <result column="duration" jdbcType="BIGINT" property="duration" />
-    <result column="create_time" jdbcType="BIGINT" property="createTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
   </resultMap>
   <sql id="Base_Column_List">
     id, key_name, val, parent_key, app_name, duration, create_time
@@ -98,7 +98,7 @@
         #{duration,jdbcType=BIGINT},
       </if>
       <if test="createTime != null">
-        #{createTime,jdbcType=BIGINT},
+        #{createTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -122,7 +122,7 @@
         duration = #{duration,jdbcType=BIGINT},
       </if>
       <if test="createTime != null">
-        create_time = #{createTime,jdbcType=LONG},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
     </set>
     where key_name = #{key}
@@ -139,10 +139,8 @@
     <if test="key !=null and key !=''">
       and key_name = #{key}
     </if >
-
     <if test="startTime != null">
-      <![CDATA[ and create_time <= #{startTime,jdbcType=TIMESTAMP}
-                and create_time >= #{endTime,jdbcType=TIMESTAMP}]]>
+      <![CDATA[ and create_time <= #{startTime} and create_time >= #{endTime}]]>
     </if>
     order by id desc
   </select>
