@@ -74,10 +74,9 @@ public class EtcdMonitor {
                         keyRecordMapper.insertSelective(new KeyRecord(arr[1], v, arr[0], ttl, "HAND", eventType.getNumber(), new Date()));
                     }
                 } else if (eventType.equals(Event.EventType.DELETE)) {
-                    System.out.println("arr[1]-> " +arr[1]);
-                    System.out.println("arr[0]-> " +arr[0]);
+                    log.info("key deleted : <app> is " + arr[0] + " <key> is " + arr[1]);
 
-                    keyTimelyMapper.deleteByKeyAndApp(arr[1],arr[0]);
+                    keyTimelyMapper.deleteByKeyAndApp(arr[1], arr[0]);
                     keyRecordMapper.insertSelective(new KeyRecord(arr[1], v, arr[0], 0L, "SYSTEM", eventType.getNumber(), new Date()));
                 }
 
