@@ -18,7 +18,7 @@ function edit() {
 		async : false,
 		error : function(response,status,xhr) {
 
-			$.modal.alertError("系统错误111111"+response);
+			$.modal.alertError("系统错误"+response);
 		},
 		fail : function(response,status,xhr) {
 
