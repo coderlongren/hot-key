@@ -1,8 +1,8 @@
 package com.jd.platform.hotkey.worker.disruptor;
 
+import cn.hutool.core.date.SystemClock;
 import com.jd.platform.hotkey.common.model.BaseModel;
 import com.jd.platform.hotkey.common.tool.Constant;
-import com.jd.platform.hotkey.worker.tool.SystemClock;
 import com.lmax.disruptor.EventHandler;
 
 /**
