@@ -3,7 +3,8 @@ netty:
   heartBeat: ${heart-beat:10}
 #etcd的地址，如有多个用逗号分隔
 etcd:
-  server: ${etcdServer:http://127.0.0.1:2379}
+  server: ${etcdServer:http://127.0.0.1:2379} #etcd的地址，重要！！！
+  workerPath: ${workerPath:default} #该worker放到哪个path下，譬如放/app1下，则该worker只能被app1使用，不会为其他client提供服务
 spring:
   aop:
     proxy-target-class: true

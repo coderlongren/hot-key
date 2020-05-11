@@ -48,6 +48,12 @@ public class EtcdStarter {
     @Value("${netty.port}")
     private int port;
 
+    /**
+     * 该worker放到etcd worker目录的哪个app下
+     */
+    @Value("${etcd.workerPath}")
+    private String workerPath;
+
     private static final String CHECK_ETCD_TRUE = "check self info exist in etcd , return true";
     private static final String CHECK_ETCD_FALSE = "check self info exist in etcd , return false";
     private static final String MAO = ":";
@@ -118,6 +124,8 @@ public class EtcdStarter {
             }
 
             configCenter.putAndGrant(ConfigConstant.caffeineSizePath + ip, CaffeineCacheHolder.getSize().toString(), 10);
+
+//            configCenter.putAndGrant(ConfigConstant.bufferPoolPath + ip, MemoryTool.getBufferPool() + "", 10);
         } catch (Exception ex) {
             logger.error(ETCD_DOWN);
         }
@@ -143,28 +151,6 @@ public class EtcdStarter {
         }
     }
 
-
-    private long storeLeaseId = -1;
-
-    /**
-     * 启动后，上传自己的信息到etcd，并维持心跳包
-     */
-    @PostConstruct
-    public void upload() {
-        //开启上传worker信息
-        ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-        scheduledExecutorService.scheduleAtFixedRate(() -> {
-            logger.info("upload info to etcd");
-            storeLeaseId = createLeaseId();
-            if (storeLeaseId != -1) {
-                //上报到etcd
-                uploadKey();
-                scheduledExecutorService.shutdown();
-            }
-
-        }, 1, 5, TimeUnit.SECONDS);
-    }
-
     /**
      * 每隔一会去check一下，自己还在不在etcd里
      */
@@ -178,7 +164,7 @@ public class EtcdStarter {
                 String value = configCenter.get(buildKey());
                 if (!buildValue().equals(value)) {
                     logger.info(CHECK_ETCD_FALSE);
-                    handUpload();
+                    uploadSelfInfo();
                 } else {
                     logger.info(CHECK_ETCD_TRUE);
                 }
@@ -187,46 +173,24 @@ public class EtcdStarter {
             }
 
 
-        }, 5, 30, TimeUnit.SECONDS);
+        }, 0, 5, TimeUnit.SECONDS);
     }
 
     /**
      * 通过http请求手工上传信息到etcd，适用于正常使用过程中，etcd挂掉，导致worker租期到期被删除，无法自动注册
      */
-    public boolean handUpload() {
-        logger.info("hand upload info to etcd，now storeLeaseId is " + storeLeaseId);
-
-        if (storeLeaseId != -1) {
-            //上报到etcd
-            uploadKey();
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private void uploadKey() {
-        configCenter.put(buildKey(), buildValue(), storeLeaseId);
+    private void uploadSelfInfo() {
+        configCenter.putAndGrant(buildKey(), buildValue(), 5);
     }
 
     private String buildKey() {
         String hostName = IpUtils.getHostName();
-        return ConfigConstant.workersPath + hostName;
+        return ConfigConstant.workersPath + workerPath + "/" + hostName;
     }
 
     private String buildValue() {
         String ip = IpUtils.getIp();
         return ip + MAO + port;
-    }
-
-    private long createLeaseId() {
-        try {
-            //每次续租5秒
-            return configCenter.buildAliveLease(4, 5);
-        } catch (Exception e) {
-            logger.error("worker connect to etcd failure");
-            return -1;
-        }
     }
 
 }

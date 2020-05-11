@@ -33,4 +33,8 @@ public interface ConfigConstant {
      * caffeine的size
      */
     String caffeineSizePath = "/jd/caffeineSize/";
+    /**
+     * bufferPool直接内存
+     */
+    String bufferPoolPath = "/jd/bufferPool/";
 }
