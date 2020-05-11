@@ -157,4 +157,33 @@
     </if>
     order by id desc
   </select>
+
+
+
+  <insert id="batchInsert">
+    INSERT INTO
+    hk_key_rule(
+    key_name,
+    prefix,
+    intervals,
+    threshold,
+    duration,
+    app_name,
+    state,
+    update_user,
+    update_time)
+    VALUES
+    <foreach collection="list" item="k" separator=",">
+      (#{k.key},
+      #{k.prefix},
+      #{k.interval},
+      #{k.threshold},
+      #{k.duration},
+      #{k.appName},
+      #{k.state},
+      #{k.updateUser},
+      #{k.updateTime})
+    </foreach>
+  </insert>
+
 </mapper>

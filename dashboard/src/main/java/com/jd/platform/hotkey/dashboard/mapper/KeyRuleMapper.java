@@ -19,4 +19,5 @@ public interface KeyRuleMapper {
 
     List<KeyRule> listRule(SearchDto param);
 
+    void batchInsert(List<KeyRule> rules);
 }

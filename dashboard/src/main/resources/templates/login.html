@@ -169,12 +169,15 @@ function sub(){
 					error : function(request) {
 						$.modal.alertError("系统错误");
 					},
-					success : function(data) {
-						if(data.code==200){
-							location.href = '/admin/index?text='+data.data;
+					success : function(result) {
+						if(result.code==200){
+							let token = result.data.token;
+							// result.getco
+							window.localStorage.setItem('token', token);
+							location.href = '/admin/index?text='+result.data.info;
 						}else{
 							v2.showdd().init();
-							layer.msg(data.msg, function(){
+							layer.msg(result.msg, function(){
 								//关闭后的操作
 							});
 						}

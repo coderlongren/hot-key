@@ -1,7 +1,10 @@
 package com.jd.platform.hotkey.dashboard.controller;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import com.github.pagehelper.util.StringUtil;
 import com.jd.platform.hotkey.dashboard.common.base.BaseController;
 import com.jd.platform.hotkey.dashboard.common.domain.Result;
@@ -69,7 +72,10 @@ public class AdminController extends BaseController {
 		cookie.setDomain("localhost");
 		cookie.setPath("/");
 		response.addCookie(cookie);
-		return  Result.success(CommonUtil.encoder(user.getNickName()+"_"+user.getRole()));
+		Map<String, String> map = new HashMap<>();
+		map.put("info",CommonUtil.encoder(user.getNickName()+"_"+user.getRole()));
+		map.put("token",JwtTokenUtil.TOKEN_PREFIX + token);
+		return  Result.success(map);
 	}
 
 

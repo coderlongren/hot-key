@@ -491,6 +491,10 @@ modal_status = {
 
 
 function getCookie(cname){
+    let token =  window.localStorage.getItem('token');
+    if(token != null && token !==""){
+        return token;
+    }
     var name = cname + "=";
     var ca = document.cookie.split(';');
     for(var i=0; i<ca.length; i++){
@@ -498,6 +502,10 @@ function getCookie(cname){
         if (c.indexOf(name)==0) return c.substring(name.length,c.length);
     }
     return "";
+}
+
+function getToken(){
+   return window.localStorage.getItem('token')
 }
 
 
