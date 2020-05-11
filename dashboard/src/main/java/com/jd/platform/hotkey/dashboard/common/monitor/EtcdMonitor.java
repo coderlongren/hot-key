@@ -67,7 +67,8 @@ public class EtcdMonitor {
                         keyRecordMapper.insertSelective(new KeyRecord(arr[1], v, arr[0], ttl, "SYSTEM", eventType.getNumber(), new Date()));
                     } else {
                         //手工加的
-                        keyTimelyMapper.updateByKey(new KeyTimely(arr[1], ttl));
+                     //   keyTimelyMapper.updateByKey(new KeyTimely(arr[1], ttl));
+                        keyTimelyMapper.insertSelective(new KeyTimely(arr[1], ttl));
                         keyRecordMapper.insertSelective(new KeyRecord(arr[1], v, arr[0], ttl, "HAND", eventType.getNumber(), new Date()));
                     }
                 } else if (eventType.equals(Event.EventType.DELETE)) {

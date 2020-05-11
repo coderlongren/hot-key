@@ -18,14 +18,9 @@ function edit() {
 		async : false,
 		error : function(response,status,xhr) {
 
-			$.modal.alertError("系统错误"+response);
+			$.modal.alertError("系统错误");
 		},
-		fail : function(response,status,xhr) {
-
-			$.modal.alertError("系统错误"+response);
-		},
-		success : function(response,status,xhr,data) {
-
+		success : function(data) {
 			$.operate.saveSuccess(data);
 		}
 	});
