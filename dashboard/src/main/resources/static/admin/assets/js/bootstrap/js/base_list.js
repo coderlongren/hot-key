@@ -512,7 +512,6 @@ function getToken(){
 //修改——转换日期格式(时间戳转换为datetime格式)
 function changeDateFormat(cellval) {
     if (cellval != null) {
-     //   alert(cellval)
         var date = new Date(parseInt(cellval.replace("/Date(", "").replace(")/", ""), 10));
         var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
         var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();

@@ -163,7 +163,7 @@ var options = {
         { field: 'val', title: 'VAL'},
         { field: 'createTime', title: '创建时间',
             formatter:function (val,row,index) {
-                return timestampToTime(val);
+                return changeDateFormat(val);
             }
         },{
             title: '操作',

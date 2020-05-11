@@ -452,7 +452,7 @@ input:-webkit-autofill, textarea:-webkit-autofill {
     border: 1px solid !important;
     border-radius: 4px;
     box-shadow: none !important;
-    color: #C7D5E0 !important;
+    color: black;
     font-size: 13px !important;
   /*   height: 31px !important; */
 }
@@ -462,7 +462,7 @@ input:-webkit-autofill, textarea:-webkit-autofill {
     border: 1px solid !important;
     border-radius: 4px;
     box-shadow: none !important;
-    color: #C7D5E0 !important;
+    color:black;
     font-size: 13px !important;
     height: 70px !important;
     width: 100%;
@@ -804,7 +804,7 @@ img.ikon {
     width:100%;
 }
 input[type=text] {
-    color: #fff;
+
 }
 .search-menu {
     border-radius: 4px;
