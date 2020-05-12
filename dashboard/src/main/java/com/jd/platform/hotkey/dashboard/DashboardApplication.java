@@ -1,17 +1,14 @@
 package com.jd.platform.hotkey.dashboard;
 
-import cn.hutool.core.date.SystemClock;
+
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.util.StringUtil;
 import com.ibm.etcd.api.KeyValue;
 import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
 import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
 import com.jd.platform.hotkey.dashboard.common.domain.Constant;
-import com.jd.platform.hotkey.dashboard.common.monitor.EtcdMonitor;
-import com.jd.platform.hotkey.dashboard.mapper.KeyRecordMapper;
 import com.jd.platform.hotkey.dashboard.mapper.KeyRuleMapper;
 import com.jd.platform.hotkey.dashboard.mapper.KeyTimelyMapper;
-import com.jd.platform.hotkey.dashboard.model.KeyRecord;
 import com.jd.platform.hotkey.dashboard.model.KeyRule;
 import com.jd.platform.hotkey.dashboard.model.KeyTimely;
 import com.jd.platform.hotkey.dashboard.util.CommonUtil;
@@ -23,11 +20,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 
 @EnableAsync
 @EnableScheduling
@@ -97,4 +94,5 @@ public class DashboardApplication implements CommandLineRunner {
             keyRuleMapper.batchInsert(rules);
         }
     }
+
 }

@@ -5,16 +5,16 @@ import com.jd.platform.hotkey.dashboard.model.KeyRecord;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Mapper
 public interface KeyRecordMapper {
-    int deleteByPrimaryKey(Long id);
 
     int insertSelective(KeyRecord record);
 
     KeyRecord selectByPrimaryKey(Long id);
 
-    int updateByPk(KeyRecord record);
-
     List<KeyRecord> listKeyRecord(SearchDto param);
+
+    int batchInsert(List<KeyRecord> list);
 }

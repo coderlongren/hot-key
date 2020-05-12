@@ -34,7 +34,7 @@
   </select>
 
   <insert id="insertSelective" parameterType="com.jd.platform.hotkey.dashboard.model.KeyRule">
-    insert into hk_key_rule
+    insert ignore into hk_key_rule
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
@@ -161,7 +161,7 @@
 
 
   <insert id="batchInsert">
-    INSERT INTO
+    INSERT ignore INTO
     hk_key_rule(
     key_name,
     prefix,

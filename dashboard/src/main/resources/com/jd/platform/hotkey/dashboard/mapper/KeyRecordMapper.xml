@@ -26,7 +26,7 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
   <insert id="insertSelective" parameterType="com.jd.platform.hotkey.dashboard.model.KeyRecord">
-    insert into hk_key_record
+    insert ignore into hk_key_record
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
@@ -131,5 +131,30 @@
     </if>
     order by id desc
   </select>
+
+
+  <insert id="batchInsert">
+    INSERT ignore INTO
+    hk_key_record(
+    key_name,
+    val,
+    app_name,
+    duration,
+    source,
+    type,
+    create_time,
+    uuid)
+    VALUES
+    <foreach collection="list" item="k" separator=",">
+      (#{k.key},
+      #{k.val},
+      #{k.appName},
+      #{k.duration},
+      #{k.source},
+      #{k.type},
+      #{k.createTime},
+      #{k.uuid})
+    </foreach>
+  </insert>
 
 </mapper>

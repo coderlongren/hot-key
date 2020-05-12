@@ -40,12 +40,6 @@ public class BaseController {
     }
 
 
-    public String userRole(){
-        final String authHeader = request.getHeader(JwtTokenUtil.AUTH_HEADER_KEY);
-        final String token = authHeader.substring(2);
-        return JwtTokenUtil.getRole(token);
-    }
-
 
     public SearchDto param(String text){
         String authHeader = request.getHeader(JwtTokenUtil.AUTH_HEADER_KEY);

@@ -15,12 +15,14 @@ import com.jd.platform.hotkey.dashboard.model.KeyRecord;
 import com.jd.platform.hotkey.dashboard.model.KeyTimely;
 import com.jd.platform.hotkey.dashboard.model.Worker;
 import com.jd.platform.hotkey.dashboard.service.WorkerService;
+import com.jd.platform.hotkey.dashboard.util.DataHandlerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 
@@ -39,13 +41,10 @@ public class EtcdMonitor {
     @Resource
     private IConfigCenter configCenter;
     @Resource
-    private KeyRecordMapper keyRecordMapper;
-    @Resource
-    private KeyTimelyMapper keyTimelyMapper;
-    @Resource
     private ChangeLogMapper logMapper;
     @Resource
     private WorkerService workerService;
+
 
     @PostConstruct
     public void watchHotKey() {
@@ -53,32 +52,10 @@ public class EtcdMonitor {
             KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.hotKeyPath);
             while (watchIterator.hasNext()) {
                 Event event = event(watchIterator);
-                KeyValue kv = event.getKv();
-                Event.EventType eventType = event.getType();
-                String k = kv.getKey().toStringUtf8();
-                String v = kv.getValue().toStringUtf8();
-                long version = kv.getModRevision();
-                long ttl = configCenter.timeToLive(kv.getLease());
-                String appKey = k.replace(ConfigConstant.hotKeyPath, "");
-                String[] arr = appKey.split("/");
-                String uuid = appKey + Constant.JOIN + version;
-                Date date = new Date();
-                if (eventType.equals(Event.EventType.PUT)) {
-                    if (Constant.SYSTEM_FLAG.equals(v)) {
-                        keyTimelyMapper.insertSelective(new KeyTimely(arr[1], v, arr[0], ttl, uuid, date));
-                        keyRecordMapper.insertSelective(new KeyRecord(arr[1], v, arr[0], ttl, Constant.SYSTEM, eventType.getNumber(),uuid, date));
-                    } else {
-                        keyTimelyMapper.insertSelective(new KeyTimely(arr[1], v, arr[0], ttl, uuid, date));
-                        keyRecordMapper.insertSelective(new KeyRecord(arr[1], v, arr[0], ttl, Constant.HAND, eventType.getNumber(),uuid, date));
-                    }
-                } else if (eventType.equals(Event.EventType.DELETE)) {
-                    keyTimelyMapper.deleteByKeyAndApp(arr[1], arr[0]);
-                    keyRecordMapper.insertSelective(new KeyRecord(arr[1], v, arr[0], 0L, Constant.SYSTEM, eventType.getNumber(),uuid, date));
-                }
-
+                log.info("来消息了 准备调用处理器: time"+ LocalDateTime.now().toString());
+                DataHandlerUtil.offer(event);
             }
         });
-
     }
 
 

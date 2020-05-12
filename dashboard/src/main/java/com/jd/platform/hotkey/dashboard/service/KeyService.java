@@ -28,8 +28,6 @@ public interface KeyService {
 
     KeyTimely selectByPk(Long key);
 
-    int updateKeyTimely(KeyTimely keyTimely);
-
     PageInfo<KeyTimely> pageKeyTimely(PageParam page, SearchDto param);
 
 }

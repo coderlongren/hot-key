@@ -36,7 +36,7 @@
 
 
   <insert id="batchInsert">
-    INSERT INTO
+    INSERT ignore INTO
         hk_key_timely(
         key_name,
         val,

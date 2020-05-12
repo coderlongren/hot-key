@@ -35,7 +35,7 @@
   </update>
 
   <insert id="insertSelective" parameterType="com.jd.platform.hotkey.dashboard.model.Worker">
-    insert into hk_worker
+    insert ignore into hk_worker
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
