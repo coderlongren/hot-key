@@ -7,6 +7,7 @@ import com.ibm.etcd.client.kv.KvClient;
 import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
 import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
 import com.jd.platform.hotkey.dashboard.common.domain.Constant;
+import com.jd.platform.hotkey.dashboard.common.domain.EventWrapper;
 import com.jd.platform.hotkey.dashboard.mapper.ChangeLogMapper;
 import com.jd.platform.hotkey.dashboard.mapper.KeyRecordMapper;
 import com.jd.platform.hotkey.dashboard.mapper.KeyTimelyMapper;
@@ -52,8 +53,8 @@ public class EtcdMonitor {
             KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.hotKeyPath);
             while (watchIterator.hasNext()) {
                 Event event = event(watchIterator);
-                log.info("来消息了 准备调用处理器: time"+ LocalDateTime.now().toString());
-                DataHandlerUtil.offer(event);
+                log.info("来消息了 准备调用处理器 time:"+ LocalDateTime.now().toString());
+                DataHandlerUtil.offer(new EventWrapper(event));
             }
         });
     }

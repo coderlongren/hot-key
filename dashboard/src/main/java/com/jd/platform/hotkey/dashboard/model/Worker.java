@@ -27,12 +27,13 @@ public class Worker {
     }
 
 
-    public Worker(String name, String ipPort) {
+    public Worker(String name, String ipPort, Integer cliCount) {
         this.name = name;
         String[] arr = ipPort.split(Constant.SPIT);
         this.ip = arr[0];
         this.port = Integer.valueOf(arr[1]);
         this.state = 1;
+        this.cliCount = cliCount;
     }
 
     public Worker(String name, String ipPort, String uuid) {

@@ -29,7 +29,7 @@ public class KeyController extends BaseController {
 
 	@GetMapping("/view")
 	public String view(ModelMap modelMap){
-		modelMap.put("title","热点记录");
+		modelMap.put("title", Constant.KEY_RECORD_VIEW);
 		return prefix + "/list";
 	}
 

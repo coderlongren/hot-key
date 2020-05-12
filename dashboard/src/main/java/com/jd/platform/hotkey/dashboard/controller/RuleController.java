@@ -3,6 +3,7 @@ package com.jd.platform.hotkey.dashboard.controller;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.jd.platform.hotkey.dashboard.common.base.BaseController;
+import com.jd.platform.hotkey.dashboard.common.domain.Constant;
 import com.jd.platform.hotkey.dashboard.common.domain.Page;
 import com.jd.platform.hotkey.dashboard.common.domain.PageParam;
 import com.jd.platform.hotkey.dashboard.common.domain.Result;
@@ -26,7 +27,7 @@ public class RuleController extends BaseController {
 
 	@GetMapping("/view")
 	public String view(ModelMap modelMap){
-		modelMap.put("title","规则配置");
+		modelMap.put("title", Constant.RULE_CONFIG_VIEW);
 		return prefix + "/list";
 	}
 

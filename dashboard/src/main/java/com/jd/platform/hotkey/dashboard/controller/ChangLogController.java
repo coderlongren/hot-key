@@ -2,10 +2,7 @@ package com.jd.platform.hotkey.dashboard.controller;
 
 import com.github.pagehelper.PageInfo;
 import com.jd.platform.hotkey.dashboard.common.base.BaseController;
-import com.jd.platform.hotkey.dashboard.common.domain.Page;
-import com.jd.platform.hotkey.dashboard.common.domain.PageParam;
-import com.jd.platform.hotkey.dashboard.common.domain.Result;
-import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
+import com.jd.platform.hotkey.dashboard.common.domain.*;
 import com.jd.platform.hotkey.dashboard.model.ChangeLog;
 import com.jd.platform.hotkey.dashboard.model.User;
 import com.jd.platform.hotkey.dashboard.service.ChangeLogService;
@@ -30,7 +27,7 @@ public class ChangLogController extends BaseController {
 
 	@GetMapping("/view")
 	public String view(ModelMap modelMap){
-		modelMap.put("title","变更记录");
+		modelMap.put("title", Constant.CHANG_LOG_VIEW);
 		return prefix + "/list";
 	}
 

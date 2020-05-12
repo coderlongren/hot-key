@@ -3,10 +3,7 @@ package com.jd.platform.hotkey.dashboard.controller;
 import java.util.List;
 import com.github.pagehelper.PageInfo;
 import com.jd.platform.hotkey.dashboard.common.base.BaseController;
-import com.jd.platform.hotkey.dashboard.common.domain.Page;
-import com.jd.platform.hotkey.dashboard.common.domain.PageParam;
-import com.jd.platform.hotkey.dashboard.common.domain.Result;
-import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
+import com.jd.platform.hotkey.dashboard.common.domain.*;
 import com.jd.platform.hotkey.dashboard.model.User;
 import com.jd.platform.hotkey.dashboard.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +25,7 @@ public class UserController extends BaseController {
 
 	@GetMapping("/view")
     public String view(ModelMap modelMap){
-		modelMap.put("title","用户管理");
+		modelMap.put("title", Constant.USER_MANAGE_VIEW);
         return prefix + "/list";
     }
 

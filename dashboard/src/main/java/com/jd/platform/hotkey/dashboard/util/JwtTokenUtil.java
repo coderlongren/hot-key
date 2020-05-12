@@ -18,7 +18,7 @@ public class JwtTokenUtil {
 
     private static Logger log = LoggerFactory.getLogger(JwtTokenUtil.class);
 
-    public static final Integer EXPIRATION_TIME = 3600*1000;
+    public static final Integer EXPIRATION_TIME = 3600*1000*24*7;
     public static final String SECRET = "happy";
     public static final String TOKEN_PREFIX = "hk";
     public static final String AUTH_HEADER_KEY = "Authorization";

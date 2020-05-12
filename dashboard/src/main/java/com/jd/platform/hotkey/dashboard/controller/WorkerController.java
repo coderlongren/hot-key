@@ -2,10 +2,7 @@ package com.jd.platform.hotkey.dashboard.controller;
 
 import com.github.pagehelper.PageInfo;
 import com.jd.platform.hotkey.dashboard.common.base.BaseController;
-import com.jd.platform.hotkey.dashboard.common.domain.Page;
-import com.jd.platform.hotkey.dashboard.common.domain.PageParam;
-import com.jd.platform.hotkey.dashboard.common.domain.Result;
-import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
+import com.jd.platform.hotkey.dashboard.common.domain.*;
 import com.jd.platform.hotkey.dashboard.model.User;
 import com.jd.platform.hotkey.dashboard.model.Worker;
 import com.jd.platform.hotkey.dashboard.service.UserService;
@@ -29,7 +26,7 @@ public class WorkerController extends BaseController {
 
 	@GetMapping("/view")
     public String view(ModelMap modelMap){
-		modelMap.put("title","节点信息");
+		modelMap.put("title", Constant.WORKER_VIEW);
     	return prefix + "/list";
     }
 

@@ -22,10 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -60,33 +57,32 @@ public class WorkerServiceImpl implements WorkerService {
     public PageInfo<Worker> pageWorker(PageParam page, SearchDto param) {
         List<KeyValue> keyValues = configCenter.getPrefix(ConfigConstant.workersPath);
         List<Worker> workers = new ArrayList<>();
+
+        List<KeyValue> rules = configCenter.getPrefix(ConfigConstant.rulePath);
+        Set<String> apps = new HashSet<>();
+        for (KeyValue kv : rules) {
+            String key = kv.getKey().toStringUtf8();
+            String app = key.replace(ConfigConstant.rulePath,"");
+            apps.add(app);
+        }
+
         for (KeyValue kv : keyValues) {
             String k = kv.getKey().toStringUtf8();
             String v = kv.getValue().toStringUtf8();
+            String[] arr = v.split(Constant.SPIT);
+            int cliCount = 0;
             if(v.contains(Constant.SPIT)){
-                workers.add(new Worker(k,v));
+                // 多个app的连接count聚合
+                for (String app : apps) {
+                    KeyValue countKv = configCenter.getKv(ConfigConstant.clientCountPath + app + "/" + arr[0]);
+                    if(countKv != null){
+                        cliCount = cliCount + Integer.parseInt(countKv.getValue().toStringUtf8());
+                    }
+                }
+                workers.add(new Worker(k,v,cliCount));
             }
         }
         return new PageInfo<>(workers);
-
-/*
-        PageHelper.startPage(page.getPageNum(),page.getPageSize());
-        List<Worker> workers = workerMapper.listWorker(param);
-        List<KeyValue> list = configCenter.getPrefix(ConfigConstant.workersPath);
-        Map<String, KeyValue> map = list.stream()
-                .collect(Collectors.toMap(kv -> kv.getKey().toStringUtf8().substring(12), kv -> kv));
-        for (Worker worker : workers) {
-            if(map.get(worker.getName()) == null){
-                worker.setState(0);
-                if(worker.getState() == 1){
-                    Worker wk = new Worker();
-                    wk.setName(worker.getName());
-                    wk.setState(0);
-                    workerMapper.updateByKey(wk);
-                }
-            }
-        }
-        return new PageInfo<>(workers);*/
     }
 
 
@@ -135,6 +131,6 @@ public class WorkerServiceImpl implements WorkerService {
     @Override
     public Worker selectByKey(String key) {
         String val = configCenter.get(key);
-        return new Worker(key,val);
+        return new Worker(key,val,0);
     }
 }
