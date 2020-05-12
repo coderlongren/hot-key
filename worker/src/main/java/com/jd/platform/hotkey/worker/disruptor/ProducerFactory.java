@@ -5,6 +5,7 @@ import com.jd.platform.hotkey.worker.disruptor.hotkey.HotKeyConsumer;
 import com.jd.platform.hotkey.worker.disruptor.hotkey.HotKeyEvent;
 import com.jd.platform.hotkey.worker.disruptor.hotkey.HotKeyEventProducer;
 import com.jd.platform.hotkey.worker.keylistener.IKeyListener;
+import com.jd.platform.hotkey.worker.tool.CpuNum;
 import com.lmax.disruptor.dsl.Disruptor;
 
 /**
@@ -20,8 +21,12 @@ public class ProducerFactory {
      * @return HotKeyEventProducer
      */
     public static MessageProducer<HotKeyEvent> createHotKeyProducer(IKeyListener iKeyListener) {
-        HotKeyConsumer[] array = new HotKeyConsumer[Constant.Default_Threads];
-        for (int i = 0; i < Constant.Default_Threads; i++) {
+        int threadCount = CpuNum.workerCount();
+        //将实际值赋给static变量
+        Constant.Default_Threads = threadCount;
+
+        HotKeyConsumer[] array = new HotKeyConsumer[threadCount];
+        for (int i = 0; i < threadCount; i++) {
             array[i] = new HotKeyConsumer(i);
             array[i].setKeyListener(iKeyListener);
         }

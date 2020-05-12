@@ -1,7 +1,5 @@
 package com.jd.platform.hotkey.worker.config;
 
-import com.jd.ump.annotation.JAnnotation;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -12,11 +10,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class Ump {
 
-    @Bean
-    public JAnnotation jAnnotation() {
-        JAnnotation jAnnotation = new JAnnotation();
-        jAnnotation.setJvmKey("hotkey.jvm");
-        jAnnotation.setSystemKey("hotkey.system");
-        return jAnnotation;
-    }
+//    @Bean
+//    public JAnnotation jAnnotation() {
+//        JAnnotation jAnnotation = new JAnnotation();
+//        jAnnotation.setJvmKey("hotkey.jvm");
+//        jAnnotation.setSystemKey("hotkey.system");
+//        return jAnnotation;
+//    }
 }

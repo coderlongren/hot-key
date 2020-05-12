@@ -4,14 +4,18 @@ package com.jd.platform.hotkey.common.tool;
  * @author wuweifeng wrote on 2019-12-05
  * @version 1.0
  */
-public interface Constant {
-    String PING = "ping";
-    String PONG = "pong";
+public class Constant {
+    public static String PING = "ping";
+    public static String PONG = "pong";
 
-    int Default_Threads = Runtime.getRuntime().availableProcessors() * 2;
+    /**
+     * 该值在ProducerFactory有修改
+     */
+    public static int Default_Threads = 4;
 
-    int MAGIC_NUMBER = 0x12fcf76;
-    String DELIMITER = "$(* *)$";
+    public static int MAGIC_NUMBER = 0x12fcf76;
+    public static String DELIMITER = "$(* *)$";
 
-    int MAX_LENGTH = 8192;
+    public static int MAX_LENGTH = 8192;
+
 }

@@ -15,7 +15,7 @@ public class AppInfo {
      */
     private String appName;
     /**
-     * channelId 和 channel的映射关系
+     * 客户端ip 和 channel的映射关系
      */
     private Map<String, ChannelHandlerContext> map = new ConcurrentHashMap<>();
 

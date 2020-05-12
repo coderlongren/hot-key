@@ -15,7 +15,7 @@ import java.util.concurrent.Executors;
  * @version 1.0
  */
 public class DisruptorEventModeBuilder<T extends BaseEvent> {
-    private int bufferSize = 1024 * 8;
+    private int bufferSize = 2 * 1024 * 1024;
     private EventHandler<T>[] workHandlers;
     private EventFactory<T> eventFactory;
 
