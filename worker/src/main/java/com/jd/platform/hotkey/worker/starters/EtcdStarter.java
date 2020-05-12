@@ -54,8 +54,6 @@ public class EtcdStarter {
     @Value("${etcd.workerPath}")
     private String workerPath;
 
-    private static final String CHECK_ETCD_TRUE = "check self info exist in etcd , return true";
-    private static final String CHECK_ETCD_FALSE = "check self info exist in etcd , return false";
     private static final String MAO = ":";
     private static final String ETCD_DOWN = "etcd is unConnected . please do something";
     private static final String EMPTY_RULE = "very important warn !!! rule info is null!!!";
@@ -161,17 +159,10 @@ public class EtcdStarter {
         scheduledExecutorService.scheduleAtFixedRate(() -> {
 
             try {
-                String value = configCenter.get(buildKey());
-                if (!buildValue().equals(value)) {
-                    logger.info(CHECK_ETCD_FALSE);
-                    uploadSelfInfo();
-                } else {
-                    logger.info(CHECK_ETCD_TRUE);
-                }
+                uploadSelfInfo();
             } catch (Exception e) {
                 //do nothing
             }
-
 
         }, 0, 5, TimeUnit.SECONDS);
     }
@@ -180,7 +171,7 @@ public class EtcdStarter {
      * 通过http请求手工上传信息到etcd，适用于正常使用过程中，etcd挂掉，导致worker租期到期被删除，无法自动注册
      */
     private void uploadSelfInfo() {
-        configCenter.putAndGrant(buildKey(), buildValue(), 5);
+        configCenter.putAndGrant(buildKey(), buildValue(), 6);
     }
 
     private String buildKey() {

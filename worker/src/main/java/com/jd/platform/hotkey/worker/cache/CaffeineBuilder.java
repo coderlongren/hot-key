@@ -14,10 +14,9 @@ public class CaffeineBuilder {
      * 构建所有来的要缓存的key cache
      */
     public static Cache<String, Object> buildAllKeyCache() {
-//        Executor executor = Executors.newCachedThreadPool();
+        //老版本jdk1.8.0_20之前，caffeine默认的forkJoinPool在及其密集的淘汰过期时，会有forkJoinPool报错。建议用新版jdk
         return Caffeine.newBuilder()
-//                .executor(executor)
-                .initialCapacity(1024)//初始大小
+                .initialCapacity(8192)//初始大小
                 .maximumSize(5000000)//最大数量
                 .expireAfterWrite(1, TimeUnit.MINUTES)//过期时间
                 .softValues()
@@ -34,6 +33,10 @@ public class CaffeineBuilder {
                 .expireAfterWrite(10, TimeUnit.SECONDS)//过期时间
                 .softValues()
                 .build();
+    }
+
+    public static void main(String[] args) {
+        System.out.println(System.getProperty("java.version"));
     }
 
 }

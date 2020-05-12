@@ -4,6 +4,7 @@ import com.jd.platform.hotkey.common.coder.Codec;
 import com.jd.platform.hotkey.common.tool.Constant;
 import com.jd.platform.hotkey.worker.netty.client.IClientChangeListener;
 import com.jd.platform.hotkey.worker.netty.filter.INettyMsgFilter;
+import com.jd.platform.hotkey.worker.tool.CpuNum;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -28,9 +29,9 @@ public class NodesServer {
     private Codec codec;
 
     public void startNettyServer(int port) throws Exception {
-        //配置线程组
-        EventLoopGroup bossGroup = new NioEventLoopGroup();
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        //boss单线程
+        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
+        EventLoopGroup workerGroup = new NioEventLoopGroup(CpuNum.workerCount());
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(bossGroup, workerGroup)
