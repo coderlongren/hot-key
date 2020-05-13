@@ -14,8 +14,11 @@ public class EventWrapper implements Serializable {
 
     private Date date;
 
-    public EventWrapper(Event event) {
+    private Long ttl;
+
+    public EventWrapper(Event event ,Long ttl) {
         this.event = event;
+        this.ttl = ttl;
         this.date = new Date();
     }
 
@@ -27,4 +30,7 @@ public class EventWrapper implements Serializable {
         return date;
     }
 
+    public Long getTtl() {
+        return ttl;
+    }
 }

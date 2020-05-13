@@ -53,8 +53,9 @@ public class EtcdMonitor {
             KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.hotKeyPath);
             while (watchIterator.hasNext()) {
                 Event event = event(watchIterator);
+                long ttl = configCenter.timeToLive(event.getKv().getLease());
                 log.info("来消息了 准备调用处理器 time:"+ LocalDateTime.now().toString());
-                DataHandlerUtil.offer(new EventWrapper(event));
+                DataHandlerUtil.offer(new EventWrapper(event,ttl));
             }
         });
     }

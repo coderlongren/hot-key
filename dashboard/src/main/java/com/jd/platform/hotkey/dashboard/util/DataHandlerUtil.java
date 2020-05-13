@@ -79,10 +79,7 @@ public class DataHandlerUtil {
         CompletableFuture.runAsync(() -> {
             while (true){
                 if (!queue.isEmpty()) {
-                    EventWrapper eventWrapper = queue.poll();
-                    Date date = eventWrapper.getDate();
-                    Event event = eventWrapper.getEvent();
-                    handHotKey(event, date);
+                    handHotKey(queue.poll());
                 }else{
                     try {
                         Thread.sleep(1000);
@@ -97,12 +94,12 @@ public class DataHandlerUtil {
 
     /**
      * 处理热点key和记录
-     * @param event 事件
-     * @param date 日期
      */
-    private void handHotKey(Event event, Date date){
+    private void handHotKey(EventWrapper eventWrapper){
+        Event event = eventWrapper.getEvent();
         KeyValue kv = event.getKv();
-        long ttl = configCenter.timeToLive(kv.getLease());
+        Date date = eventWrapper.getDate();
+        long ttl = eventWrapper.getTtl();
         log.info("从队列获取到了 kv:{}",kv);
         Event.EventType eventType = event.getType();
         String k = kv.getKey().toStringUtf8();
@@ -129,13 +126,9 @@ public class DataHandlerUtil {
     private void addRecord(KeyRecord record){
         keyRecords.add(record);
         if(keyRecords.size() >= FULL_SIZE){
-            synchronized (lock){
-                if(keyRecords.size() >= FULL_SIZE){
-                    int row = keyRecordMapper.batchInsert(keyRecords);
-                    log.info("keyRecords大于10,[主动插入],条数为：{}",row);
-                    keyRecords.clear();
-                }
-            }
+            int row = keyRecordMapper.batchInsert(keyRecords);
+            log.info("keyRecords大于10,[主动插入],条数为：{}",row);
+            keyRecords.clear();
         }
     }
 
