@@ -2,7 +2,6 @@ package com.jd.platform.hotkey.worker.cache;
 
 import cn.hutool.core.util.StrUtil;
 import com.github.benmanes.caffeine.cache.Cache;
-import jdk.nashorn.internal.ir.debug.ObjectSizeCalculator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,8 +53,8 @@ public class CaffeineCacheHolder {
         Map<String, String> map = new HashMap<>();
         for (String appName : CACHE_MAP.keySet()) {
             Map caffMap = CACHE_MAP.get(appName).asMap();
-            long bytes = ObjectSizeCalculator.getObjectSize(caffMap);
-            map.put(appName, caffMap.size() + "-" + bytes);
+//            long bytes = ObjectSizeCalculator.getObjectSize(caffMap);
+            map.put(appName, caffMap.size() + "");
 
         }
         return map;
