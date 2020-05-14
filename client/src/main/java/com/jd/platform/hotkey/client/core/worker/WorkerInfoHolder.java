@@ -18,7 +18,6 @@ public class WorkerInfoHolder {
      */
     private static final List<Server> WORKER_HOLDER = new ArrayList<>();
 
-
     private WorkerInfoHolder() {
     }
 
@@ -32,7 +31,7 @@ public class WorkerInfoHolder {
     public static boolean hasConnected(String address) {
         for (Server server : WORKER_HOLDER) {
             if (address.equals(server.address)) {
-                return server.channel != null;
+                return channelIsOk(server.channel);
             }
         }
         return false;
@@ -44,11 +43,16 @@ public class WorkerInfoHolder {
     public static List<String> getNonConnectedWorkers() {
         List<String> list = new ArrayList<>();
         for (Server server : WORKER_HOLDER) {
-            if (server.channel == null) {
+            //如果没连上，或者连上连接异常的
+            if (!channelIsOk(server.channel)) {
                 list.add(server.address);
             }
         }
         return list;
+    }
+
+    private static boolean channelIsOk(Channel channel) {
+        return channel != null && channel.isActive();
     }
 
     public static Channel chooseChannel(String key) {
@@ -89,18 +93,9 @@ public class WorkerInfoHolder {
     /**
      * 处理某个worker的channel断线事件
      */
-    public synchronized static boolean dealChannelInactive(String address) {
+    public synchronized static void dealChannelInactive(String address) {
         synchronized (WORKER_HOLDER) {
-            Iterator<Server> it = WORKER_HOLDER.iterator();
-            while (it.hasNext()) {
-                Server server = it.next();
-                if (address.equals(server.address)) {
-                    it.remove();
-                    return true;
-                }
-            }
-
-            return false;
+            WORKER_HOLDER.removeIf(server -> address.equals(server.address));
         }
     }
 
@@ -108,21 +103,23 @@ public class WorkerInfoHolder {
      * 增加一个新的worker
      */
     public synchronized static void put(String address, Channel channel) {
-        Iterator<Server> it = WORKER_HOLDER.iterator();
-        boolean exist = false;
-        while (it.hasNext()) {
-            Server server = it.next();
-            if (address.equals(server.address)) {
-                server.channel = channel;
-                exist = true;
-                break;
+        synchronized (WORKER_HOLDER) {
+            Iterator<Server> it = WORKER_HOLDER.iterator();
+            boolean exist = false;
+            while (it.hasNext()) {
+                Server server = it.next();
+                if (address.equals(server.address)) {
+                    server.channel = channel;
+                    exist = true;
+                    break;
+                }
             }
-        }
-        if (!exist) {
-            Server server = new Server();
-            server.address = address;
-            server.channel = channel;
-            WORKER_HOLDER.add(server);
+            if (!exist) {
+                Server server = new Server();
+                server.address = address;
+                server.channel = channel;
+                WORKER_HOLDER.add(server);
+            }
         }
 
     }
@@ -153,8 +150,9 @@ public class WorkerInfoHolder {
         Iterator<Server> it = WORKER_HOLDER.iterator();
         while (it.hasNext()) {
             boolean exist = false;
+            Server server = it.next();
             //判断现在的worker里是否存在，如果当前的不存在，则删掉
-            String nowAddress = it.next().address;
+            String nowAddress = server.address;
             for (String address : allAddresses) {
                 if (address.equals(nowAddress)) {
                     exist = true;
@@ -163,6 +161,10 @@ public class WorkerInfoHolder {
             }
             if (!exist) {
                 JdLogger.info(WorkerInfoHolder.class, "worker remove : " + nowAddress);
+                //如果最新地址集里已经没了，就把他关闭掉
+                if (server.channel != null) {
+                    server.channel.close();
+                }
                 it.remove();
             }
         }
