@@ -144,22 +144,21 @@ public class EtcdStarter {
                 if (CollectionUtil.isEmpty(keyValues)) {
                     JdLogger.warn(getClass(), "very important warn !!! workers ip info is null!!!");
                     notifyWorkerChange(new ArrayList<>());
+                    return false;
                 }
-
-                return false;
-            } else {
-                List<String> addresses = new ArrayList<>();
-                for (KeyValue keyValue : keyValues) {
-                    //value里放的是ip地址
-                    String ipPort = keyValue.getValue().toStringUtf8();
-                    addresses.add(ipPort);
-                }
-                JdLogger.info(getClass(), "worker info list is : " + addresses + ", now addresses is "
-                        + WorkerInfoHolder.getWorkers());
-                //发布workerinfo变更信息
-                notifyWorkerChange(addresses);
-                return true;
             }
+
+            List<String> addresses = new ArrayList<>();
+            for (KeyValue keyValue : keyValues) {
+                //value里放的是ip地址
+                String ipPort = keyValue.getValue().toStringUtf8();
+                addresses.add(ipPort);
+            }
+            JdLogger.info(getClass(), "worker info list is : " + addresses + ", now addresses is "
+                    + WorkerInfoHolder.getWorkers());
+            //发布workerinfo变更信息
+            notifyWorkerChange(addresses);
+            return true;
         } catch (StatusRuntimeException ex) {
             //etcd连不上
             JdLogger.error(getClass(), "etcd connected fail. Check the etcd address!!!");
@@ -207,10 +206,16 @@ public class EtcdStarter {
                                 return;
                             }
                             JdLogger.info(getClass(), "receive new key : " + key);
-                            //如果不是，那就是手工添加的
+                            //如果不是，那可能是手工添加的，也可能是没收到worker推送的，只收到了etcd推送的
                             HotKeyModel model = new HotKeyModel();
                             model.setRemove(false);
-                            model.setCreateTime(Long.valueOf(keyValue.getValue().toStringUtf8()));
+                            //value是1的，就是etcd推送过来的。value是时间戳的，就是手工创建的
+                            if ("1".equals(keyValue.getValue().toStringUtf8())) {
+                                model.setCreateTime(System.currentTimeMillis());
+                            } else {
+                                model.setCreateTime(Long.valueOf(keyValue.getValue().toStringUtf8()));
+                            }
+
                             model.setKey(key);
                             EventBusCenter.getInstance().post(new ReceiveNewKeyEvent(model));
                         }
