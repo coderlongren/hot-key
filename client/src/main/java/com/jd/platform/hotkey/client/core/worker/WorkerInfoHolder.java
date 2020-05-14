@@ -6,6 +6,7 @@ import com.jd.platform.hotkey.client.netty.NettyClient;
 import io.netty.channel.Channel;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author wuweifeng wrote on 2020-01-13
@@ -16,7 +17,7 @@ public class WorkerInfoHolder {
      * 保存worker的ip地址和Channel的映射关系，这是有序的。每次client发送消息时，都会根据该map的size进行hash
      * 如key-1就发送到workerHolder的第1个Channel去，key-2就发到第2个Channel去
      */
-    private static final List<Server> WORKER_HOLDER = new ArrayList<>();
+    private static final List<Server> WORKER_HOLDER = new CopyOnWriteArrayList<>();
 
     private WorkerInfoHolder() {
     }
@@ -56,14 +57,12 @@ public class WorkerInfoHolder {
     }
 
     public static Channel chooseChannel(String key) {
-        synchronized (WORKER_HOLDER) {
-            if (StrUtil.isEmpty(key) || WORKER_HOLDER.size() == 0) {
-                return null;
-            }
-            int index = Math.abs(key.hashCode() % WORKER_HOLDER.size());
-
-            return WORKER_HOLDER.get(index).channel;
+        if (StrUtil.isEmpty(key) || WORKER_HOLDER.size() == 0) {
+            return null;
         }
+        int index = Math.abs(key.hashCode() % WORKER_HOLDER.size());
+
+        return WORKER_HOLDER.get(index).channel;
     }
 
     /**
@@ -71,55 +70,50 @@ public class WorkerInfoHolder {
      * 将新的worker信息和当前的进行合并，并且连接新的address
      * address例子：10.12.139.152:11111
      */
-    public synchronized static void mergeAndConnectNew(List<String> allAddresses) {
-        synchronized (WORKER_HOLDER) {
-            removeNoneUsed(allAddresses);
+    public static void mergeAndConnectNew(List<String> allAddresses) {
+        removeNoneUsed(allAddresses);
 
-            //去连接那些在etcd里有，但是list里没有的
-            List<String> needConnectWorkers = newWorkers(allAddresses);
-            if (needConnectWorkers.size() == 0) {
-                return;
-            }
-
-            JdLogger.info(WorkerInfoHolder.class, "new workers : " + needConnectWorkers);
-
-            //再连接，连上后，value就有值了
-            NettyClient.getInstance().connect(needConnectWorkers);
-
-            Collections.sort(WORKER_HOLDER);
+        //去连接那些在etcd里有，但是list里没有的
+        List<String> needConnectWorkers = newWorkers(allAddresses);
+        if (needConnectWorkers.size() == 0) {
+            return;
         }
+
+        JdLogger.info(WorkerInfoHolder.class, "new workers : " + needConnectWorkers);
+
+        //再连接，连上后，value就有值了
+        NettyClient.getInstance().connect(needConnectWorkers);
+
+        Collections.sort(WORKER_HOLDER);
     }
 
     /**
-     * 处理某个worker的channel断线事件
+     * 处理某个worker的channel断线事件<p>
+     * 可能会导致重复删除
      */
-    public synchronized static void dealChannelInactive(String address) {
-        synchronized (WORKER_HOLDER) {
-            WORKER_HOLDER.removeIf(server -> address.equals(server.address));
-        }
+    public static void dealChannelInactive(String address) {
+        WORKER_HOLDER.removeIf(server -> address.equals(server.address));
     }
 
     /**
      * 增加一个新的worker
      */
     public synchronized static void put(String address, Channel channel) {
-        synchronized (WORKER_HOLDER) {
-            Iterator<Server> it = WORKER_HOLDER.iterator();
-            boolean exist = false;
-            while (it.hasNext()) {
-                Server server = it.next();
-                if (address.equals(server.address)) {
-                    server.channel = channel;
-                    exist = true;
-                    break;
-                }
-            }
-            if (!exist) {
-                Server server = new Server();
-                server.address = address;
+        Iterator<Server> it = WORKER_HOLDER.iterator();
+        boolean exist = false;
+        while (it.hasNext()) {
+            Server server = it.next();
+            if (address.equals(server.address)) {
                 server.channel = channel;
-                WORKER_HOLDER.add(server);
+                exist = true;
+                break;
             }
+        }
+        if (!exist) {
+            Server server = new Server();
+            server.address = address;
+            server.channel = channel;
+            WORKER_HOLDER.add(server);
         }
 
     }
@@ -147,10 +141,8 @@ public class WorkerInfoHolder {
      * 移除那些在最新的worker地址集里没有的那些
      */
     private static void removeNoneUsed(List<String> allAddresses) {
-        Iterator<Server> it = WORKER_HOLDER.iterator();
-        while (it.hasNext()) {
+        for (Server server : WORKER_HOLDER) {
             boolean exist = false;
-            Server server = it.next();
             //判断现在的worker里是否存在，如果当前的不存在，则删掉
             String nowAddress = server.address;
             for (String address : allAddresses) {
@@ -165,10 +157,37 @@ public class WorkerInfoHolder {
                 if (server.channel != null) {
                     server.channel.close();
                 }
-                it.remove();
+                WORKER_HOLDER.remove(server);
             }
         }
     }
+
+//    public static void main(String[] args) {
+//        List<String> list = new CopyOnWriteArrayList<>();
+//
+//        list.add("1");
+//        list.add("4");
+//        list.add("2");
+//        list.add("3");
+//
+//        List<String> temp = new ArrayList<>();
+//        temp.add("4");
+//
+//       for (String server : list) {
+//            boolean exist = false;
+//            for (String address : temp) {
+//                if (address.equals(server)) {
+//                    exist = true;
+//                    break;
+//                }
+//            }
+//            if (!exist) {
+//                list.remove(server);
+//            }
+//        }
+//
+//        System.out.println(list);
+//    }
 
 
     private static class Server implements Comparable<Server> {

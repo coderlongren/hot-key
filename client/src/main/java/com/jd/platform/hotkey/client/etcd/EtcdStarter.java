@@ -6,7 +6,6 @@ import com.ibm.etcd.api.KeyValue;
 import com.ibm.etcd.client.kv.KvClient;
 import com.ibm.etcd.client.kv.WatchUpdate;
 import com.jd.platform.hotkey.client.Context;
-import com.jd.platform.hotkey.client.callback.JdHotKeyStore;
 import com.jd.platform.hotkey.client.callback.ReceiveNewKeyEvent;
 import com.jd.platform.hotkey.client.core.eventbus.EventBusCenter;
 import com.jd.platform.hotkey.client.core.rule.KeyRuleInfoChangeEvent;
@@ -204,15 +203,10 @@ public class EtcdStarter {
                             model.setKey(key);
                             EventBusCenter.getInstance().post(new ReceiveNewKeyEvent(model));
                         } else {
-                            //如果已经是热key了，就不处理
-                            if (JdHotKeyStore.isHotKey(key)) {
-                                return;
-                            }
-                            JdLogger.info(getClass(), "receive new key : " + key);
-                            //如果不是，那可能是手工添加的，也可能是没收到worker推送的，只收到了etcd推送的
+                            JdLogger.info(getClass(), "etcd receive new key : " + key);
                             HotKeyModel model = new HotKeyModel();
                             model.setRemove(false);
-                            //value是1的，就是etcd推送过来的。value是时间戳的，就是手工创建的
+                            //value是1的，就是worker推到etcd推送过来的。value是时间戳的，就是手工创建的
                             if ("1".equals(keyValue.getValue().toStringUtf8())) {
                                 model.setCreateTime(System.currentTimeMillis());
                             } else {
