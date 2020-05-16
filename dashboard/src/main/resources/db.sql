@@ -104,4 +104,4 @@ CREATE TABLE `hk_key_timely`  (
 -- Records of hk_key_timely
 -- ----------------------------
 INSERT INTO `hk_key_timely` VALUES (1, 'testk1', 'testv1', '/jd/hotkeys/test/', 'test', 60000, 1212121);
-INSERT INTO `hk_key_timely` VALUES (2, 'testk2', 'testv2', '/jd/hotkeys/test/', 'test', 10000, 123443345);
+--INSERT INTO `hk_key_timely` VALUES (2, 'testk2', 'testv2', '/jd/hotkeys/test/', 'test', 10000, 123443345);
