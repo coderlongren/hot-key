@@ -13,6 +13,8 @@ public interface KeyTimelyMapper {
 
     int deleteByKeyAndApp(String key,String appName);
 
+    int deleteByUUid(List<KeyTimely> list);
+
     int insertSelective(KeyTimely key);
 
     KeyTimely selectByPrimaryKey(Long id);

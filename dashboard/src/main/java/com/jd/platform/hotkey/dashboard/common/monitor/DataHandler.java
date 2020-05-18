@@ -158,7 +158,7 @@ public class DataHandler {
 
             if (deleteList.size() > 0) {
                 //改成批量删除
-//            keyTimelyMapper.deleteByKeyAndApp(arr[1], arr[0]);
+                keyTimelyMapper.deleteByUUid(insertList);
             }
         } catch (Exception e) {
             e.printStackTrace();

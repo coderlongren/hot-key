@@ -30,6 +30,15 @@
     where key_name = #{key} and app_name = #{appName}
   </delete>
 
+
+  <delete id="deleteByUUid">
+    delete from hk_key_timely
+    where uuid in
+     <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+         #{item.uuid}
+     </foreach>
+  </delete>
+
   <delete id="clear">
     delete from hk_key_timely where 1 = 1
   </delete>
