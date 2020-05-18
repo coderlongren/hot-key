@@ -31,7 +31,7 @@
   </delete>
 
   <delete id="clear">
-    delete from hk_key_timely
+    delete from hk_key_timely where 1 = 1
   </delete>
 
 

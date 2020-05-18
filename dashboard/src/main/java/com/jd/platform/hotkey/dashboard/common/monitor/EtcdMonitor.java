@@ -23,7 +23,6 @@ import java.util.concurrent.CompletableFuture;
 /**
  * @ProjectName: hotkey
  * @ClassName: EtcdMonitor
- * @Description: TODO(一句话描述该类的功能)
  * @Author: liyunfeng31
  * @Date: 2020/4/18 18:29
  */
