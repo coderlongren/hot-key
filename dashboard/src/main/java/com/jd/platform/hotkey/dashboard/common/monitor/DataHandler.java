@@ -14,6 +14,7 @@ import com.jd.platform.hotkey.dashboard.model.KeyTimely;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +40,7 @@ public class DataHandler {
     @Resource
     private KeyTimelyMapper keyTimelyMapper;
 
-    @Value("${pool.size}")
+    @Value("${pool.size:4}")
     private String poolSize = "4";
 
     /**
@@ -145,8 +146,13 @@ public class DataHandler {
 
     private void batchInsert(List<KeyRecord> keyRecords) {
         List<KeyRecord> records = keyRecords.stream().filter(Objects::nonNull).collect(Collectors.toList());
+        int row = 0;
         if (records.size() > 0) {
-            int row = keyRecordMapper.batchInsert(records);
+            try {
+                 row = keyRecordMapper.batchInsert(records);
+            }catch (DuplicateKeyException e){
+               // log.warn("DuplicateKey");
+            }
             log.info("keyRecords [定时任务插入],条数为：{}", row);
         }
         records = null;
@@ -172,7 +178,11 @@ public class DataHandler {
         int type = eventType.getNumber();
         if (eventType.equals(Event.EventType.PUT)) {
             String source = Constant.SYSTEM_FLAG.equals(v) ? Constant.SYSTEM : Constant.HAND;
-            keyTimelyMapper.insertSelective(new KeyTimely(arr[1], v, arr[0], ttl, uuid, date));
+            try {
+                keyTimelyMapper.insertSelective(new KeyTimely(arr[1], v, arr[0], ttl, uuid, date));
+            }catch (DuplicateKeyException e){
+              //  log.warn("DuplicateKey");
+            }
             return new KeyRecord(arr[1], v, arr[0], ttl, source, type, uuid, date);
         } else if (eventType.equals(Event.EventType.DELETE)) {
             keyTimelyMapper.deleteByKeyAndApp(arr[1], arr[0]);

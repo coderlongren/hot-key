@@ -78,34 +78,49 @@ public class DataHandlerUtil {
      * 每1秒批量保存一次
      * hasTask 标识方式
      */
+    static AtomicBoolean hasTask2 = new AtomicBoolean(false);
     //@Scheduled(fixedRate = 1000)
     public void batchInsertRecords() {
         hasTask.set(true);
-        if(keyRecords.size()>0){
-            int row = keyRecordMapper.batchInsert(keyRecords);
-            log.info("keyRecords [定时任务插入],条数为：{}",row);
-            keyRecords.clear();
-        }
+        int row = keyRecordMapper.batchInsert(keyRecords);
+        log.info("keyRecords [定时任务插入],条数为：{}",row);
+        keyRecords.clear();
         hasTask.set(false);
     }
+
+    private void addRecord3(KeyRecord record) throws InterruptedException {
+        while (hasTask.get()){
+            Thread.sleep(100);
+        }
+        keyRecords.add(record);
+    }
+
 
     /**
      * 每1秒批量保存一次
      * 信号量方式
      */
     //@Scheduled(fixedRate = 1000)
-    public void batchInsertRecords2() {
+    public void batchInsertRecords2 () throws InterruptedException{
         try {
             semaphore.acquire();
             int row = keyRecordMapper.batchInsert(keyRecords);
             log.info("keyRecords [定时任务插入],条数为：{}",row);
             keyRecords.clear();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         } finally {
             semaphore.release();
         }
     }
+
+    private void addRecord1(KeyRecord record) throws InterruptedException {
+        try {
+            semaphore.acquire();
+            keyRecords.add(record);
+        } finally {
+            semaphore.release();
+        }
+    }
+
 
 
    // @PostConstruct

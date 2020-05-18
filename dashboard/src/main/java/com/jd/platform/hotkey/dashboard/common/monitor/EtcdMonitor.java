@@ -13,6 +13,7 @@ import com.jd.platform.hotkey.dashboard.model.Worker;
 import com.jd.platform.hotkey.dashboard.service.WorkerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -67,10 +68,15 @@ public class EtcdMonitor {
                 long version = kv.getModRevision();
                 String app = k.replace(ConfigConstant.rulePath, "");
                 String uuid = app + Constant.JOIN  + version;
-                if (eventType.equals(Event.EventType.PUT)) {
-                    logMapper.insertSelective(new ChangeLog(app, 1, "", v,  Constant.SYSTEM, app, uuid));
-                } else if (eventType.equals(Event.EventType.DELETE)) {
-                    logMapper.insertSelective(new ChangeLog(app, 1, v, "",  Constant.SYSTEM, app, uuid));
+
+                try {
+                    if (eventType.equals(Event.EventType.PUT)) {
+                        logMapper.insertSelective(new ChangeLog(app, 1, "", v,  Constant.SYSTEM, app, uuid));
+                    } else if (eventType.equals(Event.EventType.DELETE)) {
+                        logMapper.insertSelective(new ChangeLog(app, 1, v, "",  Constant.SYSTEM, app, uuid));
+                    }
+                }catch (DuplicateKeyException e){
+                    log.warn("DuplicateKeyException");
                 }
             }
         });

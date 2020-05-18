@@ -19,6 +19,7 @@ import com.jd.platform.hotkey.dashboard.model.KeyRule;
 import com.jd.platform.hotkey.dashboard.model.Worker;
 import com.jd.platform.hotkey.dashboard.service.WorkerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -95,10 +96,15 @@ public class WorkerServiceImpl implements WorkerService {
     @Override
     public int insertWorkerBySys(Worker worker) {
         worker.setUpdateTime(new Date());
-        workerMapper.insertSelective(worker);
-        String to = JSON.toJSONString(worker);
-        return changeLogMapper.insertSelective(new ChangeLog(worker.getName(),Constant.WORKER_CHANGE,"",
-                to,worker.getUpdateUser(), SystemClock.now()+""));
+        try {
+            workerMapper.insertSelective(worker);
+            String to = JSON.toJSONString(worker);
+            return changeLogMapper.insertSelective(new ChangeLog(worker.getName(),Constant.WORKER_CHANGE,"",
+                    to,worker.getUpdateUser(), SystemClock.now()+""));
+        }catch (DuplicateKeyException e){
+
+        }
+        return 0;
     }
 
 
@@ -121,11 +127,16 @@ public class WorkerServiceImpl implements WorkerService {
 
     @Override
     public int updateWorker(Worker worker) {
-        Worker oldWorker = workerMapper.selectByKey(worker.getName());
-        String from = JSON.toJSONString(oldWorker);
-        String to = JSON.toJSONString(worker);
-        changeLogMapper.insertSelective(new ChangeLog(worker.getName(),Constant.WORKER_CHANGE,from,to,worker.getUpdateUser(),SystemClock.now()+""));
-        return workerMapper.updateByKey(worker);
+        try {
+            Worker oldWorker = workerMapper.selectByKey(worker.getName());
+            String from = JSON.toJSONString(oldWorker);
+            String to = JSON.toJSONString(worker);
+            changeLogMapper.insertSelective(new ChangeLog(worker.getName(),Constant.WORKER_CHANGE,from,to,worker.getUpdateUser(),SystemClock.now()+""));
+            return workerMapper.updateByKey(worker);
+        }catch (DuplicateKeyException e){
+
+        }
+        return 0;
     }
 
     @Override

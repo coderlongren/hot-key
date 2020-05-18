@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -68,7 +69,11 @@ public class DashboardApplication implements CommandLineRunner {
         if (keyList.size() == 0) {
             return;
         }
-        timelyMapper.batchInsert(keyList);
+        try {
+            timelyMapper.batchInsert(keyList);
+        }catch (DuplicateKeyException e){
+
+        }
     }
 
 
