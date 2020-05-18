@@ -5,16 +5,5 @@ netty:
 etcd:
   server: ${etcdServer:http://127.0.0.1:2379} #etcd的地址，重要！！！
   workerPath: ${workerPath:default} #该worker放到哪个path下，譬如放/app1下，则该worker只能被app1使用，不会为其他client提供服务
-spring:
-  aop:
-    proxy-target-class: true
-  datasource:
-    username: root
-    password: JRTEST
-    url: jdbc:mysql://172.24.7.182:3306/test1?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
-    driver-class-name: com.mysql.cj.jdbc.Driver
-mybatis:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 server:
   port: 8080
