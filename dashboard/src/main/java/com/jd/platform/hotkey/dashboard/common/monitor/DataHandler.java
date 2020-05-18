@@ -4,6 +4,7 @@ package com.jd.platform.hotkey.dashboard.common.monitor;
 import com.ibm.etcd.api.Event;
 import com.ibm.etcd.api.KeyValue;
 import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
+import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
 import com.jd.platform.hotkey.dashboard.common.domain.Constant;
 import com.jd.platform.hotkey.dashboard.common.domain.EventWrapper;
 import com.jd.platform.hotkey.dashboard.mapper.KeyRecordMapper;
@@ -12,14 +13,17 @@ import com.jd.platform.hotkey.dashboard.model.KeyRecord;
 import com.jd.platform.hotkey.dashboard.model.KeyTimely;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -35,6 +39,9 @@ public class DataHandler {
     @Resource
     private KeyTimelyMapper keyTimelyMapper;
 
+    @Value("${pool.size}")
+    private String poolSize = "4";
+
     /**
      * 队列
      */
@@ -43,7 +50,7 @@ public class DataHandler {
     /**
      * 4个线程用来入库
      */
-    private Executor executor = Executors.newFixedThreadPool(4);
+    private Executor executor = Executors.newFixedThreadPool(Integer.valueOf(poolSize));
 
     /**
      * 入队
@@ -57,24 +64,43 @@ public class DataHandler {
      */
     @Scheduled(fixedRate = 1000)
     public void batchInsertRecords() {
-        List<KeyRecord> keyRecords = new ArrayList<>(10000);
-        if (queue.isEmpty()) {
-            return;
-        }
+        try {
+            List<KeyRecord> keyRecords = new ArrayList<>(10000);
+            if (queue.isEmpty()) {
+                return;
+            }
 
-        for (int i = 0; i < 10000; i++) {
-            if (!queue.isEmpty()) {
-                keyRecords.add(handHotKey(queue.poll()));
-            } else {
-                keyRecords.add(null);
+            for (int i = 0; i < 10000; i++) {
+                if (!queue.isEmpty()) {
+                    keyRecords.add(handHotKey(queue.poll()));
+                } else {
+                    keyRecords.add(null);
+                }
+            }
+
+            for (int i = 0; i < 10; i++) {
+                List<KeyRecord> tempRecords = keyRecords.subList(1000 * i, 1000 * (i + 1));
+                executor.execute(() -> batchInsert(tempRecords));
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+            log.info(t.getMessage());
+            for (StackTraceElement s : t.getStackTrace()) {
+                log.info(s.toString());
             }
         }
 
-        for (int i = 0; i < 10; i++) {
-            List<KeyRecord> tempRecords = keyRecords.subList(1000 * i, 1000 * (i + 1));
-            executor.execute(() -> batchInsert(tempRecords));
-        }
+    }
 
+    @Resource
+    private IConfigCenter iConfigCenter;
+    @PostConstruct
+    public void aa() {
+        CompletableFuture.runAsync(() -> {
+        for (int i = 0; i < 10000; i++) {
+            iConfigCenter.put(ConfigConstant.hotKeyPath + "i/" +i, i + "");
+
+        }});
     }
 
     public static void main(String[] args) throws InterruptedException {

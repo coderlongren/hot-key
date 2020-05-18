@@ -23,7 +23,7 @@ public abstract class AbsConsumer<T extends BaseEvent> implements EventHandler<T
         if (model == null || model.getKey() == null) {
             return;
         }
-        if (model.getKey().hashCode() % Constant.Default_Threads == Math.abs(hashIndex)) {
+        if (Math.abs(model.getKey().hashCode()) % Constant.Default_Threads == hashIndex) {
             //5秒前的过时消息就不处理了
             if (SystemClock.now() - model.getCreateTime() > 5000) {
                 return;

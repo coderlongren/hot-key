@@ -50,7 +50,7 @@ CREATE TABLE `hk_key_rule`  (
   `update_user` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '修改人',
   `update_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
   `version` int(11) NOT NULL DEFAULT 0 COMMENT '数据版本',
-  PRIMARY KEY (`id`) USING BTREE,
+  PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Compact;
 
 
@@ -65,7 +65,7 @@ CREATE TABLE `hk_key_record`  (
   `type` int(11) NOT NULL DEFAULT 1 COMMENT '记录类型：1put；2del; -1unkonw',
   `create_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   `uuid` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '防重ID',
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uniq_key`(`uuid`) USING BTREE COMMENT '唯一索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Compact;
 
@@ -81,7 +81,7 @@ CREATE TABLE `hk_change_log`  (
   `update_user` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '修改人',
   `create_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   `uuid` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '防重ID',
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uniq_key`(`uuid`) USING BTREE COMMENT '唯一索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Compact;
 
@@ -96,7 +96,7 @@ CREATE TABLE `hk_key_timely`  (
   `app_name` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '所属appName',
   `duration` int(11) NOT NULL DEFAULT 0 COMMENT '缓存时间',
   `create_time` bigint(20) NOT NULL COMMENT '创建时间',
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uniq_key`(`uuid`) USING BTREE COMMENT '唯一索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Compact;
 
@@ -104,4 +104,17 @@ CREATE TABLE `hk_key_timely`  (
 -- Records of hk_key_timely
 -- ----------------------------
 INSERT INTO `hk_key_timely` VALUES (1, 'testk1', 'testv1', '/jd/hotkeys/test/', 'test', 60000, 1212121);
-INSERT INTO `hk_key_timely` VALUES (2, 'testk2', 'testv2', '/jd/hotkeys/test/', 'test', 10000, 123443345);
+--INSERT INTO `hk_key_timely` VALUES (2, 'testk2', 'testv2', '/jd/hotkeys/test/', 'test', 10000, 123443345);
+
+
+DROP TABLE IF EXISTS `hk_app_info`;
+CREATE TABLE `hk_app_info` (
+  `id`              bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `app_name`        varchar(60) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '应用名称',
+  `principal_name`  varchar(20) CHARACTER SET utf8 COLLATE utf8_bin  NOT NULL DEFAULT '' COMMENT '负责人',
+  `principal_phone` varchar(11) CHARACTER SET utf8 COLLATE utf8_bin  NOT NULL DEFAULT '' COMMENT '负责人手机号',
+  `app_desc`        varchar(64) CHARACTER SET utf8 COLLATE utf8_bin  NOT NULL DEFAULT '' COMMENT '应用描述',
+  `create_time`     datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建/接入时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `uniq_key`(`app_name`) USING BTREE COMMENT '唯一索引'
+) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Compact;

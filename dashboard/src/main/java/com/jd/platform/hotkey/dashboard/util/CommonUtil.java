@@ -1,9 +1,5 @@
 package com.jd.platform.hotkey.dashboard.util;
 
-
-import cn.hutool.core.convert.Convert;
-import org.springframework.util.DigestUtils;
-
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
 
@@ -62,7 +58,7 @@ public class CommonUtil {
 			return new String(bytes,"utf-8");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
-		};
+		}
 		return "";
 	}
 

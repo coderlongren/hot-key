@@ -6,7 +6,6 @@ import com.ibm.etcd.api.KeyValue;
 import com.ibm.etcd.client.kv.KvClient;
 import com.ibm.etcd.client.kv.WatchUpdate;
 import com.jd.platform.hotkey.client.Context;
-import com.jd.platform.hotkey.client.callback.JdHotKeyStore;
 import com.jd.platform.hotkey.client.callback.ReceiveNewKeyEvent;
 import com.jd.platform.hotkey.client.core.eventbus.EventBusCenter;
 import com.jd.platform.hotkey.client.core.rule.KeyRuleInfoChangeEvent;
@@ -35,6 +34,7 @@ import java.util.concurrent.TimeUnit;
  * @version 1.0
  */
 public class EtcdStarter {
+    private static final Object LOCK = new Object();
 
     public void start() {
         fetchWorkerInfo();
@@ -77,25 +77,43 @@ public class EtcdStarter {
 
     }
 
-//    /**
-//     * 异步开始监听worker变化信息
-//     */
+    /**
+     * 异步开始监听worker变化信息
+     */
 //    private void startWatchWorker() {
 //        CompletableFuture.runAsync(() -> {
 //            JdLogger.info(getClass(), "--- begin watch worker change ----");
 //            IConfigCenter configCenter = EtcdConfigFactory.configCenter();
-//            try {
-//                KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.workersPath);
-//                //如果有新事件，即worker的变更，就重新拉取所有的信息
-//                while (watchIterator.hasNext()) {
-//                    JdLogger.info(getClass(), "worker info changed. begin to fetch new infos");
-//                    WatchUpdate watchUpdate = watchIterator.next();
-//                    List<Event> eventList = watchUpdate.getEvents();
-//                    System.err.println(eventList.get(0).getKv());
 //
-//                    //全量拉取worker信息
-//                    fetch();
+//            try {
+//                //注意监听是只监听自己appName的，不监听default目录。但是下面的定时任务是如果appName下没有worker，就用default的
+//                //这样譬如appName没有自己的专属worker，也可以用默认的default。但一旦将来有了自己的worker，就可以立刻监听到，就不再用default了
+//                KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.workersPath + Context.APP_NAME);
+//                while (watchIterator.hasNext()) {
+//                    synchronized (LOCK) {
+//                        WatchUpdate watchUpdate = watchIterator.next();
+//                        List<Event> eventList = watchUpdate.getEvents();
+//                        Event event = eventList.get(0);
+//                        KeyValue keyValue = event.getKv();
+//                        //value里放的是ip地址
+//                        String ipPort = keyValue.getValue().toStringUtf8();
+//                        if (Event.EventType.PUT.equals(event.getType())) {
+//                            JdLogger.info(getClass(), "worker created ：" + ipPort);
+//                            List<KeyValue> keyValues = configCenter.getPrefix(ConfigConstant.workersPath + Context.APP_NAME);
+//                            List<String> addresses = new ArrayList<>();
+//                            for (KeyValue one : keyValues) {
+//                                //value里放的是ip地址
+//                                addresses.add(one.getValue().toStringUtf8());
+//                            }
+//                            notifyWorkerChange(addresses);
+//                        } else if (Event.EventType.DELETE.equals(event.getType())) {
+//                            JdLogger.info(getClass(), "worker removed ：" + ipPort);
+//                            WorkerInfoHolder.dealChannelInactive(ipPort);
+//                        }
+//                    }
+//
 //                }
+//
 //            } catch (Exception e) {
 //                JdLogger.error(getClass(), "watch err");
 //            }
@@ -103,20 +121,20 @@ public class EtcdStarter {
 //
 //    }
 
+
     /**
      * 每隔30秒拉取worker信息
      */
     private void fetchWorkerInfo() {
         ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
         //开启拉取etcd的worker信息，如果拉取失败，则定时继续拉取
-        scheduledExecutorService.scheduleAtFixedRate(() -> {
-            JdLogger.info(getClass(), "trying to connect to etcd and fetch worker info");
-            fetch();
+        scheduledExecutorService.scheduleAtFixedRate(() -> { JdLogger.info(getClass(), "trying to connect to etcd and fetch worker info");
+        fetch();
 
         }, 0, 30, TimeUnit.SECONDS);
     }
 
-    private synchronized boolean fetch() {
+    private void fetch() {
         IConfigCenter configCenter = EtcdConfigFactory.configCenter();
 
         try {
@@ -125,29 +143,28 @@ public class EtcdStarter {
             //worker为空，可能该APP没有自己的worker集群，就去连默认的，如果默认的也没有，就不管了，等着心跳
             if (CollectionUtil.isEmpty(keyValues)) {
                 keyValues = configCenter.getPrefix(ConfigConstant.workersPath + "default");
-                if (CollectionUtil.isEmpty(keyValues)) {
-                    JdLogger.warn(getClass(), "very important warn !!! workers ip info is null!!!");
-                    notifyWorkerChange(new ArrayList<>());
-                }
+            }
+            //全是空，给个警告
+            if (CollectionUtil.isEmpty(keyValues)) {
+                JdLogger.warn(getClass(), "very important warn !!! workers ip info is null!!!");
+            }
 
-                return false;
-            } else {
-                List<String> addresses = new ArrayList<>();
+            List<String> addresses = new ArrayList<>();
+            if (keyValues != null) {
                 for (KeyValue keyValue : keyValues) {
                     //value里放的是ip地址
                     String ipPort = keyValue.getValue().toStringUtf8();
                     addresses.add(ipPort);
                 }
-                JdLogger.info(getClass(), "worker info list is : " + addresses + ", now addresses is "
-                        + WorkerInfoHolder.getWorkers());
-                //发布workerinfo变更信息
-                notifyWorkerChange(addresses);
-                return true;
             }
+
+            JdLogger.info(getClass(), "worker info list is : " + addresses + ", now addresses is "
+                    + WorkerInfoHolder.getWorkers());
+            //发布workerinfo变更信息
+            notifyWorkerChange(addresses);
         } catch (StatusRuntimeException ex) {
             //etcd连不上
             JdLogger.error(getClass(), "etcd connected fail. Check the etcd address!!!");
-            return false;
         }
 
     }
@@ -186,15 +203,16 @@ public class EtcdStarter {
                             model.setKey(key);
                             EventBusCenter.getInstance().post(new ReceiveNewKeyEvent(model));
                         } else {
-                            //如果已经是热key了，就不处理
-                            if (JdHotKeyStore.isHotKey(key)) {
-                                return;
-                            }
-                            JdLogger.info(getClass(), "receive new key : " + key);
-                            //如果不是，那就是手工添加的
+                            JdLogger.info(getClass(), "etcd receive new key : " + key);
                             HotKeyModel model = new HotKeyModel();
                             model.setRemove(false);
-                            model.setCreateTime(Long.valueOf(keyValue.getValue().toStringUtf8()));
+                            //value是1的，就是worker推到etcd推送过来的。value是时间戳的，就是手工创建的
+                            if ("1".equals(keyValue.getValue().toStringUtf8())) {
+                                model.setCreateTime(System.currentTimeMillis());
+                            } else {
+                                model.setCreateTime(Long.valueOf(keyValue.getValue().toStringUtf8()));
+                            }
+
                             model.setKey(key);
                             EventBusCenter.getInstance().post(new ReceiveNewKeyEvent(model));
                         }

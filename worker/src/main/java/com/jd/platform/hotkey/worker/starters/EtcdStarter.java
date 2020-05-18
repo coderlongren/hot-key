@@ -11,6 +11,7 @@ import com.jd.platform.hotkey.common.tool.FastJsonUtils;
 import com.jd.platform.hotkey.common.tool.IpUtils;
 import com.jd.platform.hotkey.worker.cache.CaffeineCacheHolder;
 import com.jd.platform.hotkey.worker.model.AppInfo;
+import com.jd.platform.hotkey.worker.netty.filter.HotKeyFilter;
 import com.jd.platform.hotkey.worker.netty.holder.ClientInfoHolder;
 import com.jd.platform.hotkey.worker.rule.KeyRuleHolder;
 import io.grpc.StatusRuntimeException;
@@ -121,8 +122,9 @@ public class EtcdStarter {
                 configCenter.putAndGrant(ConfigConstant.clientCountPath + appName + "/" + ip, count + "", 10);
             }
 
-            configCenter.putAndGrant(ConfigConstant.caffeineSizePath + ip, CaffeineCacheHolder.getSize().toString(), 10);
+            configCenter.putAndGrant(ConfigConstant.caffeineSizePath + ip, "caffeineSize: " + CaffeineCacheHolder.getSize(), 10);
 
+            logger.info("totalReceiveCount:" + HotKeyFilter.totalReceiveKeyCount.get());
 //            configCenter.putAndGrant(ConfigConstant.bufferPoolPath + ip, MemoryTool.getBufferPool() + "", 10);
         } catch (Exception ex) {
             logger.error(ETCD_DOWN);
