@@ -153,7 +153,7 @@
       and app_name = #{appName}
     </if >
     <if test="startTime != null">
-      <![CDATA[ and create_time <= #{startTime} and create_time >= #{endTime}]]>
+      <![CDATA[ and create_time >= #{startTime} and create_time < #{endTime}]]>
     </if>
     order by id desc
   </select>
