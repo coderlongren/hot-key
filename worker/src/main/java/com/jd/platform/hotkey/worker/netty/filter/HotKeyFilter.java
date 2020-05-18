@@ -12,6 +12,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * 热key消息，包括从netty来的和mq来的。收到消息，都发到disruptor去
@@ -25,9 +26,13 @@ public class HotKeyFilter implements INettyMsgFilter, IMqMessageReceiver {
     @Resource
     private MessageProducer<HotKeyEvent> messageProducer;
 
+    public static AtomicLong totalReceiveKeyCount = new AtomicLong();
+
     @Override
     public boolean chain(HotKeyMsg message, ChannelHandlerContext ctx) {
         if (MessageType.REQUEST_NEW_KEY == message.getMessageType()) {
+            totalReceiveKeyCount.incrementAndGet();
+
             publishMsg(message.getBody());
 
             return false;
