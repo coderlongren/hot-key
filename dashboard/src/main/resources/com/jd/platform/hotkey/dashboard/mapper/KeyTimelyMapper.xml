@@ -31,11 +31,11 @@
   </delete>
 
 
-  <delete id="deleteByUUid">
+  <delete id="batchDeleted">
     delete from hk_key_timely
-    where uuid in
+    where (app_name,key_name) in
      <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
-         #{item.uuid}
+       (#{item.appName},#{item.key})
      </foreach>
   </delete>
 

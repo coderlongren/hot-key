@@ -132,7 +132,6 @@ public class DataHandler {
     private void batchTimely(List<KeyTimely> keyTimelies) {
         List<KeyTimely> insertList = new ArrayList<>();
         List<KeyTimely> deleteList = new ArrayList<>();
-
         for (KeyTimely keyTimely : keyTimelies) {
             if (keyTimely == null) {
                 continue;
@@ -158,7 +157,7 @@ public class DataHandler {
 
             if (deleteList.size() > 0) {
                 //改成批量删除
-                keyTimelyMapper.deleteByUUid(insertList);
+                keyTimelyMapper.batchDeleted(deleteList);
             }
         } catch (Exception e) {
             e.printStackTrace();

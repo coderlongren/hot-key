@@ -13,8 +13,6 @@ public interface KeyTimelyMapper {
 
     int deleteByKeyAndApp(String key,String appName);
 
-    int deleteByUUid(List<KeyTimely> list);
-
     int insertSelective(KeyTimely key);
 
     KeyTimely selectByPrimaryKey(Long id);
@@ -26,4 +24,6 @@ public interface KeyTimelyMapper {
     List<KeyTimely> listKeyTimely(SearchDto param);
 
     int batchInsert(List<KeyTimely> list);
+
+    void batchDeleted(List<KeyTimely> deleteList);
 }
