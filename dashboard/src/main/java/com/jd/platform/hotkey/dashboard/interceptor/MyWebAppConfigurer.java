@@ -1,6 +1,7 @@
 package com.jd.platform.hotkey.dashboard.interceptor;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.web.servlet.config.annotation.*;
 
 
@@ -12,6 +13,15 @@ public class MyWebAppConfigurer  implements WebMvcConfigurer {
 		//拦截路径可自行配置多个 可用 ，分隔开
 		InterceptorRegistration registration = registry.addInterceptor(new JwtInterceptor()).addPathPatterns("/**");
 		registration.excludePathPatterns("/admin/login","/error","/static/**");
+	}
+
+
+	@Override
+	public void addViewControllers(ViewControllerRegistry registry){
+		//设置访问路径为 “/”
+		registry.addViewController("/").setViewName("login.html");
+		//设置为最高优先级
+		registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
 	}
 
 
