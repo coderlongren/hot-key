@@ -22,9 +22,13 @@ public class ClientStarter {
     private String etcdServer;
 
     /**
-     * 推送key的间隔(毫秒)
+     * 推送key的间隔(毫秒)，推送越快，探测的越密集，会越快探测出来，但对client资源消耗相应增大
      */
     private Long pushPeriod;
+    /**
+     * caffeine的最大容量，默认给5万
+     */
+    private int caffeineSize;
 
     public ClientStarter(String appName) {
         if (appName == null) {
@@ -38,12 +42,21 @@ public class ClientStarter {
         private String etcdServer;
         private LocalCache localCache;
         private Long pushPeriod;
+        private int caffeineSize = 50000;
 
         public Builder() {
         }
 
         public Builder setAppName(String appName) {
             this.appName = appName;
+            return this;
+        }
+
+        public Builder setCaffeineSize(int caffeineSize) {
+            if (caffeineSize < 128) {
+                caffeineSize = 128;
+            }
+            this.caffeineSize = caffeineSize;
             return this;
         }
 
@@ -66,6 +79,7 @@ public class ClientStarter {
             ClientStarter clientStarter = new ClientStarter(appName);
             clientStarter.etcdServer = etcdServer;
             clientStarter.pushPeriod = pushPeriod;
+            clientStarter.caffeineSize = caffeineSize;
 
             return clientStarter;
         }
@@ -77,6 +91,9 @@ public class ClientStarter {
      */
     public void startPipeline() {
         JdLogger.info(getClass(), "etcdServer:" + etcdServer);
+        //设置caffeine的最大容量
+        Context.CAFFEINE_SIZE = caffeineSize;
+
         //设置etcd地址
         EtcdConfigFactory.buildConfigCenter(etcdServer);
         //开始定时推送

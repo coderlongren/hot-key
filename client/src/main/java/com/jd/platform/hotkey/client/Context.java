@@ -11,4 +11,6 @@ public class Context {
      * 与worker连接断开后，是否需要重连
      */
     public static boolean NEED_RECONNECT = true;
+
+    public static int CAFFEINE_SIZE = 50000;
 }

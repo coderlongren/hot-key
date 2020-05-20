@@ -69,6 +69,8 @@ public class DataHandler {
             if (queue.isEmpty()) {
                 return;
             }
+            //TODO 此处可以判断实际数量，不用add到10000个null，但我懒的写
+//            queue.size()
 
             for (int i = 0; i < 10000; i++) {
                 if (!queue.isEmpty()) {
@@ -96,7 +98,7 @@ public class DataHandler {
 
 //    @Resource
 //    private IConfigCenter iConfigCenter;
-
+//
 //    @PostConstruct
 //    public void aa() {
 //        CompletableFuture.runAsync(() -> {
@@ -106,7 +108,6 @@ public class DataHandler {
 //            }
 //            System.out.println(System.currentTimeMillis());
 //
-//            //开启上传worker信息
 //            ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 //            scheduledExecutorService.scheduleAtFixedRate(this::batchInsertRecords, 0, 1, TimeUnit.SECONDS);
 //        });

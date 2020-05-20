@@ -34,6 +34,10 @@ public interface ConfigConstant {
      */
     String caffeineSizePath = "/jd/caffeineSize/";
     /**
+     * totalReceiveKeyCount该worker接收到的key总量，每10秒上报一次
+     */
+    String totalReceiveKeyCount = "/jd/totalKeyCount/";
+    /**
      * bufferPool直接内存
      */
     String bufferPoolPath = "/jd/bufferPool/";

@@ -10,6 +10,7 @@ import com.jd.platform.hotkey.common.rule.KeyRule;
 import com.jd.platform.hotkey.common.tool.FastJsonUtils;
 import com.jd.platform.hotkey.common.tool.IpUtils;
 import com.jd.platform.hotkey.worker.cache.CaffeineCacheHolder;
+import com.jd.platform.hotkey.worker.disruptor.AbsConsumer;
 import com.jd.platform.hotkey.worker.model.AppInfo;
 import com.jd.platform.hotkey.worker.netty.filter.HotKeyFilter;
 import com.jd.platform.hotkey.worker.netty.holder.ClientInfoHolder;
@@ -119,12 +120,15 @@ public class EtcdStarter {
                 String appName = appInfo.getAppName();
                 Map<String, ChannelHandlerContext> map = appInfo.getMap();
                 int count = map.values().size();
-                configCenter.putAndGrant(ConfigConstant.clientCountPath + appName + "/" + ip, count + "", 10);
+                configCenter.putAndGrant(ConfigConstant.clientCountPath + appName + "/" + ip, count + "", 11);
             }
 
-            configCenter.putAndGrant(ConfigConstant.caffeineSizePath + ip, "caffeineSize: " + CaffeineCacheHolder.getSize(), 10);
+            configCenter.putAndGrant(ConfigConstant.caffeineSizePath + ip, "caffeineSize: " + CaffeineCacheHolder.getSize(), 11);
 
-            logger.info("totalReceiveCount:" + HotKeyFilter.totalReceiveKeyCount.get());
+            //上报每秒QPS（接收key数量、处理key数量）
+            String totalCount = "totalReceiveCount:" + HotKeyFilter.totalReceiveKeyCount.get() + " totalDealCount:" + AbsConsumer.totalDealCount.longValue();
+            configCenter.putAndGrant(ConfigConstant.totalReceiveKeyCount + ip, totalCount, 11);
+            logger.info(totalCount);
 //            configCenter.putAndGrant(ConfigConstant.bufferPoolPath + ip, MemoryTool.getBufferPool() + "", 10);
         } catch (Exception ex) {
             logger.error(ETCD_DOWN);

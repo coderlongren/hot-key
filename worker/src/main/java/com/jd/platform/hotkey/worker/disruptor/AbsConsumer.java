@@ -5,12 +5,16 @@ import com.jd.platform.hotkey.common.model.BaseModel;
 import com.jd.platform.hotkey.common.tool.Constant;
 import com.lmax.disruptor.EventHandler;
 
+import java.util.concurrent.atomic.LongAdder;
+
 /**
  * @author wuweifeng wrote on 2019-08-21.
  */
 public abstract class AbsConsumer<T extends BaseEvent> implements EventHandler<T> {
 
     private int hashIndex;
+
+    public static final LongAdder totalDealCount = new LongAdder();
 
     public AbsConsumer(int hashIndex) {
         this.hashIndex = hashIndex;
@@ -29,6 +33,9 @@ public abstract class AbsConsumer<T extends BaseEvent> implements EventHandler<T
                 return;
             }
             onEvent(t);
+
+            //处理完毕，将数量加1
+            totalDealCount.increment();
         }
     }
 
