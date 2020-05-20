@@ -15,6 +15,8 @@ public class Worker {
 
     private Integer cliCount;
 
+    private long totalCount;
+
     private Date updateTime;
 
     private String updateUser;
@@ -22,8 +24,19 @@ public class Worker {
     private Integer state;
 
     private String uuid;
+    /**
+     * 每个worker里的 caffeine的size
+     */
+    private Integer caffeineCount;
 
     public Worker() {
+    }
+
+    public Worker(String name, String ipPort) {
+        this.name = name;
+        String[] arr = ipPort.split(Constant.SPIT);
+        this.ip = arr[0];
+        this.port = Integer.valueOf(arr[1]);
     }
 
 
@@ -49,6 +62,22 @@ public class Worker {
         this.name = name;
         this.updateUser = updateUser;
         this.state = state;
+    }
+
+    public Integer getCaffeineCount() {
+        return caffeineCount;
+    }
+
+    public void setCaffeineCount(Integer caffeineCount) {
+        this.caffeineCount = caffeineCount;
+    }
+
+    public long getTotalCount() {
+        return totalCount;
+    }
+
+    public void setTotalCount(long totalCount) {
+        this.totalCount = totalCount;
     }
 
     public Integer getId() {

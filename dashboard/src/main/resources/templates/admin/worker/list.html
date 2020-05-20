@@ -37,11 +37,11 @@
 
                         <div class="body-nest" id="Blank_Page_Content">
                             <!-- 工具条 -->
-                            <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">
+                            <!--<div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">
                             	<button onclick="$.operate.add()" type="button" class="btn btn-primary">
                                     <span class="entypo-plus-squared"></span>&nbsp;&nbsp;新增
                                 </button>
-                           </div>
+                           </div>-->
                             <!-- 工具条 end-->
                            <table id="dataTable" class="table-striped footable-res footable metro-blue" data-page-size="6">
 
@@ -98,11 +98,8 @@ var options = {
                 field: 'cliCount',
                 title: '客户端连接数'
             },{
-                field: 'updateTime',
-                title: '修改时间',
-                formatter:function (val,row,index) {
-                    return changeDateFormat(val);
-                }
+                field: 'caffeineCount',
+                title: '当前缓存key数量',
             },{
                 field: 'state',
                 title: '状态',
@@ -113,7 +110,8 @@ var options = {
                         return "下线";
                     }
                 }
-            },{
+            }
+            <!--,{
 			    title: '操作',
 			    formatter: function (value, row, index) {
 			        var actions = [];
@@ -122,7 +120,8 @@ var options = {
 			        actions.push('<a class="btn btn-danger btn-xs" href="#" onclick="$.operate.remove(\'' + val + '\')"><i class="fa fa-remove"></i>删除</a>');
 			        return actions.join('');
 			    }
-			}]
+			}-->
+			]
   };
 $(function(){
 	var oTab=$.table.oTableInit(options);

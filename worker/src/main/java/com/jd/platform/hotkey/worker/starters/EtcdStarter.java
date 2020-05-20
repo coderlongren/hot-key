@@ -124,7 +124,7 @@ public class EtcdStarter {
                 configCenter.putAndGrant(ConfigConstant.clientCountPath + appName + "/" + ip, count + "", 11);
             }
 
-            configCenter.putAndGrant(ConfigConstant.caffeineSizePath + ip, CaffeineCacheHolder.getSize().toString(), 11);
+            configCenter.putAndGrant(ConfigConstant.caffeineSizePath + ip, FastJsonUtils.convertObjectToJSON(CaffeineCacheHolder.getSize()), 11);
 
             //上报每秒QPS（接收key数量、处理key数量）
             String totalCount = FastJsonUtils.convertObjectToJSON(new TotalCount(HotKeyFilter.totalReceiveKeyCount.get(), AbsConsumer.totalDealCount.longValue()));
