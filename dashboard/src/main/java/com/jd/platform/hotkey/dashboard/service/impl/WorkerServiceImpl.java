@@ -76,6 +76,8 @@ public class WorkerServiceImpl implements WorkerService {
                     cliCount = cliCount + Integer.parseInt(keyValue.getValue().toStringUtf8());
                 }
             }
+            worker.setCliCount(cliCount);
+
             int caffeineCount = 0;
             for (KeyValue keyValue : caffeineKeyValues) {
                 //如果是该ip的count，都累加
