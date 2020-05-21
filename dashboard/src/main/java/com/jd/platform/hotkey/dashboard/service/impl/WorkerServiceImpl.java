@@ -8,8 +8,8 @@ import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
 import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
 import com.jd.platform.hotkey.common.tool.FastJsonUtils;
 import com.jd.platform.hotkey.dashboard.common.domain.Constant;
-import com.jd.platform.hotkey.dashboard.common.domain.PageParam;
-import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
+import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
+import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
 import com.jd.platform.hotkey.dashboard.mapper.ChangeLogMapper;
 import com.jd.platform.hotkey.dashboard.mapper.WorkerMapper;
 import com.jd.platform.hotkey.dashboard.model.ChangeLog;
@@ -52,7 +52,7 @@ public class WorkerServiceImpl implements WorkerService {
     }
 
     @Override
-    public PageInfo<Worker> pageWorker(PageParam page, SearchDto param) {
+    public PageInfo<Worker> pageWorker(PageReq page, SearchReq param) {
         //key:  "/jd/workers/cartsoa/host-10-173-244-22"	value:"10.173.244.22:11111"
         List<KeyValue> keyValues = configCenter.getPrefix(ConfigConstant.workersPath);
         List<Worker> workers = new ArrayList<>();
