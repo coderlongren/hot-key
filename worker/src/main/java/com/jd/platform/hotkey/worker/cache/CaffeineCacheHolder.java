@@ -49,12 +49,12 @@ public class CaffeineCacheHolder {
     /**
      * 获取每个app的caffeine容量
      */
-    public static Map<String, String> getSize() {
-        Map<String, String> map = new HashMap<>();
+    public static Map<String, Integer> getSize() {
+        Map<String, Integer> map = new HashMap<>();
         for (String appName : CACHE_MAP.keySet()) {
             Map caffMap = CACHE_MAP.get(appName).asMap();
 //            long bytes = ObjectSizeCalculator.getObjectSize(caffMap);
-            map.put(appName, caffMap.size() + "");
+            map.put(appName, caffMap.size());
 
         }
         return map;

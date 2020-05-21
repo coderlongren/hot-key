@@ -1,5 +1,6 @@
 package com.jd.platform.hotkey.dashboard.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.github.pagehelper.util.StringUtil;
@@ -116,9 +117,14 @@ public class RuleServiceImpl implements RuleService {
         String app = rule.getAppName();
         String etcdKey = ConfigConstant.rulePath + app;
         List<KeyValue> keyValues = configCenter.getPrefix(etcdKey);
-        KeyValue keyValue = keyValues.get(0);
-        String val = keyValue.getValue().toStringUtf8();
-        List<KeyRule> rules = JSON.parseArray(val, KeyRule.class);
+
+        List<KeyRule> rules = new ArrayList<>();
+        if (CollectionUtil.isNotEmpty(keyValues)) {
+            KeyValue keyValue = keyValues.get(0);
+            String val = keyValue.getValue().toStringUtf8();
+            rules = JSON.parseArray(val, KeyRule.class);
+        }
+
         rules.add(rule);
         configCenter.put(etcdKey,JSON.toJSONString(rules));
         return 1;
