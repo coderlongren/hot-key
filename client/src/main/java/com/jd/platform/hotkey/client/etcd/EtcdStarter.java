@@ -34,7 +34,6 @@ import java.util.concurrent.TimeUnit;
  * @version 1.0
  */
 public class EtcdStarter {
-    private static final Object LOCK = new Object();
 
     public void start() {
         fetchWorkerInfo();
@@ -276,7 +275,7 @@ public class EtcdStarter {
             JdLogger.info(getClass(), "--- begin watch rule change ----");
             try {
                 IConfigCenter configCenter = EtcdConfigFactory.configCenter();
-                KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.rulePath + Context.APP_NAME);
+                KvClient.WatchIterator watchIterator = configCenter.watch(ConfigConstant.rulePath + Context.APP_NAME);
                 //如果有新事件，即rule的变更，就重新拉取所有的信息
                 while (watchIterator.hasNext()) {
                     //这句必须写，next会让他卡住，除非真的有新rule变更
