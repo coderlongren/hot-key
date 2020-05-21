@@ -4,6 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.jd.platform.hotkey.dashboard.common.base.BaseController;
 import com.jd.platform.hotkey.dashboard.common.domain.*;
+import com.jd.platform.hotkey.dashboard.common.domain.req.ChartReq;
+import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
+import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
+import com.jd.platform.hotkey.dashboard.common.domain.vo.HotKeyLineChartVo;
 import com.jd.platform.hotkey.dashboard.model.KeyRecord;
 import com.jd.platform.hotkey.dashboard.model.KeyTimely;
 import com.jd.platform.hotkey.dashboard.service.KeyService;
@@ -12,9 +16,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 
 @Controller
@@ -27,6 +28,13 @@ public class KeyController extends BaseController {
 	private KeyService keyService;
 
 
+	@PostMapping("/lineChart")
+	@ResponseBody
+	public HotKeyLineChartVo lineChart(ChartReq chartReq){
+		return keyService.getLineChart(chartReq);
+	}
+
+
 	@GetMapping("/view")
 	public String view(ModelMap modelMap){
 		modelMap.put("title", Constant.KEY_RECORD_VIEW);
@@ -36,8 +44,8 @@ public class KeyController extends BaseController {
 
 	@PostMapping("/list")
 	@ResponseBody
-	public Page<KeyRecord> list(PageParam page, SearchDto searchDto){
-		PageInfo<KeyRecord> info = keyService.pageKeyRecord(page, param2(searchDto));
+	public Page<KeyRecord> list(PageReq page, SearchReq searchReq){
+		PageInfo<KeyRecord> info = keyService.pageKeyRecord(page, param2(searchReq));
 		return new Page<>(info.getPageNum(),(int)info.getTotal(),info.getList());
 	}
 
@@ -50,9 +58,9 @@ public class KeyController extends BaseController {
 
 	@PostMapping("/listTimely")
 	@ResponseBody
-	public Page<KeyTimely> listTimely(PageParam page,SearchDto searchDto){
-		System.out.println("searchText--> "+ JSON.toJSONString(searchDto));
-		PageInfo<KeyTimely> info = keyService.pageKeyTimely(page, param2(searchDto));
+	public Page<KeyTimely> listTimely(PageReq page, SearchReq searchReq){
+		System.out.println("searchText--> "+ JSON.toJSONString(searchReq));
+		PageInfo<KeyTimely> info = keyService.pageKeyTimely(page, param2(searchReq));
 		return new Page<>(info.getPageNum(),(int)info.getTotal(),info.getList());
 	}
 

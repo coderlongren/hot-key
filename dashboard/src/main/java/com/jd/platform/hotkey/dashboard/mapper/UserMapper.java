@@ -1,6 +1,6 @@
 package com.jd.platform.hotkey.dashboard.mapper;
 
-import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
+import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
 import com.jd.platform.hotkey.dashboard.model.User;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -16,7 +16,7 @@ public interface UserMapper {
 
     int updateByPk(User record);
 
-    List<User> listUser(SearchDto param);
+    List<User> listUser(SearchReq param);
 
     User findByNameAndPwd(User user);
 

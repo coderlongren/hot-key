@@ -3,11 +3,9 @@ package com.jd.platform.hotkey.dashboard.controller;
 import com.github.pagehelper.PageInfo;
 import com.jd.platform.hotkey.dashboard.common.base.BaseController;
 import com.jd.platform.hotkey.dashboard.common.domain.*;
-import com.jd.platform.hotkey.dashboard.model.User;
+import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
 import com.jd.platform.hotkey.dashboard.model.Worker;
-import com.jd.platform.hotkey.dashboard.service.UserService;
 import com.jd.platform.hotkey.dashboard.service.WorkerService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +31,7 @@ public class WorkerController extends BaseController {
 
 	@PostMapping("/list")
 	@ResponseBody
-		public Page<Worker> list(PageParam page, String searchText){
+		public Page<Worker> list(PageReq page, String searchText){
 		PageInfo<Worker> info = workerService.pageWorker(page, param(searchText));
 		return new Page<>(info.getPageNum(),(int)info.getTotal(),info.getList());
 	}

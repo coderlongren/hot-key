@@ -115,7 +115,7 @@
   </update>
 
 
-  <select id="listKeyRecord"  resultMap="BaseResultMap"  parameterType="com.jd.platform.hotkey.dashboard.common.domain.SearchDto">
+  <select id="listKeyRecord"  resultMap="BaseResultMap"  parameterType="com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq">
     select
     <include refid="Base_Column_List" />
     from hk_key_record
@@ -156,5 +156,20 @@
       #{k.uuid})
     </foreach>
   </insert>
+
+
+
+  <select id="maxHotKey"  resultType="com.jd.platform.hotkey.dashboard.common.domain.dto.KeyCountDto">
+    select key_name as k, count(1) as count
+    from hk_key_record
+    where type = 0
+    <if test="appName !=null and appName !=''">
+      and app_name = #{appName}
+    </if >
+    <if test="st != null">
+      <![CDATA[ and create_time >= #{st} and create_time < #{et}]]>
+    </if>
+    GROUP BY k ORDER BY count desc limit 10
+  </select>
 
 </mapper>

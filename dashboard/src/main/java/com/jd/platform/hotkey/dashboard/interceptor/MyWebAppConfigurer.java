@@ -12,14 +12,14 @@ public class MyWebAppConfigurer  implements WebMvcConfigurer {
 	public void addInterceptors(InterceptorRegistry registry) {
 		//拦截路径可自行配置多个 可用 ，分隔开
 		InterceptorRegistration registration = registry.addInterceptor(new JwtInterceptor()).addPathPatterns("/**");
-		registration.excludePathPatterns("/admin/login","/error","/static/**");
+		registration.excludePathPatterns("/user/login","/error","/static/**","/main/**");
 	}
 
 
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry){
 		//设置访问路径为 “/”
-		registry.addViewController("/").setViewName("login.html");
+		registry.addViewController("/").setViewName("admin/index.html");
 		//设置为最高优先级
 		registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
 	}
@@ -28,20 +28,6 @@ public class MyWebAppConfigurer  implements WebMvcConfigurer {
 	/** 解决跨域问题 **/
 	@Override
 	public void addCorsMappings(CorsRegistry registry){
-		/*
-			registry.addMapping("/**")
-			// 设置允许跨域请求的域名
-			.allowedOrigins("*")
-			// 是否允许证书
-			.allowCredentials(true)
-			// 设置允许的方法
-			.allowedMethods("GET", "POST", "DELETE", "PUT")
-			// 设置允许的header属性
-			.allowedHeaders("*")
-			// 跨域允许时间
-			.maxAge(3600);
-			super.addCorsMappings(registry);
-		*/
 	}
 	
 	/** 静态资源处理 **/

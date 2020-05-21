@@ -8,7 +8,6 @@
 <link rel="stylesheet" th:href="@{/static/admin/assets/js/button/ladda/ladda.min.css}">
 <link th:href="@{/static/admin/assets/js/bootstrap/css/bootstrap-table/bootstrap-table.min.css}" rel="stylesheet"/>
 <link rel="stylesheet" th:href="@{/static/admin/assets/js/button/ladda/ladda.min.css}">
-<link rel="stylesheet" th:href="@{/static/js/bootstrap-treetable/bootstrap-treetable.min.css}">
 
 <style type="text/css">
 .select-list ul li{
@@ -180,7 +179,7 @@ $(function(){
     $.ajax({
         cache : true,
         type : "POST",
-        url : "/admin/info",
+        url : "/user/info",
         headers: {
             "Authorization":getCookie("token")
         },

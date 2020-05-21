@@ -6,8 +6,8 @@ import com.github.pagehelper.util.StringUtil;
 import com.ibm.etcd.api.KeyValue;
 import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
 import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
-import com.jd.platform.hotkey.dashboard.common.domain.PageParam;
-import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
+import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
+import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
 import com.jd.platform.hotkey.dashboard.model.KeyRule;
 import com.jd.platform.hotkey.dashboard.service.RuleService;
 import org.springframework.stereotype.Service;
@@ -33,7 +33,7 @@ public class RuleServiceImpl implements RuleService {
 
 
     @Override
-    public PageInfo<KeyRule> pageKeyRule(PageParam page, SearchDto param) {
+    public PageInfo<KeyRule> pageKeyRule(PageReq page, SearchReq param) {
         String appName = param.getAppName();
         List<KeyValue> keyValues = configCenter.getPrefix(StringUtil.isEmpty(appName)?ConfigConstant.rulePath:ConfigConstant.rulePath+appName);
         List<KeyRule> rules = new ArrayList<>();

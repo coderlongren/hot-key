@@ -1,6 +1,6 @@
 package com.jd.platform.hotkey.dashboard.mapper;
 
-import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
+import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
 import com.jd.platform.hotkey.dashboard.model.KeyRule;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
@@ -17,7 +17,7 @@ public interface KeyRuleMapper {
 
     int updateByKey(KeyRule record);
 
-    List<KeyRule> listRule(SearchDto param);
+    List<KeyRule> listRule(SearchReq param);
 
     void batchInsert(List<KeyRule> rules);
 }

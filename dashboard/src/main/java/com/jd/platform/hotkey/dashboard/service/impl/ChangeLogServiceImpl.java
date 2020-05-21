@@ -2,14 +2,11 @@ package com.jd.platform.hotkey.dashboard.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.jd.platform.hotkey.dashboard.common.domain.PageParam;
-import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
+import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
+import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
 import com.jd.platform.hotkey.dashboard.mapper.ChangeLogMapper;
 import com.jd.platform.hotkey.dashboard.model.ChangeLog;
-import com.jd.platform.hotkey.dashboard.model.KeyRecord;
 import com.jd.platform.hotkey.dashboard.service.ChangeLogService;
-import org.checkerframework.checker.units.qual.A;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -30,7 +27,7 @@ public class ChangeLogServiceImpl implements ChangeLogService {
 
 
     @Override
-    public PageInfo<ChangeLog> pageChangeLog(PageParam page, SearchDto param) {
+    public PageInfo<ChangeLog> pageChangeLog(PageReq page, SearchReq param) {
         PageHelper.startPage(page.getPageNum(),page.getPageSize());
         List<ChangeLog> changeLogs = changeLogMapper.listChangeLog(param);
         return new PageInfo<>(changeLogs);

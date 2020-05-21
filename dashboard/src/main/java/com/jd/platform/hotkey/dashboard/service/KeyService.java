@@ -1,8 +1,10 @@
 package com.jd.platform.hotkey.dashboard.service;
 
 import com.github.pagehelper.PageInfo;
-import com.jd.platform.hotkey.dashboard.common.domain.PageParam;
-import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
+import com.jd.platform.hotkey.dashboard.common.domain.req.ChartReq;
+import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
+import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
+import com.jd.platform.hotkey.dashboard.common.domain.vo.HotKeyLineChartVo;
 import com.jd.platform.hotkey.dashboard.model.KeyRecord;
 import com.jd.platform.hotkey.dashboard.model.KeyTimely;
 
@@ -16,7 +18,7 @@ import com.jd.platform.hotkey.dashboard.model.KeyTimely;
 public interface KeyService {
 
 
-    PageInfo<KeyRecord> pageKeyRecord(PageParam page, SearchDto param);
+    PageInfo<KeyRecord> pageKeyRecord(PageReq page, SearchReq param);
 
     int insertKeyByUser(KeyTimely keyTimely);
 
@@ -28,6 +30,7 @@ public interface KeyService {
 
     KeyTimely selectByPk(Long key);
 
-    PageInfo<KeyTimely> pageKeyTimely(PageParam page, SearchDto param);
+    PageInfo<KeyTimely> pageKeyTimely(PageReq page, SearchReq param);
 
+    HotKeyLineChartVo getLineChart(ChartReq chartReq);
 }

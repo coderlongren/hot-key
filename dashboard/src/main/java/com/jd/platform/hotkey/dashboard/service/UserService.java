@@ -1,8 +1,8 @@
 package com.jd.platform.hotkey.dashboard.service;
 
 import com.github.pagehelper.PageInfo;
-import com.jd.platform.hotkey.dashboard.common.domain.PageParam;
-import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
+import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
+import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
 import com.jd.platform.hotkey.dashboard.model.User;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
  */
 public interface UserService {
 
-    PageInfo<User> pageUser(PageParam page, SearchDto dto);
+    PageInfo<User> pageUser(PageReq page, SearchReq dto);
 
     User findByNameAndPwd(User user);
 

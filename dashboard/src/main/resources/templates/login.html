@@ -162,7 +162,7 @@ function sub(){
 				$.ajax({
 					cache : false,
 					type : "POST",
-					url :  "/admin/login",
+					url :  "/user/login",
 					data : user,
 					async : false,
 					dataType : "json",
@@ -175,7 +175,7 @@ function sub(){
 							// result.getco
 							window.localStorage.setItem('token', token);
 							window.localStorage.setItem('time', Date.now());
-							location.href = '/admin/index?text='+result.data.info;
+							location.href = '/user/index?text='+result.data.info;
 						}else{
 							v2.showdd().init();
 							layer.msg(result.msg, function(){

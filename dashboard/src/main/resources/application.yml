@@ -3,6 +3,8 @@ server :
   servlet :
     context-path : /
 spring :
+  resources:
+    static-locations: classpath:/resources,classpath:/static
   profiles :
     active : dev
     # 服务模块

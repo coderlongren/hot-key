@@ -1,11 +1,10 @@
 package com.jd.platform.hotkey.dashboard.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.jd.platform.hotkey.dashboard.common.base.BaseController;
 import com.jd.platform.hotkey.dashboard.common.domain.Constant;
 import com.jd.platform.hotkey.dashboard.common.domain.Page;
-import com.jd.platform.hotkey.dashboard.common.domain.PageParam;
+import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
 import com.jd.platform.hotkey.dashboard.common.domain.Result;
 import com.jd.platform.hotkey.dashboard.model.KeyRule;
 import com.jd.platform.hotkey.dashboard.service.RuleService;
@@ -33,7 +32,7 @@ public class RuleController extends BaseController {
 
 	@PostMapping("/list")
 	@ResponseBody
-	public Page<KeyRule> list(PageParam page, String searchText){
+	public Page<KeyRule> list(PageReq page, String searchText){
 		PageInfo<KeyRule> info = ruleService.pageKeyRule(page, param(searchText));
 		return new Page<>(info.getPageNum(),(int)info.getTotal(),info.getList());
 	}

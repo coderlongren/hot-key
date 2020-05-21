@@ -48,7 +48,7 @@ public class DashboardApplication implements CommandLineRunner {
     @Override
     public void run(String... args) {
         int row = timelyMapper.clear();
-        logger.info("clear db timely hotKey, effect row : {}", row);
+        logger.info("clear db timely hotKey, effect row : {}");
     }
 
 

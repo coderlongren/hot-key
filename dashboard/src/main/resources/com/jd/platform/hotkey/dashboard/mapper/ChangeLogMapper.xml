@@ -84,7 +84,7 @@
     </trim>
   </insert>
 
-  <select id="listChangeLog"  parameterType="com.jd.platform.hotkey.dashboard.common.domain.SearchDto"   resultMap="BaseResultMap">
+  <select id="listChangeLog" parameterType="com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from hk_change_log

@@ -1,8 +1,8 @@
 package com.jd.platform.hotkey.dashboard.service;
 
 import com.github.pagehelper.PageInfo;
-import com.jd.platform.hotkey.dashboard.common.domain.PageParam;
-import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
+import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
+import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
 import com.jd.platform.hotkey.dashboard.model.Worker;
 
 /**
@@ -13,7 +13,7 @@ import com.jd.platform.hotkey.dashboard.model.Worker;
  * @Date: 2020/4/17 16:28
  */
 public interface WorkerService {
-    PageInfo<Worker> pageWorker(PageParam page, SearchDto param);
+    PageInfo<Worker> pageWorker(PageReq page, SearchReq param);
 
     int insertWorkerByUser(Worker worker);
 

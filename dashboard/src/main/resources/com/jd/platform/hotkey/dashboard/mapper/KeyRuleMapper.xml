@@ -144,7 +144,7 @@
     where key_name = #{key}
   </update>
 
-  <select id="listRule"  parameterType="com.jd.platform.hotkey.dashboard.common.domain.SearchDto"  resultMap="BaseResultMap">
+  <select id="listRule" parameterType="com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from hk_key_rule

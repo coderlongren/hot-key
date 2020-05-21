@@ -22,7 +22,11 @@ height: calc(100vh - 139px);overflow-x: hidden;
 </head>
 
 <body id="body">
-   
+
+<!-- 顶部通用-->
+<div th:replace="admin/common/html/topMenu :: topMenu(1)">
+</div>
+<!-- 结束顶部通用 -->
 <!-- 左边菜单栏通用 -->
 <div th:replace="admin/common/html/leftMenu :: leftMenu">
 </div>
@@ -32,7 +36,7 @@ height: calc(100vh - 139px);overflow-x: hidden;
 <!-- 右边内容 -->
 <div class="wrap-fluid">
      <div style="background-color: aliceblue;">
-       <iframe  width="100%"   id="mainFrame" name="mainFrame" th:src="@{'/admin/main'}" frameborder="0" marginheight="0" marginwidth="0" border="false"  ></iframe>
+       <iframe  width="100%"   id="mainFrame" name="mainFrame"  frameborder="0" marginheight="0" marginwidth="0" border="false"></iframe>
      </div>
       
      <!-- 页脚 通用-->
@@ -50,6 +54,7 @@ height: calc(100vh - 139px);overflow-x: hidden;
 
 <script>
 
+    $("#mainFrame").attr("src","/user/main");
     $('.tooltip-tip').on('click',  function(e){
         $(this).parent().find(".menuSelected").removeClass("menuSelected");
         $(this).addClass("menuSelected");

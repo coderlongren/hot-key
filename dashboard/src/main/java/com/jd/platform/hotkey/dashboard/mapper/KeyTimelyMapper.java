@@ -1,6 +1,6 @@
 package com.jd.platform.hotkey.dashboard.mapper;
 
-import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
+import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
 import com.jd.platform.hotkey.dashboard.model.KeyTimely;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -21,7 +21,7 @@ public interface KeyTimelyMapper {
 
     int updateByKey(KeyTimely key);
 
-    List<KeyTimely> listKeyTimely(SearchDto param);
+    List<KeyTimely> listKeyTimely(SearchReq param);
 
     int batchInsert(List<KeyTimely> list);
 

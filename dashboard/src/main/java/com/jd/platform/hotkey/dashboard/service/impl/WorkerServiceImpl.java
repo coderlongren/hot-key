@@ -2,29 +2,23 @@ package com.jd.platform.hotkey.dashboard.service.impl;
 
 import cn.hutool.core.date.SystemClock;
 import com.alibaba.fastjson.JSON;
-import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.github.pagehelper.util.StringUtil;
-import com.google.protobuf.ByteString;
 import com.ibm.etcd.api.KeyValue;
 import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
 import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
 import com.jd.platform.hotkey.dashboard.common.domain.Constant;
-import com.jd.platform.hotkey.dashboard.common.domain.PageParam;
-import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
+import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
+import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
 import com.jd.platform.hotkey.dashboard.mapper.ChangeLogMapper;
 import com.jd.platform.hotkey.dashboard.mapper.WorkerMapper;
 import com.jd.platform.hotkey.dashboard.model.ChangeLog;
-import com.jd.platform.hotkey.dashboard.model.KeyRule;
 import com.jd.platform.hotkey.dashboard.model.Worker;
 import com.jd.platform.hotkey.dashboard.service.WorkerService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @ProjectName: hotkey
@@ -55,7 +49,7 @@ public class WorkerServiceImpl implements WorkerService {
     }
 
     @Override
-    public PageInfo<Worker> pageWorker(PageParam page, SearchDto param) {
+    public PageInfo<Worker> pageWorker(PageReq page, SearchReq param) {
         List<KeyValue> keyValues = configCenter.getPrefix(ConfigConstant.workersPath);
         List<Worker> workers = new ArrayList<>();
 

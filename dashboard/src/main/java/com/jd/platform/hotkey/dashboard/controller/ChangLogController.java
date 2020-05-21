@@ -3,11 +3,9 @@ package com.jd.platform.hotkey.dashboard.controller;
 import com.github.pagehelper.PageInfo;
 import com.jd.platform.hotkey.dashboard.common.base.BaseController;
 import com.jd.platform.hotkey.dashboard.common.domain.*;
+import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
 import com.jd.platform.hotkey.dashboard.model.ChangeLog;
-import com.jd.platform.hotkey.dashboard.model.User;
 import com.jd.platform.hotkey.dashboard.service.ChangeLogService;
-import com.jd.platform.hotkey.dashboard.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +32,7 @@ public class ChangLogController extends BaseController {
 
 	@PostMapping("/list")
 	@ResponseBody
-	public Page<ChangeLog> list(PageParam page, String searchText){
+	public Page<ChangeLog> list(PageReq page, String searchText){
 		PageInfo<ChangeLog> info = logService.pageChangeLog(page, param(searchText));
 		return new Page<>(info.getPageNum(),(int)info.getTotal(),info.getList());
 	}

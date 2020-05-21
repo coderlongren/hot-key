@@ -139,7 +139,7 @@
     where key_name = #{key}
   </update>
 
-  <select id="listKeyTimely"  resultMap="BaseResultMap"  parameterType="com.jd.platform.hotkey.dashboard.common.domain.SearchDto">
+  <select id="listKeyTimely"  resultMap="BaseResultMap"  parameterType="com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq">
     select
     <include refid="Base_Column_List" />
     from hk_key_timely

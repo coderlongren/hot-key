@@ -1,8 +1,8 @@
 package com.jd.platform.hotkey.dashboard.service;
 
 import com.github.pagehelper.PageInfo;
-import com.jd.platform.hotkey.dashboard.common.domain.PageParam;
-import com.jd.platform.hotkey.dashboard.common.domain.SearchDto;
+import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
+import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
 import com.jd.platform.hotkey.dashboard.model.ChangeLog;
 
 /**
@@ -14,7 +14,7 @@ import com.jd.platform.hotkey.dashboard.model.ChangeLog;
  */
 public interface ChangeLogService {
 
-    PageInfo<ChangeLog> pageChangeLog(PageParam page, SearchDto param);
+    PageInfo<ChangeLog> pageChangeLog(PageReq page, SearchReq param);
 
     ChangeLog selectByPrimaryKey(int id);
 
