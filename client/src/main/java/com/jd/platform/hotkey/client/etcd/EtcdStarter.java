@@ -276,10 +276,13 @@ public class EtcdStarter {
             JdLogger.info(getClass(), "--- begin watch rule change ----");
             try {
                 IConfigCenter configCenter = EtcdConfigFactory.configCenter();
-                KvClient.WatchIterator watchIterator = configCenter.watch(ConfigConstant.rulePath + Context.APP_NAME);
+                KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.rulePath + Context.APP_NAME);
                 //如果有新事件，即rule的变更，就重新拉取所有的信息
                 while (watchIterator.hasNext()) {
+                    //这句必须写，next会让他卡住，除非真的有新rule变更
+                    WatchUpdate watchUpdate = watchIterator.next();
                     JdLogger.info(getClass(), "rules info changed. begin to fetch new infos");
+                    List<Event> eventList = watchUpdate.getEvents();
 
                     //全量拉取rule信息
                     fetchRuleFromEtcd();
