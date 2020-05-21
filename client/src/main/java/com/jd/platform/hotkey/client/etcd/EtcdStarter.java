@@ -244,13 +244,16 @@ public class EtcdStarter {
     private boolean fetchRuleFromEtcd() {
         IConfigCenter configCenter = EtcdConfigFactory.configCenter();
         try {
+            List<KeyRule> ruleList = new ArrayList<>();
             //从etcd获取自己的rule
             String rules = configCenter.get(ConfigConstant.rulePath + Context.APP_NAME);
             if (StringUtil.isNullOrEmpty(rules)) {
                 JdLogger.warn(getClass(), "rule is empty");
+                //会清空本地缓存队列
+                notifyRuleChange(ruleList);
                 return true;
             }
-            List<KeyRule> ruleList = FastJsonUtils.toList(rules, KeyRule.class);
+            ruleList = FastJsonUtils.toList(rules, KeyRule.class);
 
             notifyRuleChange(ruleList);
             return true;
@@ -277,9 +280,6 @@ public class EtcdStarter {
                 //如果有新事件，即rule的变更，就重新拉取所有的信息
                 while (watchIterator.hasNext()) {
                     JdLogger.info(getClass(), "rules info changed. begin to fetch new infos");
-                    WatchUpdate watchUpdate = watchIterator.next();
-                    List<Event> eventList = watchUpdate.getEvents();
-                    System.err.println(eventList.get(0).getKv());
 
                     //全量拉取rule信息
                     fetchRuleFromEtcd();

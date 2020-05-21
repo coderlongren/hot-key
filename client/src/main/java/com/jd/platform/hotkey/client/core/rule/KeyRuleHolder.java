@@ -1,5 +1,6 @@
 package com.jd.platform.hotkey.client.core.rule;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import com.google.common.eventbus.Subscribe;
 import com.jd.platform.hotkey.client.cache.CacheFactory;
@@ -22,17 +23,24 @@ import java.util.stream.Collectors;
 public class KeyRuleHolder {
 
     /**
-     * 保存超时时间和caffine的映射，key是超时时间，value是caffeine
+     * 保存超时时间和caffeine的映射，key是超时时间，value是caffeine
      */
     private static final ConcurrentHashMap<Integer, LocalCache> RULE_CACHE_MAP = new ConcurrentHashMap<>();
 
     private static final List<KeyRule> KEY_RULES = new ArrayList<>();
 
     /**
-     * 所有的规则，如果规则的超时时间变化了，会重建caffine
+     * 所有的规则，如果规则的超时时间变化了，会重建caffeine
      */
     public static void putRules(List<KeyRule> keyRules) {
         synchronized (KEY_RULES) {
+            //如果规则为空，清空规则表
+            if (CollectionUtil.isEmpty(keyRules)) {
+                KEY_RULES.clear();
+                RULE_CACHE_MAP.clear();
+                return;
+            }
+
             KEY_RULES.clear();
             KEY_RULES.addAll(keyRules);
 
@@ -72,6 +80,7 @@ public class KeyRuleHolder {
             LocalCache common = null;
 
             //遍历该app的所有rule，找到与key匹配的rule。优先全匹配->prefix匹配-> * 通配
+            //这一段虽然看起来比较奇怪，但是没毛病，不要乱改
             for (KeyRule keyRule : KEY_RULES) {
                 if (key.equals(keyRule.getKey())) {
                     return RULE_CACHE_MAP.get(keyRule.getDuration());
@@ -99,7 +108,7 @@ public class KeyRuleHolder {
         if (StrUtil.isEmpty(key)) {
             return false;
         }
-        //遍历该app的所有rule，找到与key匹配的rule。优先全匹配->prefix匹配-> * 通配
+        //遍历该app的所有rule，找到与key匹配的rule。
         for (KeyRule keyRule : KEY_RULES) {
             if ("*".equals(keyRule.getKey()) || key.equals(keyRule.getKey()) ||
                     (keyRule.isPrefix() && key.startsWith(keyRule.getKey()))) {

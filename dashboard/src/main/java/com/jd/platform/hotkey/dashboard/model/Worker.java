@@ -21,7 +21,7 @@ public class Worker {
 
     private String updateUser;
 
-    private Integer state;
+    private Integer state = 1;
 
     private String uuid;
     /**
