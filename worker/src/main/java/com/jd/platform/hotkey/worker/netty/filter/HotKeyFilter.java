@@ -12,6 +12,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -47,7 +48,17 @@ public class HotKeyFilter implements INettyMsgFilter, IMqMessageReceiver {
     }
 
     private void publishMsg(String message) {
-        HotKeyModel model = FastJsonUtils.toBean(message, HotKeyModel.class);
-        messageProducer.publish(new HotKeyEvent(model));
+        //老版的用的单个HotKeyModel，新版用的数组
+        if (message.startsWith("[")) {
+            List<HotKeyModel> models = FastJsonUtils.toList(message, HotKeyModel.class);
+            for (HotKeyModel model : models) {
+                messageProducer.publish(new HotKeyEvent(model));
+            }
+        } else if (message.startsWith("{")) {
+            HotKeyModel model = FastJsonUtils.toBean(message, HotKeyModel.class);
+            messageProducer.publish(new HotKeyEvent(model));
+        }
+
     }
+
 }

@@ -21,7 +21,6 @@ public class HotKeyModel extends BaseModel {
      */
     private boolean remove;
 
-
     @Override
     public String toString() {
         return "HotKeyModel{" +

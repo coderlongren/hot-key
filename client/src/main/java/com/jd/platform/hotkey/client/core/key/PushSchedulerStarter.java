@@ -18,13 +18,10 @@ public class PushSchedulerStarter {
             period = 500L;
         }
         ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-        scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                IKeyCollector collectHK = KeyHandlerFactory.getCollector();
-                KeyHandlerFactory.getPusher().send(Context.APP_NAME, collectHK.lockAndGetResult());
-                collectHK.finishOnce();
-            }
+        scheduledExecutorService.scheduleAtFixedRate(() -> {
+            IKeyCollector collectHK = KeyHandlerFactory.getCollector();
+            KeyHandlerFactory.getPusher().send(Context.APP_NAME, collectHK.lockAndGetResult());
+            collectHK.finishOnce();
         },0, period, TimeUnit.MILLISECONDS);
     }
 

@@ -3,6 +3,7 @@ package com.jd.platform.hotkey.worker.disruptor;
 import cn.hutool.core.date.SystemClock;
 import com.jd.platform.hotkey.common.model.BaseModel;
 import com.jd.platform.hotkey.common.tool.Constant;
+import com.jd.platform.hotkey.worker.tool.InitConstant;
 import com.lmax.disruptor.EventHandler;
 
 import java.util.concurrent.atomic.LongAdder;
@@ -15,6 +16,8 @@ public abstract class AbsConsumer<T extends BaseEvent> implements EventHandler<T
     private int hashIndex;
 
     public static final LongAdder totalDealCount = new LongAdder();
+    //过期的
+    public static final LongAdder expireTotalCount = new LongAdder();
 
     public AbsConsumer(int hashIndex) {
         this.hashIndex = hashIndex;
@@ -29,7 +32,8 @@ public abstract class AbsConsumer<T extends BaseEvent> implements EventHandler<T
         }
         if (Math.abs(model.getKey().hashCode()) % Constant.Default_Threads == hashIndex) {
             //5秒前的过时消息就不处理了
-            if (SystemClock.now() - model.getCreateTime() > 5000) {
+            if (SystemClock.now() - model.getCreateTime() > InitConstant.timeOut) {
+                expireTotalCount.increment();
                 return;
             }
             onEvent(t);
