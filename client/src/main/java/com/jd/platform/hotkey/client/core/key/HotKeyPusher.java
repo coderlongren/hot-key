@@ -34,7 +34,6 @@ public class HotKeyPusher {
 
         if (remove) {
             //如果是删除key，就直接发到etcd去，不用做聚合
-            //TODO
             KeyHandlerFactory.getPusher().send(Context.APP_NAME, CollectionUtil.list(false, hotKeyModel));
         } else {
             //如果key是规则内的要被探测的key，就积累等待传送
