@@ -135,7 +135,7 @@ public class KeyController extends BaseController {
 			list.add(record.getApp());
 			rows.add(list);
 		}
-		String[] s = {"热点key","次数","所属APP"};
+		String[] s = {"热点key","次数"};
 		ExcelData data = new ExcelData("hotKey.xlsx", Arrays.asList(s),rows);
 		ExcelUtil.exportExcel(response,data);
 	}

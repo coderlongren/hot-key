@@ -160,7 +160,7 @@
 
 
   <select id="maxHotKey"  resultType="com.jd.platform.hotkey.dashboard.common.domain.dto.KeyCountDto">
-    select key_name as k, count(1) as count, app_name as app
+    select key_name as k, count(1) as count
     from hk_key_record
     where type = 0
     <if test="appName !=null and appName !=''">
