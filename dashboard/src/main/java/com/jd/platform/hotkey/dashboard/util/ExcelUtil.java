@@ -70,22 +70,14 @@ public class ExcelUtil {
      */
     private static void setData(XSSFSheet sheet, List<List<String>> rows) {
         try{
-            log.info("rows--->  "+rows.size());
             int rowNum = 1;
             for (int i = 0; i < rows.size(); i++) {
                 XSSFRow row = sheet.createRow(rowNum);
                 List<String> po = rows.get(i);
                 for (int j = 0; j < po.size(); j++) {
-                    if (j==0){
-                        row.createCell(j).setCellValue(po.get(0));
-                    }
-                    if (j==1){
-                        row.createCell(j).setCellValue(po.get(1));
-                    }
-                    if (j==3){
-                        row.createCell(j).setCellValue(po.get(3));
-                    }
-
+                    if (j==0){  row.createCell(j).setCellValue(po.get(0)); }
+                    if (j==1){  row.createCell(j).setCellValue(po.get(1)); }
+                    if (j==2){  row.createCell(j).setCellValue(po.get(2)); }
                 }
                 rowNum++;
             }

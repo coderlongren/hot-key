@@ -2,6 +2,7 @@ package com.jd.platform.hotkey.dashboard.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
+import com.github.pagehelper.util.StringUtil;
 import com.jd.platform.hotkey.dashboard.common.base.BaseController;
 import com.jd.platform.hotkey.dashboard.common.domain.*;
 import com.jd.platform.hotkey.dashboard.common.domain.dto.KeyCountDto;
@@ -114,11 +115,15 @@ public class KeyController extends BaseController {
 
 	@RequestMapping(value = "/export", method = RequestMethod.GET)
 	@ResponseBody
-	public void lineChart(HttpServletResponse response,
+	public void export(HttpServletResponse response,
 						  String startTime,String endTime,String appName,String key){
 		SearchReq req = new SearchReq();
-		req.setStartTime(DateUtil.strToDate(startTime));
-		req.setEndTime(DateUtil.strToDate(endTime));
+		if(StringUtil.isNotEmpty(startTime)){
+			req.setStartTime(DateUtil.strToDate(startTime));
+		}
+		if(StringUtil.isNotEmpty(endTime)){
+			req.setEndTime(DateUtil.strToDate(endTime));
+		}
 		req.setAppName(appName);
 		req.setKey(key);
 		List<KeyCountDto> records = keyService.listExportKey(req);
@@ -127,6 +132,7 @@ public class KeyController extends BaseController {
 			List<String> list = new ArrayList<>();
 			list.add(record.getK());
 			list.add(record.getCount().toString());
+			list.add(record.getApp());
 			rows.add(list);
 		}
 		String[] s = {"热点key","次数","所属APP"};
