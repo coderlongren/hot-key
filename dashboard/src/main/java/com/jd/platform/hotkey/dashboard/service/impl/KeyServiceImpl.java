@@ -61,7 +61,7 @@ public class KeyServiceImpl implements KeyService {
         List<String> list = new ArrayList<>();
         for (int i = 5; i > 0 ; i--) {
             LocalDateTime pre = now.minusHours(i);
-            List<KeyCountDto> records = recordMapper.maxHotKey(new ChartReq(pre, now));
+            List<KeyCountDto> records = recordMapper.maxHotKey(new ChartReq(pre, now, 10));
             int finalI = i;
             records.forEach(dto ->{
                 String k = dto.getK();
@@ -79,6 +79,13 @@ public class KeyServiceImpl implements KeyService {
             list.add("近"+i+"小时");
         }
         return new HotKeyLineChartVo(list,map);
+    }
+
+    @Override
+    public List<KeyCountDto> listExportKey(SearchReq req) {
+        ChartReq chartReq = new ChartReq(req.getStartTime(), req.getEndTime(), req.getAppName(), req.getKey());
+        System.out.println(JSON.toJSONString(chartReq));
+        return recordMapper.maxHotKey(chartReq);
     }
 
 

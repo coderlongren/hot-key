@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.jd.platform.hotkey.dashboard.common.base.BaseController;
 import com.jd.platform.hotkey.dashboard.common.domain.*;
+import com.jd.platform.hotkey.dashboard.common.domain.dto.KeyCountDto;
 import com.jd.platform.hotkey.dashboard.common.domain.req.ChartReq;
 import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
 import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
@@ -11,11 +12,20 @@ import com.jd.platform.hotkey.dashboard.common.domain.vo.HotKeyLineChartVo;
 import com.jd.platform.hotkey.dashboard.model.KeyRecord;
 import com.jd.platform.hotkey.dashboard.model.KeyTimely;
 import com.jd.platform.hotkey.dashboard.service.KeyService;
+import com.jd.platform.hotkey.dashboard.util.DateUtil;
+import com.jd.platform.hotkey.dashboard.util.ExcelUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 
 @Controller
@@ -101,5 +111,27 @@ public class KeyController extends BaseController {
     }
 
 
+
+	@RequestMapping(value = "/export", method = RequestMethod.GET)
+	@ResponseBody
+	public void lineChart(HttpServletResponse response,
+						  String startTime,String endTime,String appName,String key){
+		SearchReq req = new SearchReq();
+		req.setStartTime(DateUtil.strToDate(startTime));
+		req.setEndTime(DateUtil.strToDate(endTime));
+		req.setAppName(appName);
+		req.setKey(key);
+		List<KeyCountDto> records = keyService.listExportKey(req);
+		List<List<String> > rows = new ArrayList<>();
+		for (KeyCountDto record : records) {
+			List<String> list = new ArrayList<>();
+			list.add(record.getK());
+			list.add(record.getCount().toString());
+			rows.add(list);
+		}
+		String[] s = {"热点key","次数","所属APP"};
+		ExcelData data = new ExcelData("hotKey.xlsx", Arrays.asList(s),rows);
+		ExcelUtil.exportExcel(response,data);
+	}
 }
 

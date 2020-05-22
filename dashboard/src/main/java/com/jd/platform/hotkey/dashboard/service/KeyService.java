@@ -1,12 +1,15 @@
 package com.jd.platform.hotkey.dashboard.service;
 
 import com.github.pagehelper.PageInfo;
+import com.jd.platform.hotkey.dashboard.common.domain.dto.KeyCountDto;
 import com.jd.platform.hotkey.dashboard.common.domain.req.ChartReq;
 import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
 import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
 import com.jd.platform.hotkey.dashboard.common.domain.vo.HotKeyLineChartVo;
 import com.jd.platform.hotkey.dashboard.model.KeyRecord;
 import com.jd.platform.hotkey.dashboard.model.KeyTimely;
+
+import java.util.List;
 
 /**
  * @ProjectName: hotkey
@@ -33,4 +36,6 @@ public interface KeyService {
     PageInfo<KeyTimely> pageKeyTimely(PageReq page, SearchReq param);
 
     HotKeyLineChartVo getLineChart(ChartReq chartReq);
+
+    List<KeyCountDto> listExportKey(SearchReq searchReq);
 }

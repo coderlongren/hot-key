@@ -12,39 +12,48 @@ import java.util.Date;
 public class ChartReq implements Serializable {
 
 
-    private Date st;
+    private Date startTime;
 
-    private Date et;
+    private Date endTime;
 
     private String appName;
 
     private Integer limit;
+
+    private String key;
 
     private Integer threshold;
 
     public ChartReq() {
     }
 
-    public ChartReq(LocalDateTime st, LocalDateTime et) {
-        this.st = DateUtil.localDateTimeToDate(st);
-        this.et = DateUtil.localDateTimeToDate(et);
-        this.limit = 5;
+    public ChartReq(LocalDateTime st, LocalDateTime et, Integer limit) {
+        this.startTime = DateUtil.localDateTimeToDate(st);
+        this.endTime = DateUtil.localDateTimeToDate(et);
+        this.limit = limit;
     }
 
-    public Date getSt() {
-        return st;
+    public ChartReq(Date st, Date et, String appName, String key) {
+        this.startTime = st;
+        this.endTime = et;
+        this.appName = appName;
+        this.key = key;
     }
 
-    public void setSt(Date st) {
-        this.st = st;
+    public Date getStartTime() {
+        return startTime;
     }
 
-    public Date getEt() {
-        return et;
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
     }
 
-    public void setEt(Date et) {
-        this.et = et;
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
     }
 
     public String getAppName() {
@@ -61,6 +70,14 @@ public class ChartReq implements Serializable {
 
     public void setLimit(Integer limit) {
         this.limit = limit;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public Integer getThreshold() {

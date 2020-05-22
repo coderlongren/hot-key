@@ -58,11 +58,11 @@
 
                             <div class="body-nest" id="search_div"  style="display: block">
                                 <div class="form_left">
-                                    <form role="form" class="form-inline">
+                                    <form role="form" class="form-inline" id="keyForm">
                                         <div class="form-group" style="width: 17%" >
                                           <label class="control-label timeBut" >选择日期：</label>
                                             <div class='input-group date datetimepicker' id='datetimepicker1' data-date-format="yyyy-mm-dd hh:ii:ss">
-                                                <input type='text' class="form-control" name="startTime"/>
+                                                <input type='text' class="form-control" name="startTime" id="st"/>
                                                 <span class="input-group-addon">
                                                     <span class="glyphicon glyphicon-calendar"></span>
                                                 </span>
@@ -71,7 +71,7 @@
                                         <div class="form-group" style="width: 13%" >
                                             <label class="control-label timeBut">~</label>
                                             <div class='input-group date datetimepicker' id='datetimepicker2' data-date-format="yyyy-mm-dd hh:ii:ss">
-                                                <input type='text' class="form-control"  name="endTime"/>
+                                                <input type='text' class="form-control"  name="endTime" id="et"/>
                                                 <span class="input-group-addon">
                                                     <span class="glyphicon glyphicon-calendar"></span>
                                                 </span>
@@ -79,14 +79,15 @@
                                         </div>
                                         <div class="form-group" style="margin-left: 60px">
                                             <label class="control-label timeBut2">热点Key：</label>
-                                            <input type="text" name="key" placeholder="key"class="form-control">
+                                            <input type="text" name="key" placeholder="key"class="form-control" id="key">
                                         </div>
                                         <div class="form-group" style="width: 15%;margin-left: 60px" >
                                             <label class="control-label timeBut2" >所属APP：</label>
                                             <select name="appName" id="apps" class="form-control" style="width: 72%">
                                             </select>
                                         </div>
-                                        <button onclick="$.table.search(this)" class="btn btn-success" style="margin-left: 10%" type="button"><i class="fa fa-search"></i>&nbsp;搜索</button>
+                                        <button onclick="exportHot()" class="btn btn-success" style="margin-left: 20%" type="button"><i class="fa fa-search"></i>&nbsp;导出</button>
+                                        <button onclick="$.table.search(this)" class="btn btn-success" style="margin-left: 1%" type="button"><i class="fa fa-search"></i>&nbsp;搜索</button>
                                     </form>
                                 </div>
                             </div>
@@ -211,7 +212,14 @@ $(function(){
         minuteStep: 1           //用于构建小时视图。就是最小的视图是每1分钟可选一次。是以分钟为单位的
 });
 
+
 })
+
+function exportHot() {
+    $("#keyForm").attr("action","/key/export");//改变表单的提交地址为下载的地址
+    $("#keyForm").submit();//提交表单
+}
+
 </script>
 
 </body>

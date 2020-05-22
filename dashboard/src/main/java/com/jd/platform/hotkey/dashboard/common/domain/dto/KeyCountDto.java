@@ -11,6 +11,8 @@ public class KeyCountDto implements Serializable {
 
     private Integer count;
 
+    private String app;
+
     public String getK() {
         return k;
     }
@@ -25,5 +27,13 @@ public class KeyCountDto implements Serializable {
 
     public void setCount(Integer count) {
         this.count = count;
+    }
+
+    public String getApp() {
+        return app;
+    }
+
+    public void setApp(String app) {
+        this.app = app;
     }
 }
