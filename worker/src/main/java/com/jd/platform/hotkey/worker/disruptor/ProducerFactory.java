@@ -6,6 +6,7 @@ import com.jd.platform.hotkey.worker.disruptor.hotkey.HotKeyEvent;
 import com.jd.platform.hotkey.worker.disruptor.hotkey.HotKeyEventProducer;
 import com.jd.platform.hotkey.worker.keylistener.IKeyListener;
 import com.jd.platform.hotkey.worker.tool.CpuNum;
+import com.jd.platform.hotkey.worker.tool.InitConstant;
 import com.lmax.disruptor.dsl.Disruptor;
 
 /**
@@ -32,11 +33,11 @@ public class ProducerFactory {
         }
         DisruptorEventModeBuilder<HotKeyEvent> builder = new DisruptorEventModeBuilder<>();
         Disruptor<HotKeyEvent> disruptor = builder
+                .setBufferSize(InitConstant.bufferSize * 1024 * 1024)
                 .setEventFactory(HotKeyEvent::new)
                 .setWorkerHandlers(array).build();
 
         return new HotKeyEventProducer(disruptor);
     }
-
 
 }

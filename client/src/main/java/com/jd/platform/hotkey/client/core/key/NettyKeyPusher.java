@@ -10,7 +10,10 @@ import com.jd.platform.hotkey.common.tool.FastJsonUtils;
 import io.netty.channel.Channel;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 将msg推送到netty的pusher
@@ -23,14 +26,23 @@ public class NettyKeyPusher implements IKeyPusher {
     public void send(String appName, List<HotKeyModel> list) {
         //积攒了半秒的key集合，按照hash分发到不同的worker
         long now = System.currentTimeMillis();
+
+        Map<Channel, List<HotKeyModel>> map = new HashMap<>();
         for(HotKeyModel model : list) {
             model.setCreateTime(now);
             Channel channel = WorkerInfoHolder.chooseChannel(model.getKey());
             if (channel == null) {
                 continue;
             }
+
+            map.computeIfAbsent(channel, k -> new ArrayList<>());
+            map.get(channel).add(model);
+        }
+
+        for (Channel channel : map.keySet()) {
             try {
-                channel.writeAndFlush(MsgBuilder.buildByteBuf(new HotKeyMsg(MessageType.REQUEST_NEW_KEY, FastJsonUtils.convertObjectToJSON(model))));
+                List<HotKeyModel> batch = map.get(channel);
+                channel.writeAndFlush(MsgBuilder.buildByteBuf(new HotKeyMsg(MessageType.REQUEST_NEW_KEY, FastJsonUtils.convertObjectToJSON(batch))));
             } catch (Exception e) {
                 try {
                     InetSocketAddress insocket = (InetSocketAddress) channel.remoteAddress();

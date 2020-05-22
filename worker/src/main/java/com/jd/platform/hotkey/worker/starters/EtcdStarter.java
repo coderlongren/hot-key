@@ -129,7 +129,7 @@ public class EtcdStarter {
             //上报每秒QPS（接收key数量、处理key数量）
             String totalCount = FastJsonUtils.convertObjectToJSON(new TotalCount(HotKeyFilter.totalReceiveKeyCount.get(), AbsConsumer.totalDealCount.longValue()));
             configCenter.putAndGrant(ConfigConstant.totalReceiveKeyCount + ip, totalCount, 11);
-            logger.info(totalCount);
+            logger.info(totalCount + " expireCount:" + AbsConsumer.expireTotalCount);
 //            configCenter.putAndGrant(ConfigConstant.bufferPoolPath + ip, MemoryTool.getBufferPool() + "", 10);
         } catch (Exception ex) {
             logger.error(ETCD_DOWN);

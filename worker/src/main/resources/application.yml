@@ -1,6 +1,9 @@
 netty:
   port: ${netty-port:11111}
   heartBeat: ${heart-beat:10}
+  timeOut: ${timeOut:5000}
+disruptor:
+  bufferSize: ${bufferSize:2} #必须是2的整数倍
 #etcd的地址，如有多个用逗号分隔
 etcd:
   server: ${etcdServer:http://127.0.0.1:2379} #etcd的地址，重要！！！
