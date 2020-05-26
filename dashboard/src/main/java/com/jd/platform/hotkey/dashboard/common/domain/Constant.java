@@ -11,8 +11,6 @@ public class Constant {
 
     public static final String HAND = "HAND";
 
-    public static final String SYSTEM_FLAG = "1";
-
 
     public static final int RULE_CHANGE = 1;
 

@@ -121,14 +121,15 @@ public class EtcdStarter {
                 String appName = appInfo.getAppName();
                 Map<String, ChannelHandlerContext> map = appInfo.getMap();
                 int count = map.values().size();
-                configCenter.putAndGrant(ConfigConstant.clientCountPath + appName + "/" + ip, count + "", 11);
+                //即便是full gc也不能超过3秒
+                configCenter.putAndGrant(ConfigConstant.clientCountPath + appName + "/" + ip, count + "", 13);
             }
 
-            configCenter.putAndGrant(ConfigConstant.caffeineSizePath + ip, FastJsonUtils.convertObjectToJSON(CaffeineCacheHolder.getSize()), 11);
+            configCenter.putAndGrant(ConfigConstant.caffeineSizePath + ip, FastJsonUtils.convertObjectToJSON(CaffeineCacheHolder.getSize()), 13);
 
             //上报每秒QPS（接收key数量、处理key数量）
             String totalCount = FastJsonUtils.convertObjectToJSON(new TotalCount(HotKeyFilter.totalReceiveKeyCount.get(), AbsConsumer.totalDealCount.longValue()));
-            configCenter.putAndGrant(ConfigConstant.totalReceiveKeyCount + ip, totalCount, 11);
+            configCenter.putAndGrant(ConfigConstant.totalReceiveKeyCount + ip, totalCount, 13);
             logger.info(totalCount + " expireCount:" + AbsConsumer.expireTotalCount);
 //            configCenter.putAndGrant(ConfigConstant.bufferPoolPath + ip, MemoryTool.getBufferPool() + "", 10);
         } catch (Exception ex) {
@@ -178,7 +179,7 @@ public class EtcdStarter {
      * 通过http请求手工上传信息到etcd，适用于正常使用过程中，etcd挂掉，导致worker租期到期被删除，无法自动注册
      */
     private void uploadSelfInfo() {
-        configCenter.putAndGrant(buildKey(), buildValue(), 6);
+        configCenter.putAndGrant(buildKey(), buildValue(), 8);
     }
 
     private String buildKey() {

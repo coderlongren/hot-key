@@ -7,6 +7,7 @@ import com.jd.platform.hotkey.worker.rule.KeyRuleHolder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.UUID;
 
 
 /**
@@ -18,12 +19,11 @@ public class EtcdPusher implements IPusher {
     @Resource
     private IConfigCenter iConfigCenter;
 
-    private static final String DEFAULT_VALUE = "1";
 
     @Override
     public void push(HotKeyModel model) {
         //推送到etcd，供dashboard监听入库
-        iConfigCenter.putAndGrant(HotKeyPathTool.keyRecordPath(model), DEFAULT_VALUE,
+        iConfigCenter.putAndGrant(HotKeyPathTool.keyRecordPath(model), UUID.randomUUID().toString(),
                 KeyRuleHolder.getRuleByAppAndKey(model).getDuration());
     }
 

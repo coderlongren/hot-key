@@ -93,6 +93,7 @@ public class EtcdMonitor {
         eventWrapper.setTtl(ttl);
         eventWrapper.setVersion(kv.getVersion());
         eventWrapper.setEventType(eventType);
+        eventWrapper.setUuid(v);
 
         return eventWrapper;
     }

@@ -136,7 +136,6 @@ public class DataHandler {
         }
 
         try {
-
             if (deleteList.size() > 0) {
                 //改成批量删除
                 keyTimelyMapper.batchDeleted(deleteList);
@@ -156,15 +155,16 @@ public class DataHandler {
         Event.EventType eventType = eventWrapper.getEventType();
         String appKey = eventWrapper.getKey();
         String v = eventWrapper.getValue();
-        long version = eventWrapper.getVersion();
+        //appName+"/"+"key"
         String[] arr = appKey.split("/");
-        String uuid = appKey + Constant.JOIN + version;
+        String uuid = eventWrapper.getUuid();
         int type = eventType.getNumber();
 
         //组建成对象，供累计后批量插入、删除
         TwoTuple<KeyTimely, KeyRecord> timelyKeyRecordTwoTuple = new TwoTuple<>();
         if (eventType.equals(Event.EventType.PUT)) {
-            String source = Constant.SYSTEM_FLAG.equals(v) ? Constant.SYSTEM : Constant.HAND;
+            //手工添加的是时间戳13位，worker传过来的是uuid
+            String source = v.length() == 13 ? Constant.HAND : Constant.SYSTEM;
             timelyKeyRecordTwoTuple.setFirst(new KeyTimely(arr[1], v, arr[0], ttl, uuid, date));
             timelyKeyRecordTwoTuple.setSecond(new KeyRecord(arr[1], v, arr[0], ttl, source, type, uuid, date));
             return timelyKeyRecordTwoTuple;
@@ -175,6 +175,5 @@ public class DataHandler {
         }
         return timelyKeyRecordTwoTuple;
     }
-
 
 }
