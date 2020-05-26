@@ -2,12 +2,12 @@ package com.jd.platform.hotkey.worker.netty.pusher;
 
 import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
 import com.jd.platform.hotkey.common.model.HotKeyModel;
+import com.jd.platform.hotkey.common.tool.HotKeyPathTool;
 import com.jd.platform.hotkey.worker.rule.KeyRuleHolder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
-import static com.jd.platform.hotkey.common.tool.EtcdKeyBuilder.keyPath;
 
 /**
  * @author wuweifeng wrote on 2020-02-24
@@ -22,15 +22,16 @@ public class EtcdPusher implements IPusher {
 
     @Override
     public void push(HotKeyModel model) {
-        //推送到etcd
-        iConfigCenter.putAndGrant(keyPath(model), DEFAULT_VALUE,
+        //推送到etcd，供dashboard监听入库
+        iConfigCenter.putAndGrant(HotKeyPathTool.keyRecordPath(model), DEFAULT_VALUE,
                 KeyRuleHolder.getRuleByAppAndKey(model).getDuration());
     }
 
     @Override
+    @Deprecated
     public void remove(HotKeyModel model) {
         //推送etcd删除
-        iConfigCenter.delete(keyPath(model));
+        iConfigCenter.delete(HotKeyPathTool.keyPath(model));
     }
 
 

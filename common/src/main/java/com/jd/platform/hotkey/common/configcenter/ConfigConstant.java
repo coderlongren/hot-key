@@ -30,6 +30,10 @@ public interface ConfigConstant {
      */
     String hotKeyPath = "/jd/hotkeys/";
     /**
+     * 每个app的热key记录放这里，供控制台监听入库用。格式如：jd/records/app1/userA
+     */
+    String hotKeyRecordPath = "/jd/keyRecords/";
+    /**
      * caffeine的size
      */
     String caffeineSizePath = "/jd/caffeineSize/";

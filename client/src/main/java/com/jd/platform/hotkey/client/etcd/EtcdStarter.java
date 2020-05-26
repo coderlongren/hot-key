@@ -206,6 +206,7 @@ public class EtcdStarter {
                             HotKeyModel model = new HotKeyModel();
                             model.setRemove(false);
                             //value是1的，就是worker推到etcd推送过来的。value是时间戳的，就是手工创建的
+                            //该功能已摒弃，client不再监听worker发往etcd的key了，只监听etcd手工的和client发到etcd的
                             if ("1".equals(keyValue.getValue().toStringUtf8())) {
                                 model.setCreateTime(System.currentTimeMillis());
                             } else {

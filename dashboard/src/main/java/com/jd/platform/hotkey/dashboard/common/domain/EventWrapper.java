@@ -10,20 +10,56 @@ import java.util.Date;
  */
 public class EventWrapper implements Serializable {
 
-    private Event event;
+    private String key;
+
+    private String value;
+
+    private Event.EventType eventType;
 
     private Date date;
 
     private Long ttl;
 
-    public EventWrapper(Event event ,Long ttl) {
-        this.event = event;
-        this.ttl = ttl;
-        this.date = new Date();
+    private long version;
+
+    public long getVersion() {
+        return version;
     }
 
-    public Event getEvent() {
-        return event;
+    public void setVersion(long version) {
+        this.version = version;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public Event.EventType getEventType() {
+        return eventType;
+    }
+
+    public void setEventType(Event.EventType eventType) {
+        this.eventType = eventType;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public void setTtl(Long ttl) {
+        this.ttl = ttl;
     }
 
     public Date getDate() {

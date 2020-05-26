@@ -2,8 +2,6 @@ package com.jd.platform.hotkey.dashboard.common.monitor;
 
 
 import com.ibm.etcd.api.Event;
-import com.ibm.etcd.api.KeyValue;
-import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
 import com.jd.platform.hotkey.dashboard.common.domain.Constant;
 import com.jd.platform.hotkey.dashboard.common.domain.EventWrapper;
 import com.jd.platform.hotkey.dashboard.mapper.KeyRecordMapper;
@@ -38,7 +36,7 @@ public class DataHandler {
     @Resource
     private KeyTimelyMapper keyTimelyMapper;
 
-    @Value("${pool.size:4}")
+    @Value("${pool.size}")
     private String poolSize = "4";
 
     /**
@@ -95,23 +93,6 @@ public class DataHandler {
         }
 
     }
-
-//    @Resource
-//    private IConfigCenter iConfigCenter;
-//
-//    @PostConstruct
-//    public void aa() {
-//        CompletableFuture.runAsync(() -> {
-//            System.out.println(System.currentTimeMillis());
-//            for (int i = 0; i < 10000; i++) {
-//                iConfigCenter.put(ConfigConstant.hotKeyPath + "i/" + i, i + "");
-//            }
-//            System.out.println(System.currentTimeMillis());
-//
-//            ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-//            scheduledExecutorService.scheduleAtFixedRate(this::batchInsertRecords, 0, 1, TimeUnit.SECONDS);
-//        });
-//    }
 
 
     private void batchInsertRecord(List<KeyRecord> keyRecords) {
@@ -170,15 +151,12 @@ public class DataHandler {
      * 处理热点key和记录
      */
     private TwoTuple<KeyTimely, KeyRecord> handHotKey(EventWrapper eventWrapper) {
-        Event event = eventWrapper.getEvent();
-        KeyValue kv = event.getKv();
         Date date = eventWrapper.getDate();
         long ttl = eventWrapper.getTtl();
-        Event.EventType eventType = event.getType();
-        String k = kv.getKey().toStringUtf8();
-        String v = kv.getValue().toStringUtf8();
-        long version = kv.getModRevision();
-        String appKey = k.replace(ConfigConstant.hotKeyPath, "");
+        Event.EventType eventType = eventWrapper.getEventType();
+        String appKey = eventWrapper.getKey();
+        String v = eventWrapper.getValue();
+        long version = eventWrapper.getVersion();
         String[] arr = appKey.split("/");
         String uuid = appKey + Constant.JOIN + version;
         int type = eventType.getNumber();

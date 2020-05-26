@@ -5,8 +5,7 @@ import com.jd.platform.hotkey.client.core.rule.KeyRuleHolder;
 import com.jd.platform.hotkey.client.etcd.EtcdConfigFactory;
 import com.jd.platform.hotkey.common.model.HotKeyModel;
 import com.jd.platform.hotkey.common.model.typeenum.KeyType;
-
-import static com.jd.platform.hotkey.common.tool.EtcdKeyBuilder.keyPath;
+import com.jd.platform.hotkey.common.tool.HotKeyPathTool;
 
 /**
  * 客户端上传热key的入口调用
@@ -36,8 +35,7 @@ public class HotKeyPusher {
 
         if (remove) {
             //如果是删除key，就直接发到etcd去，不用做聚合
-//            KeyHandlerFactory.getPusher().send(Context.APP_NAME, CollectionUtil.list(false, hotKeyModel));
-            EtcdConfigFactory.configCenter().delete(keyPath(hotKeyModel));
+            EtcdConfigFactory.configCenter().delete(HotKeyPathTool.keyPath(hotKeyModel));
         } else {
             //如果key是规则内的要被探测的key，就积累等待传送
             if (KeyRuleHolder.isKeyInRule(key)) {

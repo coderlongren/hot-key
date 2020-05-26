@@ -9,5 +9,9 @@ import com.jd.platform.hotkey.common.model.HotKeyModel;
 public interface IPusher {
     void push(HotKeyModel model);
 
+    /**
+     * worker是监听不到删除事件了，client不往worker发删除事件了
+     */
+    @Deprecated
     void remove(HotKeyModel model);
 }

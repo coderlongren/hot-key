@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -26,6 +27,7 @@ import java.util.concurrent.CompletableFuture;
  * @Author: liyunfeng31
  * @Date: 2020/4/18 18:29
  */
+@SuppressWarnings("ALL")
 @Component
 public class EtcdMonitor {
 
@@ -41,18 +43,59 @@ public class EtcdMonitor {
     @Resource
     private DataHandler dataHandler;
 
+    /**
+     * 监听新来的热key，该key的产生是来自于手工在控制台添加
+     */
     @PostConstruct
-    public void watchHotKey() {
+    public void watchHandOperationHotKey() {
         CompletableFuture.runAsync(() -> {
             KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.hotKeyPath);
             while (watchIterator.hasNext()) {
                 Event event = event(watchIterator);
-                long ttl = configCenter.timeToLive(event.getKv().getLease());
-                dataHandler.offer(new EventWrapper(event, ttl));
+                EventWrapper eventWrapper = build(event);
+
+                String appKey = event.getKv().getKey().toStringUtf8().replace(ConfigConstant.hotKeyPath, "");
+                eventWrapper.setKey(appKey);
+
+                dataHandler.offer(eventWrapper);
             }
         });
     }
 
+    /**
+     * 监听新来的热key，该key的产生是来自于worker集群推送过来的
+     */
+    @PostConstruct
+    public void watchHotKeyRecord() {
+        CompletableFuture.runAsync(() -> {
+            KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.hotKeyRecordPath);
+            while (watchIterator.hasNext()) {
+                Event event = event(watchIterator);
+                EventWrapper eventWrapper = build(event);
+
+                String appKey = event.getKv().getKey().toStringUtf8().replace(ConfigConstant.hotKeyRecordPath, "");
+                eventWrapper.setKey(appKey);
+
+                dataHandler.offer(eventWrapper);
+            }
+        });
+    }
+
+    private EventWrapper build(Event event) {
+        KeyValue kv = event.getKv();
+
+        long ttl = configCenter.timeToLive(kv.getLease());
+        String v = kv.getValue().toStringUtf8();
+        Event.EventType eventType = event.getType();
+        EventWrapper eventWrapper = new EventWrapper();
+        eventWrapper.setValue(v);
+        eventWrapper.setDate(new Date());
+        eventWrapper.setTtl(ttl);
+        eventWrapper.setVersion(kv.getVersion());
+        eventWrapper.setEventType(eventType);
+
+        return eventWrapper;
+    }
 
     @PostConstruct
     public void watchRules() {
@@ -110,5 +153,6 @@ public class EtcdMonitor {
     private Event event(KvClient.WatchIterator watchIterator) {
         return watchIterator.next().getEvents().get(0);
     }
+
 
 }
