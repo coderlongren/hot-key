@@ -24,6 +24,19 @@ public class EventWrapper implements Serializable {
 
     private String uuid;
 
+    @Override
+    public String toString() {
+        return "EventWrapper{" +
+                "key='" + key + '\'' +
+                ", value='" + value + '\'' +
+                ", eventType=" + eventType +
+                ", date=" + date +
+                ", ttl=" + ttl +
+                ", version=" + version +
+                ", uuid='" + uuid + '\'' +
+                '}';
+    }
+
     public String getUuid() {
         return uuid;
     }

@@ -1,6 +1,5 @@
 package com.jd.platform.hotkey.dashboard.model;
 
-import cn.hutool.core.date.SystemClock;
 
 import java.io.Serializable;
 import java.util.Date;
