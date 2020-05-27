@@ -170,7 +170,8 @@ public class DataHandler {
             return timelyKeyRecordTwoTuple;
         } else if (eventType.equals(Event.EventType.DELETE)) {
             timelyKeyRecordTwoTuple.setFirst(new KeyTimely(arr[1], null, arr[0], 0L, null, null));
-            timelyKeyRecordTwoTuple.setSecond(new KeyRecord(arr[1], v, arr[0], 0L, Constant.SYSTEM, type, uuid, date));
+            //删除事件就不记录了
+//            timelyKeyRecordTwoTuple.setSecond(new KeyRecord(arr[1], v, arr[0], 0L, Constant.SYSTEM, type, uuid, date));
             return timelyKeyRecordTwoTuple;
         }
         return timelyKeyRecordTwoTuple;

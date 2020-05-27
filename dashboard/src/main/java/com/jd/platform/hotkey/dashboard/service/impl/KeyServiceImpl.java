@@ -4,8 +4,10 @@ package com.jd.platform.hotkey.dashboard.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.ibm.etcd.api.Event;
 import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
 import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
+import com.jd.platform.hotkey.dashboard.common.domain.Constant;
 import com.jd.platform.hotkey.dashboard.common.domain.dto.KeyCountDto;
 import com.jd.platform.hotkey.dashboard.common.domain.req.ChartReq;
 import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
@@ -112,6 +114,7 @@ public class KeyServiceImpl implements KeyService {
 
     @Override
     public int delKeyByUser(KeyTimely keyTimely) {
+        //app + "_" + key
         String[] arr = keyTimely.getKey().split("_");
         //删除client监听目录的key
         String ectdKey = ConfigConstant.hotKeyPath + arr[0] + "/" + arr[1];
@@ -119,6 +122,11 @@ public class KeyServiceImpl implements KeyService {
         //也删除Record目录下的该key，因为不确定要删的key到底在哪
         String recordKey = ConfigConstant.hotKeyRecordPath + arr[0] + "/" + arr[1];
         configCenter.delete(recordKey);
+
+        KeyRecord keyRecord = new KeyRecord(arr[1], "", arr[0], 0L, Constant.HAND,
+                Event.EventType.DELETE_VALUE, UUID.randomUUID().toString(), new Date());
+
+        recordMapper.insertSelective(keyRecord);
 
         return 1;
     }

@@ -1,6 +1,5 @@
 package com.jd.platform.hotkey.dashboard.common.monitor;
 
-import com.github.pagehelper.util.StringUtil;
 import com.ibm.etcd.api.Event;
 import com.ibm.etcd.api.KeyValue;
 import com.ibm.etcd.client.kv.KvClient;
@@ -94,10 +93,6 @@ public class EtcdMonitor {
         eventWrapper.setTtl(ttl);
         eventWrapper.setVersion(kv.getVersion());
         eventWrapper.setEventType(eventType);
-        //删除事件时没有v
-        if (StringUtil.isEmpty(v)) {
-            v = "deleted";
-        }
         eventWrapper.setUuid(v);
 
         return eventWrapper;
