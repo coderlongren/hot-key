@@ -46,9 +46,7 @@ public class EtcdStarter {
 
         startWatchRule();
 
-        //监听热key事件，worker探测出来后也会推给etcd，到时client会收到来自于worker和来自于etcd的两个热key事件，如果是新增，
-        //就只处理worker的就行。如果是删除，可能是etcd的热key过期删除，也可能是手工删除的
-        //只监听手工的增删？算了，还是监听所有的吧，重复的就return
+        //监听热key事件，只监听手工添加、删除的key
         startWatchHotKey();
     }
 
@@ -60,10 +58,18 @@ public class EtcdStarter {
         IConfigCenter configCenter = EtcdConfigFactory.configCenter();
         try {
             //获取所有热key
-            List<KeyValue> keyValues = configCenter.getPrefix(ConfigConstant.hotKeyPath + Context.APP_NAME);
+            List<KeyValue> handKeyValues = configCenter.getPrefix(ConfigConstant.hotKeyPath + Context.APP_NAME);
+            List<KeyValue> workerKeyValues = configCenter.getPrefix(ConfigConstant.hotKeyRecordPath + Context.APP_NAME);
 
-            for (KeyValue keyValue : keyValues) {
+            for (KeyValue keyValue : handKeyValues) {
                 String key = keyValue.getKey().toStringUtf8().replace(ConfigConstant.hotKeyPath + Context.APP_NAME + "/", "");
+                HotKeyModel model = new HotKeyModel();
+                model.setRemove(false);
+                model.setKey(key);
+                EventBusCenter.getInstance().post(new ReceiveNewKeyEvent(model));
+            }
+            for (KeyValue keyValue : workerKeyValues) {
+                String key = keyValue.getKey().toStringUtf8().replace(ConfigConstant.hotKeyRecordPath + Context.APP_NAME + "/", "");
                 HotKeyModel model = new HotKeyModel();
                 model.setRemove(false);
                 model.setKey(key);
@@ -281,8 +287,8 @@ public class EtcdStarter {
                 while (watchIterator.hasNext()) {
                     //这句必须写，next会让他卡住，除非真的有新rule变更
                     WatchUpdate watchUpdate = watchIterator.next();
-                    JdLogger.info(getClass(), "rules info changed. begin to fetch new infos");
                     List<Event> eventList = watchUpdate.getEvents();
+                    JdLogger.info(getClass(), "rules info changed. begin to fetch new infos. rule change is " + eventList);
 
                     //全量拉取rule信息
                     fetchRuleFromEtcd();
