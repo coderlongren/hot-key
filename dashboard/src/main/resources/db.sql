@@ -118,3 +118,35 @@ CREATE TABLE `hk_app_info` (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uniq_key`(`app_name`) USING BTREE COMMENT '唯一索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Compact;
+
+
+
+CREATE TABLE `hk_statistics`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `key_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'keyName',
+  `count` int(11) NOT NULL COMMENT '计数',
+  `app` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT 'app',
+  `days` int(11) NOT NULL COMMENT '天数',
+  `hours` bigint(11) NOT NULL COMMENT '小时数',
+  `minutes` bigint(11) NOT NULL DEFAULT 0 COMMENT '分钟数',
+  `biz_type` int(2) NOT NULL COMMENT '业务类型',
+  `uuid` varchar(180) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '防重ID',
+  `create_time` datetime(0) NOT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `uniq_uuid`(`uuid`) USING BTREE COMMENT '防重唯一索引'
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Compact;
+
+
+CREATE TABLE `hk_receive_count`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `worker_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'key名称',
+  `receive_count` int(11) NOT NULL COMMENT '接收数',
+  `hours` int(20) NOT NULL COMMENT '小时数',
+  `minutes` bigint(20) NOT NULL COMMENT '分钟数',
+  `seconds` bigint(20) NOT NULL COMMENT '秒数',
+  `uuid` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '防重ID',
+  `create_time` datetime(0) NOT NULL COMMENT '修改时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `uniq_uuid`(`uuid`) USING BTREE COMMENT '防重ID'
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Compact;
+
