@@ -8,6 +8,7 @@ import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
 import com.jd.platform.hotkey.dashboard.common.domain.vo.HotKeyLineChartVo;
 import com.jd.platform.hotkey.dashboard.model.KeyRecord;
 import com.jd.platform.hotkey.dashboard.model.KeyTimely;
+import com.jd.platform.hotkey.dashboard.model.Statistics;
 
 import java.util.List;
 
@@ -37,5 +38,7 @@ public interface KeyService {
 
     HotKeyLineChartVo getLineChart(ChartReq chartReq);
 
-    List<KeyCountDto> listExportKey(SearchReq searchReq);
+    List<Statistics> listExportKey(SearchReq searchReq);
+
+    HotKeyLineChartVo getQpsLineChart(ChartReq chartReq);
 }

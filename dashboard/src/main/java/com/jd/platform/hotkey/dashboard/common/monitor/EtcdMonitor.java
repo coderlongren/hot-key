@@ -8,7 +8,9 @@ import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
 import com.jd.platform.hotkey.dashboard.common.domain.Constant;
 import com.jd.platform.hotkey.dashboard.common.domain.EventWrapper;
 import com.jd.platform.hotkey.dashboard.mapper.ChangeLogMapper;
+import com.jd.platform.hotkey.dashboard.mapper.ReceiveCountMapper;
 import com.jd.platform.hotkey.dashboard.model.ChangeLog;
+import com.jd.platform.hotkey.dashboard.model.ReceiveCount;
 import com.jd.platform.hotkey.dashboard.model.Worker;
 import com.jd.platform.hotkey.dashboard.service.WorkerService;
 import org.slf4j.Logger;
@@ -42,6 +44,9 @@ public class EtcdMonitor {
 
     @Resource
     private DataHandler dataHandler;
+
+    @Resource
+    private ReceiveCountMapper receiveCountMapper;
 
     /**
      * 监听新来的热key，该key的产生是来自于手工在控制台添加
@@ -145,6 +150,29 @@ public class EtcdMonitor {
                 } else if (eventType.equals(Event.EventType.DELETE)) {
                     worker.setState(0);
                     workerService.updateWorker(worker);
+                }
+            }
+        });
+    }
+
+
+
+    //@PostConstruct
+    public void watchReceiveKeyCount() {
+        CompletableFuture.runAsync(() -> {
+            KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.totalReceiveKeyCount);
+            while (watchIterator.hasNext()) {
+                Event event = event(watchIterator);
+                KeyValue kv = event.getKv();
+                Event.EventType eventType = event.getType();
+                String k = kv.getKey().toStringUtf8();
+                String v = kv.getValue().toStringUtf8();
+                long version = kv.getModRevision();
+                String uuid = k + Constant.JOIN + version;
+                if (eventType.equals(Event.EventType.PUT)) {
+                    receiveCountMapper.insert(new ReceiveCount(k, Long.parseLong(v), uuid));
+                } else if (eventType.equals(Event.EventType.DELETE)) {
+                    receiveCountMapper.insert(new ReceiveCount(k, 0L, uuid));
                 }
             }
         });

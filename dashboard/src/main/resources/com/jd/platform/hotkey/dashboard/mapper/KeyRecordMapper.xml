@@ -16,7 +16,7 @@
     id, key_name, app_name, val, duration,source,type,create_time,uuid
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from hk_key_record
     where id = #{id,jdbcType=BIGINT}
@@ -159,8 +159,8 @@
 
 
 
-  <select id="maxHotKey"  resultType="com.jd.platform.hotkey.dashboard.common.domain.dto.KeyCountDto">
-    select key_name as k, count(1) as count , app_name as app
+  <select id="maxHotKey"  resultType="com.jd.platform.hotkey.dashboard.model.Statistics">
+    select key_name as keyName, count(1) as count , app_name as app
     from hk_key_record
     where type = 0
     <if test="appName !=null and appName !=''">

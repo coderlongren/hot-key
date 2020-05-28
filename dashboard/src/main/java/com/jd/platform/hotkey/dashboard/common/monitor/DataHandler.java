@@ -4,10 +4,15 @@ package com.jd.platform.hotkey.dashboard.common.monitor;
 import com.ibm.etcd.api.Event;
 import com.jd.platform.hotkey.dashboard.common.domain.Constant;
 import com.jd.platform.hotkey.dashboard.common.domain.EventWrapper;
+import com.jd.platform.hotkey.dashboard.common.domain.dto.KeyCountDto;
+import com.jd.platform.hotkey.dashboard.common.domain.req.ChartReq;
 import com.jd.platform.hotkey.dashboard.mapper.KeyRecordMapper;
 import com.jd.platform.hotkey.dashboard.mapper.KeyTimelyMapper;
+import com.jd.platform.hotkey.dashboard.mapper.StatisticsMapper;
 import com.jd.platform.hotkey.dashboard.model.KeyRecord;
 import com.jd.platform.hotkey.dashboard.model.KeyTimely;
+import com.jd.platform.hotkey.dashboard.model.Statistics;
+import com.jd.platform.hotkey.dashboard.util.DateUtil;
 import com.jd.platform.hotkey.dashboard.util.TwoTuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,10 +22,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -35,8 +38,11 @@ public class DataHandler {
     private KeyRecordMapper keyRecordMapper;
     @Resource
     private KeyTimelyMapper keyTimelyMapper;
+    @Resource
+    private StatisticsMapper statisticsMapper;
 
-    @Value("${pool.size}")
+
+    @Value("${pool.size:4}")
     private String poolSize = "4";
 
     /**
@@ -47,7 +53,7 @@ public class DataHandler {
     /**
      * 4个线程用来入库
      */
-    private Executor executor = Executors.newFixedThreadPool(Integer.valueOf(poolSize));
+    private Executor executor = Executors.newFixedThreadPool(Integer.parseInt(poolSize));
 
     /**
      * 入队
@@ -175,6 +181,24 @@ public class DataHandler {
             return timelyKeyRecordTwoTuple;
         }
         return timelyKeyRecordTwoTuple;
+    }
+
+
+    @Scheduled(cron = "0 0 * * * ?")
+    public void offlineStatistics() {
+        // 每小时 统计一次record 表 结果记录到统计表
+        LocalDateTime now = LocalDateTime.now();
+        List<Statistics> records = keyRecordMapper.maxHotKey(new ChartReq(now.minusHours(1), now, 1000));
+        records.forEach(x->{
+            x.setBizType(1);
+            x.setCreateTime(DateUtil.localDateTimeToDate(now));
+            x.setDays(DateUtil.nowDay(now));
+            int hour = DateUtil.nowHour(now);
+            x.setHours(hour);
+            x.setUuid(1+"_"+x.getKeyName()+"_"+hour);
+        });
+       int row = statisticsMapper.batchInsert(records);
+       log.info("定时统计热点记录时间：{}, 影响行数：{}", now.toString(), row);
     }
 
 }

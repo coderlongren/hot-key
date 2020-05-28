@@ -12,6 +12,7 @@ import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
 import com.jd.platform.hotkey.dashboard.common.domain.vo.HotKeyLineChartVo;
 import com.jd.platform.hotkey.dashboard.model.KeyRecord;
 import com.jd.platform.hotkey.dashboard.model.KeyTimely;
+import com.jd.platform.hotkey.dashboard.model.Statistics;
 import com.jd.platform.hotkey.dashboard.service.KeyService;
 import com.jd.platform.hotkey.dashboard.util.DateUtil;
 import com.jd.platform.hotkey.dashboard.util.ExcelUtil;
@@ -29,6 +30,10 @@ import java.util.Date;
 import java.util.List;
 
 
+
+/**
+ * @author liyunfeng31
+ */
 @Controller
 @RequestMapping("/key")
 public class KeyController extends BaseController {
@@ -42,8 +47,17 @@ public class KeyController extends BaseController {
 	@PostMapping("/lineChart")
 	@ResponseBody
 	public HotKeyLineChartVo lineChart(ChartReq chartReq){
+		System.out.println("===========");
 		return keyService.getLineChart(chartReq);
 	}
+
+	//@PostMapping("/qps")
+	@GetMapping("/qps")
+	@ResponseBody
+	public HotKeyLineChartVo qpsLineChart(ChartReq ChartReq) {
+		return keyService.getQpsLineChart(ChartReq);
+	}
+
 
 
 	@GetMapping("/view")
@@ -70,7 +84,6 @@ public class KeyController extends BaseController {
 	@PostMapping("/listTimely")
 	@ResponseBody
 	public Page<KeyTimely> listTimely(PageReq page, SearchReq searchReq){
-		System.out.println("searchText--> "+ JSON.toJSONString(searchReq));
 		PageInfo<KeyTimely> info = keyService.pageKeyTimely(page, param2(searchReq));
 		return new Page<>(info.getPageNum(),(int)info.getTotal(),info.getList());
 	}
@@ -126,11 +139,11 @@ public class KeyController extends BaseController {
 		}
 		req.setAppName(appName);
 		req.setKey(key);
-		List<KeyCountDto> records = keyService.listExportKey(req);
+		List<Statistics> records = keyService.listExportKey(req);
 		List<List<String> > rows = new ArrayList<>();
-		for (KeyCountDto record : records) {
+		for (Statistics record : records) {
 			List<String> list = new ArrayList<>();
-			list.add(record.getK());
+			list.add(record.getKeyName());
 			list.add(record.getCount().toString());
 			list.add(record.getApp());
 			rows.add(list);

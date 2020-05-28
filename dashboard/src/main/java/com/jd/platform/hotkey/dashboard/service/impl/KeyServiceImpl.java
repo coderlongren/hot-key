@@ -13,17 +13,24 @@ import com.jd.platform.hotkey.dashboard.common.domain.req.ChartReq;
 import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
 import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
 import com.jd.platform.hotkey.dashboard.common.domain.vo.HotKeyLineChartVo;
+import com.jd.platform.hotkey.dashboard.mapper.ReceiveCountMapper;
 import com.jd.platform.hotkey.dashboard.mapper.KeyRecordMapper;
 import com.jd.platform.hotkey.dashboard.mapper.KeyTimelyMapper;
+import com.jd.platform.hotkey.dashboard.mapper.StatisticsMapper;
 import com.jd.platform.hotkey.dashboard.model.KeyRecord;
 import com.jd.platform.hotkey.dashboard.model.KeyTimely;
+import com.jd.platform.hotkey.dashboard.model.ReceiveCount;
+import com.jd.platform.hotkey.dashboard.model.Statistics;
 import com.jd.platform.hotkey.dashboard.service.KeyService;
 import com.jd.platform.hotkey.dashboard.util.CommonUtil;
+import com.jd.platform.hotkey.dashboard.util.DateUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 
 /**
@@ -42,6 +49,10 @@ public class KeyServiceImpl implements KeyService {
     private KeyRecordMapper recordMapper;
     @Resource
     private KeyTimelyMapper keyTimelyMapper;
+    @Resource
+    private ReceiveCountMapper countMapper;
+    @Resource
+    private StatisticsMapper statisticsMapper;
 
 
     @Override
@@ -56,37 +67,64 @@ public class KeyServiceImpl implements KeyService {
 
     @Override
     public HotKeyLineChartVo getLineChart(ChartReq chartReq) {
-        LocalDateTime now = LocalDateTime.now();
-       // LocalDateTime now = LocalDateTime.now().minusDays(3).minusHours(3);
-        Map<String, int[]> map = new HashMap<>(10);
-        List<String> list = new ArrayList<>();
-        for (int i = 5; i > 0 ; i--) {
-            LocalDateTime pre = now.minusHours(i);
-            List<KeyCountDto> records = recordMapper.maxHotKey(new ChartReq(pre, now, 10));
-            int finalI = i;
-            records.forEach(dto ->{
-                String k = dto.getK();
-                Integer v = dto.getCount();
-                if(map.get(k) == null){
-                   int [] data = new int[5];
-                   data[finalI-1] = v;
-                   map.put(k, data);
-               }else{
-                   int[] data = map.get(k);
-                   data[finalI-1] = v;
-                   map.put(k, data);
-               }
-            });
-            list.add("近"+i+"小时");
+        int hours = 6;
+        // 默认查询6小时内的数据
+        if(chartReq.getStartTime() == null || chartReq.getEndTime() == null){
+            chartReq.setStartTime(DateUtil.preTime(hours));
+            chartReq.setEndTime(new Date());
         }
-        return new HotKeyLineChartVo(list,map);
+
+        List<Statistics> statistics = statisticsMapper.listStatistics(chartReq);
+        // 获取data Y轴
+        Map<String, int[]> keyDateMap = keyDateMap(statistics, hours);
+        // 获取时间x轴
+        List<String> list = new ArrayList<>();
+        for (int i = hours; i >0 ; i--) {
+            LocalDateTime time = LocalDateTime.now().minusHours(i-1);
+            int hour = time.getHour();
+            list.add(hour+"时");
+        }
+        return new HotKeyLineChartVo(list,keyDateMap);
     }
 
     @Override
-    public List<KeyCountDto> listExportKey(SearchReq req) {
+    public List<Statistics> listExportKey(SearchReq req) {
         ChartReq chartReq = new ChartReq(req.getStartTime(), req.getEndTime(), req.getAppName(), req.getKey());
-        System.out.println(JSON.toJSONString(chartReq));
         return recordMapper.maxHotKey(chartReq);
+    }
+
+    @Override
+    public HotKeyLineChartVo getQpsLineChart(ChartReq chartReq) {
+        if(chartReq.getStartTime() == null || chartReq.getEndTime() == null){
+         /*   chartReq.setStartTime(DateUtil.preTime());
+            chartReq.setEndTime(new Date());*/
+        }
+        List<ReceiveCount> countList = countMapper.list(chartReq);
+        Map<String, int []> map = new HashMap<>(10);
+        Set<String> minutes = new HashSet<>();
+        List<List<ReceiveCount>> workerList = new ArrayList<>();
+        countList.stream().collect(Collectors.groupingBy(ReceiveCount::getWorkerName,Collectors.toList()))
+                .forEach((name,data)-> workerList.add(data));
+        for (List<ReceiveCount> cts : workerList) {
+            int size = cts.size();
+            for (int i = 0; i < size; i++) {
+                ReceiveCount dto = cts.get(i);
+                String k = dto.getWorkerName();
+                Long v = dto.getReceiveCount();
+                Long ms = dto.getMinutes();
+                minutes.add(ms.toString());
+                if(map.get(k) == null){
+                    int [] data = new int[size];
+                    data[i] = v.intValue();
+                    map.put(k, data);
+                }else{
+                    int [] data = map.get(k);
+                    data[i] = v.intValue();
+                    map.put(k, data);
+                }
+            }
+        }
+        return new HotKeyLineChartVo(new ArrayList<>(minutes),map);
     }
 
 
@@ -142,6 +180,35 @@ public class KeyServiceImpl implements KeyService {
     }
 
 
+
+
+    private Map<String, int[]> keyDateMap(List<Statistics> statistics, int hours){
+        Map<String, int[]> map = new HashMap<>(10);
+        Map<String, List<Statistics>> listMap = statistics.stream().collect(Collectors.groupingBy(Statistics::getKeyName));
+        for (Map.Entry<String, List<Statistics>> m : listMap.entrySet()) {
+            int start = DateUtil.preHours(LocalDateTime.now(),5);
+            map.put(m.getKey(),new int[hours]);
+            int[] data = map.get(m.getKey());
+            int tmp = 0;
+            for (int i = 0; i < hours; i++) {
+                Statistics st;
+                try {
+                    st = m.getValue().get(tmp);
+                    if(String.valueOf(start).endsWith("24")){ start = start + 77; }
+                    if(start != st.getHours()){
+                        data[i] = 0;
+                    }else{
+                        tmp ++;
+                        data[i] = st.getCount();
+                    }
+                    start++;
+                }catch (Exception e){
+                    data[i] = 0;
+                }
+            }
+        }
+        return map;
+    }
 }
 
 

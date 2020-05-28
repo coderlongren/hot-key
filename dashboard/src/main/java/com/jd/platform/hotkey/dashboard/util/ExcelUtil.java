@@ -5,7 +5,6 @@ import java.io.OutputStream;
 import java.util.List;
 
 import com.jd.platform.hotkey.dashboard.common.domain.ExcelData;
-import com.jd.platform.hotkey.dashboard.common.monitor.EtcdMonitor;
 import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.xssf.usermodel.*;
 import org.slf4j.Logger;
@@ -14,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 public class ExcelUtil {
 
-    private static Logger log = LoggerFactory.getLogger(EtcdMonitor.class);
+    private static Logger log = LoggerFactory.getLogger(ExcelUtil.class);
 
     public static void exportExcel(HttpServletResponse response, ExcelData data) {
         log.info("导出解析开始，fileName:{}",data.getFileName());
@@ -100,11 +99,8 @@ public class ExcelUtil {
             //清空response
             response.reset();
             //设置response的Header
-            log.info("fileName-->  "+fileName);
             response.addHeader("Content-Disposition", "attachment;filename=" + fileName);
-          //  OutputStream os = new BufferedOutputStream(response.getOutputStream());
             response.setContentType("application/vnd.ms-excel;charset=utf-8");
-
             OutputStream os = response.getOutputStream();
             //将excel写入到输出流中
             workbook.write(os);

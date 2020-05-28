@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jd.platform.hotkey.dashboard.mapper.StatisticsMapper" >
+  <resultMap id="BaseResultMap" type="com.jd.platform.hotkey.dashboard.model.Statistics" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="key_name" property="keyName" jdbcType="VARCHAR" />
+    <result column="count" property="count" jdbcType="INTEGER" />
+    <result column="days" property="days" jdbcType="INTEGER" />
+    <result column="hours" property="hours" jdbcType="BIGINT" />
+    <result column="minutes" property="minutes" jdbcType="BIGINT" />
+    <result column="biz_type" property="bizType" jdbcType="INTEGER" />
+    <result column="uuid" property="uuid" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+
+  <select id="listStatistics" resultMap="BaseResultMap" >
+    select id, key_name, count, days, hours, minutes, biz_type, uuid, create_time
+    from hk_statistics
+  </select>
+
+
+  <insert id="batchInsert">
+    INSERT ignore INTO
+    hk_statistics(
+    key_name,count,app,
+    days,hours, minutes,
+    biz_type,create_time,uuid)
+    VALUES
+    <foreach collection="list" item="k" separator=",">
+      ( #{k.key},#{k.count},#{k.app},
+      #{k.days}, #{k.hours},#{k.minutes},
+      #{k.bizType},#{k.createTime},#{k.uuid})
+    </foreach>
+  </insert>
+
+
+
+</mapper>
