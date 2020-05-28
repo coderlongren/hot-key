@@ -7,6 +7,7 @@ import com.jd.platform.hotkey.common.tool.FastJsonUtils;
 import com.jd.platform.hotkey.worker.disruptor.MessageProducer;
 import com.jd.platform.hotkey.worker.disruptor.hotkey.HotKeyEvent;
 import com.jd.platform.hotkey.worker.mq.IMqMessageReceiver;
+import com.jd.platform.hotkey.worker.netty.holder.WhiteListHolder;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -52,10 +53,17 @@ public class HotKeyFilter implements INettyMsgFilter, IMqMessageReceiver {
         if (message.startsWith("[")) {
             List<HotKeyModel> models = FastJsonUtils.toList(message, HotKeyModel.class);
             for (HotKeyModel model : models) {
+                //白名单key不处理
+                if (WhiteListHolder.contains(model.getKey())) {
+                    continue;
+                }
                 messageProducer.publish(new HotKeyEvent(model));
             }
         } else if (message.startsWith("{")) {
             HotKeyModel model = FastJsonUtils.toBean(message, HotKeyModel.class);
+            if (WhiteListHolder.contains(model.getKey())) {
+                return;
+            }
             messageProducer.publish(new HotKeyEvent(model));
         }
 

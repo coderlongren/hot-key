@@ -1,5 +1,6 @@
 package com.jd.platform.hotkey.worker.starters;
 
+import cn.hutool.core.util.StrUtil;
 import com.ibm.etcd.api.Event;
 import com.ibm.etcd.api.KeyValue;
 import com.ibm.etcd.client.kv.KvClient;
@@ -15,6 +16,7 @@ import com.jd.platform.hotkey.worker.model.AppInfo;
 import com.jd.platform.hotkey.worker.model.TotalCount;
 import com.jd.platform.hotkey.worker.netty.filter.HotKeyFilter;
 import com.jd.platform.hotkey.worker.netty.holder.ClientInfoHolder;
+import com.jd.platform.hotkey.worker.netty.holder.WhiteListHolder;
 import com.jd.platform.hotkey.worker.rule.KeyRuleHolder;
 import io.grpc.StatusRuntimeException;
 import io.netty.channel.ChannelHandlerContext;
@@ -87,6 +89,36 @@ public class EtcdStarter {
             }
         });
 
+    }
+
+    /**
+     * 启动回调监听器，监听白名单变化，只监听自己所在的app，白名单key不参与热key计算，直接忽略
+     */
+    @PostConstruct
+    public void watchWhiteList() {
+        CompletableFuture.runAsync(() -> {
+            //获取所有白名单
+            fetchWhite();
+
+            KvClient.WatchIterator watchIterator = configCenter.watch(ConfigConstant.whiteListPath + workerPath);
+            while (watchIterator.hasNext()) {
+                WatchUpdate watchUpdate = watchIterator.next();
+                logger.info("whiteList changed ");
+
+                fetchWhite();
+            }
+        });
+
+    }
+
+    private void fetchWhite() {
+        String value = configCenter.get(ConfigConstant.whiteListPath + workerPath);
+        if (StrUtil.isNotEmpty(value)) {
+            String[] list = value.split(",");
+            for (String s : list) {
+                WhiteListHolder.add(s);
+            }
+        }
     }
 
     /**

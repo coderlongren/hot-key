@@ -11,5 +11,5 @@ import java.util.List;
  * @version 1.0
  */
 public class ClientInfoHolder {
-    public static volatile List<AppInfo> apps = new ArrayList<>();
+    public static List<AppInfo> apps = new ArrayList<>();
 }

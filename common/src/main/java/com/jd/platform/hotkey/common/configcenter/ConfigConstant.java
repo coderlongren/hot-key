@@ -22,6 +22,10 @@ public interface ConfigConstant {
      */
     String rulePath = "/jd/rules/";
     /**
+     * 白名单路径，白名单的不参与热key计算，如 /jd/whiteList/app1 -> key1,key2,key3
+     */
+    String whiteListPath = "/jd/whiteList/";
+    /**
      * 客户端数量，如/jd/count/cartsoa = 2900
      */
     String clientCountPath = "/jd/count/";
