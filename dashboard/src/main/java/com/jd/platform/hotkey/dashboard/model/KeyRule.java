@@ -3,7 +3,6 @@ package com.jd.platform.hotkey.dashboard.model;
 import java.util.Date;
 
 public class KeyRule {
-
     private Integer id;
 
     /**

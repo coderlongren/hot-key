@@ -79,19 +79,23 @@ public class RuleServiceImpl implements RuleService {
      */
     @Override
     public int updateRule(KeyRule rule) {
+        if (StringUtil.isEmpty(rule.getAppName())) {
+            return -1;
+        }
+        com.jd.platform.hotkey.common.rule.KeyRule temp = new com.jd.platform.hotkey.common.rule.KeyRule(rule.getKey(),
+                rule.getPrefix(), rule.getInterval(), rule.getThreshold(), rule.getDuration());
+
         String ruleKey = rule.getKey();
         String app = rule.getAppName();
         String etcdKey = ConfigConstant.rulePath + app;
         List<KeyValue> keyValues = configCenter.getPrefix(etcdKey);
         KeyValue keyValue = keyValues.get(0);
         String val = keyValue.getValue().toStringUtf8();
-        List<KeyRule> rules = JSON.parseArray(val, KeyRule.class);
-        for (KeyRule keyRule : rules) {
+        List<com.jd.platform.hotkey.common.rule.KeyRule> rules = JSON.parseArray(val, com.jd.platform.hotkey.common.rule.KeyRule.class);
+        for (com.jd.platform.hotkey.common.rule.KeyRule keyRule : rules) {
             if(keyRule.getKey().equals(ruleKey)){
-                keyRule.setInterval(rule.getInterval());
-                keyRule.setDuration(rule.getDuration());
-                keyRule.setThreshold(rule.getThreshold());
-                keyRule.setPrefix(rule.getPrefix());
+                keyRule = new com.jd.platform.hotkey.common.rule.KeyRule.Builder().interval(rule.getInterval())
+                        .duration(rule.getDuration()).threshold(rule.getThreshold()).prefix(rule.getPrefix()).build();
             }
         }
         configCenter.put(etcdKey,JSON.toJSONString(rules));
@@ -115,17 +119,22 @@ public class RuleServiceImpl implements RuleService {
     @Override
     public int insertRule(KeyRule rule) {
         String app = rule.getAppName();
+        if (StringUtil.isEmpty(app)) {
+            return -1;
+        }
         String etcdKey = ConfigConstant.rulePath + app;
         List<KeyValue> keyValues = configCenter.getPrefix(etcdKey);
 
-        List<KeyRule> rules = new ArrayList<>();
+        List<com.jd.platform.hotkey.common.rule.KeyRule> rules = new ArrayList<>();
         if (CollectionUtil.isNotEmpty(keyValues)) {
             KeyValue keyValue = keyValues.get(0);
             String val = keyValue.getValue().toStringUtf8();
-            rules = JSON.parseArray(val, KeyRule.class);
+            rules = JSON.parseArray(val, com.jd.platform.hotkey.common.rule.KeyRule.class);
         }
 
-        rules.add(rule);
+        com.jd.platform.hotkey.common.rule.KeyRule keyRule = new com.jd.platform.hotkey.common.rule.KeyRule(rule.getKey(),
+                rule.getPrefix(), rule.getInterval(), rule.getThreshold(), rule.getDuration());
+        rules.add(keyRule);
         configCenter.put(etcdKey,JSON.toJSONString(rules));
         return 1;
     }
