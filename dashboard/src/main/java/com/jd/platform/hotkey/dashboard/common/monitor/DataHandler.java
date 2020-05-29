@@ -195,12 +195,7 @@ public class DataHandler {
     public void offlineStatistics() {
         // 每小时 统计一次record 表 结果记录到统计表
         LocalDateTime now = LocalDateTime.now();
-        List<Statistics> records =null;
-        try {
-           records = keyRecordMapper.maxHotKey(new ChartReq(now.minusHours(1), now, 1000));
-        }catch (Exception e){
-            log.error("查询keyRecord异常",e);
-        }
+        List<Statistics> records = keyRecordMapper.maxHotKey(new ChartReq(now.minusHours(1), now, 1000));
         if(CollectionUtils.isEmpty(records)){
             return;
         }
