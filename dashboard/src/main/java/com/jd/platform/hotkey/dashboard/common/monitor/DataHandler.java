@@ -4,7 +4,6 @@ package com.jd.platform.hotkey.dashboard.common.monitor;
 import com.ibm.etcd.api.Event;
 import com.jd.platform.hotkey.dashboard.common.domain.Constant;
 import com.jd.platform.hotkey.dashboard.common.domain.EventWrapper;
-import com.jd.platform.hotkey.dashboard.common.domain.dto.KeyCountDto;
 import com.jd.platform.hotkey.dashboard.common.domain.req.ChartReq;
 import com.jd.platform.hotkey.dashboard.mapper.KeyRecordMapper;
 import com.jd.platform.hotkey.dashboard.mapper.KeyTimelyMapper;
@@ -13,6 +12,7 @@ import com.jd.platform.hotkey.dashboard.model.KeyRecord;
 import com.jd.platform.hotkey.dashboard.model.KeyTimely;
 import com.jd.platform.hotkey.dashboard.model.Statistics;
 import com.jd.platform.hotkey.dashboard.util.DateUtil;
+import com.jd.platform.hotkey.dashboard.util.RuleUtil;
 import com.jd.platform.hotkey.dashboard.util.TwoTuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,10 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -172,7 +175,9 @@ public class DataHandler {
             //手工添加的是时间戳13位，worker传过来的是uuid
             String source = v.length() == 13 ? Constant.HAND : Constant.SYSTEM;
             timelyKeyRecordTwoTuple.setFirst(new KeyTimely(arr[1], v, arr[0], ttl, uuid, date));
-            timelyKeyRecordTwoTuple.setSecond(new KeyRecord(arr[1], v, arr[0], ttl, source, type, uuid, date));
+            KeyRecord keyRecord = new KeyRecord(arr[1], v, arr[0], ttl, source, type, uuid, date);
+            keyRecord.setRule(RuleUtil.rule(appKey));
+            timelyKeyRecordTwoTuple.setSecond(keyRecord);
             return timelyKeyRecordTwoTuple;
         } else if (eventType.equals(Event.EventType.DELETE)) {
             timelyKeyRecordTwoTuple.setFirst(new KeyTimely(arr[1], null, arr[0], 0L, null, null));

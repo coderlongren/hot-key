@@ -2,7 +2,6 @@ package com.jd.platform.hotkey.dashboard.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 public class KeyRecord implements Serializable {
 
@@ -32,6 +31,10 @@ public class KeyRecord implements Serializable {
     private Date createTime;
 
     private String uuid;
+    /**
+     * 该记录是哪个rule下的，如 /app1/uid__  将来会按rule对keyRecord进行分组做图表展示
+     */
+    private String rule;
 
     public KeyRecord() {
     }
@@ -46,6 +49,14 @@ public class KeyRecord implements Serializable {
         this.type = type;
         this.uuid = uuid;
         this.createTime = createTime;
+    }
+
+    public String getRule() {
+        return rule;
+    }
+
+    public void setRule(String rule) {
+        this.rule = rule;
     }
 
     public Long getId() {
