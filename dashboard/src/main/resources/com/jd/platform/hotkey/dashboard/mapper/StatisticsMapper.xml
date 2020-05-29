@@ -28,7 +28,7 @@
     biz_type,create_time,uuid)
     VALUES
     <foreach collection="list" item="k" separator=",">
-      ( #{k.key},#{k.count},#{k.app},
+      ( #{k.keyName},#{k.count},#{k.app},
       #{k.days}, #{k.hours},#{k.minutes},
       #{k.bizType},#{k.createTime},#{k.uuid})
     </foreach>

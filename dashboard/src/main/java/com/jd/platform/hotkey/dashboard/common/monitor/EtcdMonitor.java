@@ -55,6 +55,20 @@ public class EtcdMonitor {
     @Resource
     private ReceiveCountMapper receiveCountMapper;
 
+//    @PostConstruct
+//    public void init() {
+//        CompletableFuture.runAsync(() -> {
+//            try {
+//                Thread.sleep(3000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//            for (int i = 0; i < 20000; i++) {
+//                configCenter.put(ConfigConstant.hotKeyPath + "sample/" + i, UUID.randomUUID().toString());
+//            }
+//        });
+//    }
+
     /**
      * 监听新来的热key，该key的产生是来自于手工在控制台添加
      */
