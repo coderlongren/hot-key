@@ -33,7 +33,7 @@ public class RuleUtil {
         String[] appKey = key.split("/");
         String appName = appKey[0];
         String realKey = appKey[1];
-        return findByKey(appName, realKey).getKey();
+        return appName + "-" + findByKey(appName, realKey).getKey();
     }
 
     private static KeyRule findByKey(String appName, String key) {
