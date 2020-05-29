@@ -14,6 +14,7 @@ import com.jd.platform.hotkey.dashboard.model.Statistics;
 import com.jd.platform.hotkey.dashboard.util.DateUtil;
 import com.jd.platform.hotkey.dashboard.util.RuleUtil;
 import com.jd.platform.hotkey.dashboard.util.TwoTuple;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +22,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -193,7 +195,15 @@ public class DataHandler {
     public void offlineStatistics() {
         // 每小时 统计一次record 表 结果记录到统计表
         LocalDateTime now = LocalDateTime.now();
-        List<Statistics> records = keyRecordMapper.maxHotKey(new ChartReq(now.minusHours(1), now, 1000));
+        List<Statistics> records =null;
+        try {
+           records = keyRecordMapper.maxHotKey(new ChartReq(now.minusHours(1), now, 1000));
+        }catch (Exception e){
+            log.error("查询keyRecord异常",e);
+        }
+        if(CollectionUtils.isEmpty(records)){
+            return;
+        }
         records.forEach(x->{
             x.setBizType(1);
             x.setCreateTime(DateUtil.localDateTimeToDate(now));
