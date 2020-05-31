@@ -59,6 +59,7 @@ public class KeyServiceImpl implements KeyService {
         List<KeyTimely> listKey = keyTimelyMapper.listKeyTimely(param);
         for (KeyTimely timely : listKey) {
             timely.setKey(CommonUtil.keyName(timely.getKey()));
+            timely.setRuleDesc(RuleUtil.ruleDesc(timely.getAppName() + "/" + timely.getKey()));
         }
         return new PageInfo<>(listKey);
     }

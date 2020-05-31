@@ -149,7 +149,6 @@
     source,
     type,
     create_time,
-/*    rule,*/
     uuid)
     VALUES
     <foreach collection="list" item="k" separator=",">
@@ -160,7 +159,6 @@
       #{k.source},
       #{k.type},
       #{k.createTime},
-   /*   #{k.rule},*/
       #{k.uuid})
     </foreach>
   </insert>

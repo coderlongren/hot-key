@@ -33,7 +33,10 @@ public class KeyTimely implements Serializable {
     private Date createTime;
 
     private String uuid;
-
+    /**
+     * 该rule的描述
+     */
+    private transient String ruleDesc;
 
     public KeyTimely() {
     }
@@ -51,6 +54,14 @@ public class KeyTimely implements Serializable {
         this.appName = appName;
         this.duration = duration;
         this.createTime = createTime;
+    }
+
+    public String getRuleDesc() {
+        return ruleDesc;
+    }
+
+    public void setRuleDesc(String ruleDesc) {
+        this.ruleDesc = ruleDesc;
     }
 
     public Long getId() {
