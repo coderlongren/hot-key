@@ -1,21 +1,19 @@
 package com.jd.platform.hotkey.dashboard.service.impl;
 
 
-import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ibm.etcd.api.Event;
 import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
 import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
 import com.jd.platform.hotkey.dashboard.common.domain.Constant;
-import com.jd.platform.hotkey.dashboard.common.domain.dto.KeyCountDto;
 import com.jd.platform.hotkey.dashboard.common.domain.req.ChartReq;
 import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
 import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
 import com.jd.platform.hotkey.dashboard.common.domain.vo.HotKeyLineChartVo;
-import com.jd.platform.hotkey.dashboard.mapper.ReceiveCountMapper;
 import com.jd.platform.hotkey.dashboard.mapper.KeyRecordMapper;
 import com.jd.platform.hotkey.dashboard.mapper.KeyTimelyMapper;
+import com.jd.platform.hotkey.dashboard.mapper.ReceiveCountMapper;
 import com.jd.platform.hotkey.dashboard.mapper.StatisticsMapper;
 import com.jd.platform.hotkey.dashboard.model.KeyRecord;
 import com.jd.platform.hotkey.dashboard.model.KeyTimely;
@@ -24,12 +22,12 @@ import com.jd.platform.hotkey.dashboard.model.Statistics;
 import com.jd.platform.hotkey.dashboard.service.KeyService;
 import com.jd.platform.hotkey.dashboard.util.CommonUtil;
 import com.jd.platform.hotkey.dashboard.util.DateUtil;
+import com.jd.platform.hotkey.dashboard.util.RuleUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
@@ -132,6 +130,10 @@ public class KeyServiceImpl implements KeyService {
     public PageInfo<KeyRecord> pageKeyRecord(PageReq page, SearchReq param) {
         PageHelper.startPage(page.getPageNum(), page.getPageSize());
         List<KeyRecord> listKey = recordMapper.listKeyRecord(param);
+        for (KeyRecord keyRecord : listKey) {
+            keyRecord.setRuleDesc(RuleUtil.ruleDesc(keyRecord.getAppName() + "/" + keyRecord.getKey()));
+        }
+
         return new PageInfo<>(listKey);
     }
 

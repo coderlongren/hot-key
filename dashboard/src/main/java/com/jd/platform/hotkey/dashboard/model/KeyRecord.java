@@ -35,6 +35,10 @@ public class KeyRecord implements Serializable {
      * 该记录是哪个rule下的，如 /app1/uid__  将来会按rule对keyRecord进行分组做图表展示
      */
     private String rule;
+    /**
+     * 该rule的描述
+     */
+    private transient String ruleDesc;
 
     public KeyRecord() {
     }
@@ -49,6 +53,14 @@ public class KeyRecord implements Serializable {
         this.type = type;
         this.uuid = uuid;
         this.createTime = createTime;
+    }
+
+    public String getRuleDesc() {
+        return ruleDesc;
+    }
+
+    public void setRuleDesc(String ruleDesc) {
+        this.ruleDesc = ruleDesc;
     }
 
     public String getRule() {

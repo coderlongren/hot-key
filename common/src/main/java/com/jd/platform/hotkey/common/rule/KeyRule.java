@@ -25,13 +25,22 @@ public class KeyRule {
      * 变热key后，本地、etcd缓存它多久。单位（秒），默认60
      */
     private int duration;
+    /**
+     * 描述
+     */
+    private String desc;
 
     public KeyRule(String key, boolean prefix, int interval, int threshold, int duration) {
+        this(key, prefix, interval, threshold, duration, null);
+    }
+
+    public KeyRule(String key, boolean prefix, int interval, int threshold, int duration, String desc) {
         this.key = key;
         this.prefix = prefix;
         this.interval = interval;
         this.threshold = threshold;
         this.duration = duration;
+        this.desc = desc;
     }
 
     public String getKey() {
@@ -40,6 +49,10 @@ public class KeyRule {
 
     public boolean isPrefix() {
         return prefix;
+    }
+
+    public String getDesc() {
+        return desc;
     }
 
     public int getInterval() {
@@ -75,15 +88,26 @@ public class KeyRule {
          * 变热key后，本地、etcd缓存它多久。默认1分钟
          */
         private int duration;
+        /**
+         * 描述
+         */
+        private String desc;
 
         public Builder key(String key) {
             this.key = key;
             return this;
         }
+
         public Builder prefix(boolean prefix) {
             this.prefix = prefix;
             return this;
         }
+
+        public Builder desc(String desc) {
+            this.desc = desc;
+            return this;
+        }
+
         public Builder interval(int interval) {
             if (interval < 1) {
                 interval = 1;
@@ -91,10 +115,12 @@ public class KeyRule {
             this.interval = interval;
             return this;
         }
+
         public Builder threshold(int threshold) {
             this.threshold = threshold;
             return this;
         }
+
         public Builder duration(int duration) {
             if (duration < 1) {
                 duration = 1;
@@ -104,7 +130,7 @@ public class KeyRule {
         }
 
         public KeyRule build() {
-            return new KeyRule(key, prefix, interval, threshold, duration);
+            return new KeyRule(key, prefix, interval, threshold, duration, desc);
         }
     }
 

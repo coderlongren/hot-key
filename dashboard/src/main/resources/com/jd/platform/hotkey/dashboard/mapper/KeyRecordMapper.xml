@@ -49,9 +49,9 @@
       <if test="duration != null">
         duration,
       </if>
-      <if test="rule != null">
+     <!-- <if test="rule != null">
         rule,
-      </if>
+      </if>-->
       <if test="type != null">
         type,
       </if>
@@ -81,9 +81,9 @@
       <if test="duration != null">
         #{duration,jdbcType=BIGINT},
       </if>
-      <if test="rule != null">
+     <!-- <if test="rule != null">
         #{rule,jdbcType=VARCHAR},
-      </if>
+      </if>-->
       <if test="type != null">
         #{type,jdbcType=INTEGER},
       </if>
@@ -149,8 +149,8 @@
     source,
     type,
     create_time,
-    uuid,
-    rule)
+/*    rule,*/
+    uuid)
     VALUES
     <foreach collection="list" item="k" separator=",">
       (#{k.key},
@@ -160,8 +160,8 @@
       #{k.source},
       #{k.type},
       #{k.createTime},
-      #{k.uuid},
-      #{k.rule})
+   /*   #{k.rule},*/
+      #{k.uuid})
     </foreach>
   </insert>
 
