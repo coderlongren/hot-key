@@ -3,6 +3,9 @@ package com.jd.platform.hotkey.dashboard.common.eunm;
 
 public enum ResultEnum {
 
+    /**
+     * 操作成功
+     */
     SUCCESS(200, "操作成功！"),
 
     NO_LOGIN(1000, "未登录"),
@@ -17,7 +20,9 @@ public enum ResultEnum {
 
     PARAM_ERROR(1005, "参数错误"),
 
-    BIZ_ERROR(1006, "业务异常");
+    BIZ_ERROR(1006, "业务异常"),
+
+    CONFLICT_ERROR(1007, "用户名/手机号已存在");
 
     private int code;
 

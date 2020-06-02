@@ -7,6 +7,7 @@ import com.jd.platform.hotkey.dashboard.common.domain.Page;
 import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
 import com.jd.platform.hotkey.dashboard.common.domain.Result;
 import com.jd.platform.hotkey.dashboard.model.KeyRule;
+import com.jd.platform.hotkey.dashboard.model.Rules;
 import com.jd.platform.hotkey.dashboard.service.RuleService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -19,58 +20,56 @@ import javax.annotation.Resource;
 @RequestMapping("/rule")
 public class RuleController extends BaseController {
 	
-	private String prefix = "admin/rule";
 
 	@Resource
 	private RuleService ruleService;
 
+
+
 	@GetMapping("/view")
 	public String view(ModelMap modelMap){
 		modelMap.put("title", Constant.RULE_CONFIG_VIEW);
-		return prefix + "/list";
+		return "admin/rule/view";
 	}
 
-	@PostMapping("/list")
+	@GetMapping("/viewDetail")
+	public String view3(ModelMap modelMap){
+		modelMap.put("title", Constant.RULE_CONFIG_VIEW);
+		return "admin/rule/jn";
+	}
+
+	@PostMapping("/getRule")
 	@ResponseBody
-	public Page<KeyRule> list(PageReq page, String searchText){
-		PageInfo<KeyRule> info = ruleService.pageKeyRule(page, param(searchText));
-		return new Page<>(info.getPageNum(),(int)info.getTotal(),info.getList());
+	public Rules getRule(String app){
+		return ruleService.selectRules(app);
 	}
 
-
-    @GetMapping("/add")
-    public String add(){
-        return prefix + "/add";
-    }
 
 	@PostMapping("/add")
 	@ResponseBody
-	public Result add(KeyRule rule){
+	public Result add(Rules rule){
 		rule.setUpdateUser(userName());
-		int b = ruleService.insertRule(rule);
+		int b = ruleService.add(rule);
 		return b == 0 ? Result.fail():Result.success();
 	}
+
+
+	@PostMapping("/update")
+	@ResponseBody
+	public Result update(Rules rules){
+		rules.setUpdateUser(userName());
+		int b = ruleService.updateRule(rules);
+		return b == 0 ? Result.fail():Result.success();
+	}
+
 
 	@PostMapping("/remove")
 	@ResponseBody
-	public Result remove(String key){
-		int b = ruleService.delRule(key);
+	public Result remove(String app){
+		int b = ruleService.delRule(app, userName());
 		return b == 0 ? Result.fail():Result.success();
 	}
 
-
-	@GetMapping("/edit/{key}")
-    public String edit(@PathVariable("key") String key, ModelMap modelMap){
-		modelMap.put("rule", ruleService.selectByKey(key));
-        return prefix + "/edit";
-    }
-	
-
-    @PostMapping("/edit")
-    @ResponseBody
-    public Result editSave(KeyRule rule) {
-		return Result.success(ruleService.updateRule(rule));
-    }
 
 }
 

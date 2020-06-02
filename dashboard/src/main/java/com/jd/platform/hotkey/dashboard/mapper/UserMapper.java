@@ -21,4 +21,5 @@ public interface UserMapper {
     User findByNameAndPwd(User user);
 
     List<String> listApp();
+
 }

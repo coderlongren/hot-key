@@ -130,6 +130,7 @@ CREATE TABLE `hk_statistics`  (
   `hours` bigint(11) NOT NULL COMMENT '小时数',
   `minutes` bigint(11) NOT NULL DEFAULT 0 COMMENT '分钟数',
   `biz_type` int(2) NOT NULL COMMENT '业务类型',
+  `rule` varchar(180) NOT NULL COMMENT '所属规则',
   `uuid` varchar(180) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '防重ID',
   `create_time` datetime(0) NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE,
@@ -149,4 +150,18 @@ CREATE TABLE `hk_receive_count`  (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uniq_uuid`(`uuid`) USING BTREE COMMENT '防重ID'
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Compact;
+
+
+
+CREATE TABLE `hk_rules`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `rules` varchar(5000) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '规则JSON',
+  `app` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '' COMMENT '所属APP',
+  `update_user` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '' COMMENT '修改人',
+  `update_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
+  `version` int(11) NOT NULL DEFAULT 0 COMMENT '版本号',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `uniq_app`(`app`) USING BTREE COMMENT '防重索引'
+) ENGINE = InnoDB AUTO_INCREMENT = 15 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Compact;
+
 

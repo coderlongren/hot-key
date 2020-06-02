@@ -1,16 +1,13 @@
 package com.jd.platform.hotkey.dashboard;
 
 
-import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.util.StringUtil;
 import com.ibm.etcd.api.KeyValue;
 import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
 import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
-import com.jd.platform.hotkey.dashboard.common.domain.Constant;
-import com.jd.platform.hotkey.dashboard.mapper.KeyRuleMapper;
 import com.jd.platform.hotkey.dashboard.mapper.KeyTimelyMapper;
-import com.jd.platform.hotkey.dashboard.model.KeyRule;
-import com.jd.platform.hotkey.dashboard.util.CommonUtil;
+import com.jd.platform.hotkey.dashboard.mapper.RulesMapper;
+import com.jd.platform.hotkey.dashboard.model.Rules;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -21,7 +18,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import javax.annotation.Resource;
-import java.util.Date;
 import java.util.List;
 
 
@@ -38,7 +34,7 @@ public class DashboardApplication implements CommandLineRunner {
     @Resource
     private KeyTimelyMapper timelyMapper;
     @Resource
-    private KeyRuleMapper keyRuleMapper;
+    private RulesMapper rulesMapper;
 
 
     public static void main(String[] args) {
@@ -59,19 +55,11 @@ public class DashboardApplication implements CommandLineRunner {
     public void syncRuleToDb() {
         List<KeyValue> keyValues = configCenter.getPrefix(ConfigConstant.rulePath);
         logger.info("get rule from ETCD,  rules: {}", keyValues.size());
-        Date date = new Date();
         for (KeyValue kv : keyValues) {
             String val = kv.getValue().toStringUtf8();
             if(StringUtil.isEmpty(val)) continue;
             String key = kv.getKey().toStringUtf8();
-            List<KeyRule> rules = JSON.parseArray(val,KeyRule.class);
-            for (KeyRule rule : rules) {
-                rule.setAppName(CommonUtil.appName(key));
-                rule.setUpdateTime(date);
-                rule.setUpdateUser(Constant.SYSTEM);
-                rule.setState(1);
-            }
-            keyRuleMapper.batchInsert(rules);
+            rulesMapper.update(new Rules(key, val));
         }
     }
 

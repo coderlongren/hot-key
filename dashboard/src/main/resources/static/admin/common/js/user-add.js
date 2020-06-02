@@ -1,64 +1,9 @@
 $("#form-add").validate({
 	rules:{
-		username:{
-			required:true,
-			minlength: 2,
-			maxlength: 20,
-			remote: {
-                url: "/user/checkLoginNameUnique",
-                type: "post",
-                dataType: "json",
-                dataFilter: function(data, type) {
-                    if (data == "0")
-                    	return true;
-                    else 
-                    	return false;
-                }
-            }
-		},
-		appName:{
-			required:true,
-		},
 		pwd:{
 			required:true,
 			minlength: 5,
 			maxlength: 20
-		},
-		email:{
-			required:true,
-            email:true,
-            remote: {
-                url:rootPath + "/UserController/checkEmailUnique",
-                type: "post",
-                dataType: "json",
-                data: {
-                    name: function () {
-                        return $.trim($("#email").val());
-                    }
-                },
-                dataFilter: function (data, type) {
-                    if (data == "0") return true;
-                    else return false;
-                }
-            }
-		},
-		phonenumber:{
-			required:true,
-			isPhone:true,
-            remote: {
-                url: rootPath + "/system/user/checkPhoneUnique",
-                type: "post",
-                dataType: "json",
-                data: {
-                    name: function () {
-                        return $.trim($("#phonenumber").val());
-                    }
-                },
-                dataFilter: function (data, type) {
-                    if (data == "0") return true;
-                    else return false;
-                }
-            }
 		},
 	},
 	messages: {
