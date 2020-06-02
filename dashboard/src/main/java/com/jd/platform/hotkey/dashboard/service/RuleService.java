@@ -4,6 +4,7 @@ import com.github.pagehelper.PageInfo;
 import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
 import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
 import com.jd.platform.hotkey.dashboard.model.KeyRule;
+import com.jd.platform.hotkey.dashboard.model.Rules;
 
 /**
  * @ProjectName: hotkey
@@ -13,14 +14,13 @@ import com.jd.platform.hotkey.dashboard.model.KeyRule;
  * @Date: 2020/4/17 16:29
  */
 public interface RuleService {
-    PageInfo<KeyRule> pageKeyRule(PageReq page, SearchReq param);
 
-    int insertRule(KeyRule rule);
 
-    KeyRule selectByKey(String key);
+    Rules selectRules(String app);
 
-    int updateRule(KeyRule rule);
+    int updateRule(Rules rules);
 
-    int delRule(String key);
+    Integer add(Rules rules);
 
+    int delRule(String key, String updater);
 }

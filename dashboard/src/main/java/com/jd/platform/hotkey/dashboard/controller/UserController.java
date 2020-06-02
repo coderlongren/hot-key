@@ -51,7 +51,7 @@ public class UserController extends BaseController {
 		cookie.setDomain("localhost");
 		cookie.setPath("/");
 		response.addCookie(cookie);
-		Map<String, String> map = new HashMap<>();
+		Map<String, String> map = new HashMap<>(2);
 		map.put("info",CommonUtil.encoder(user.getNickName()+"_"+user.getRole()));
 		map.put("token",JwtTokenUtil.TOKEN_PREFIX + token);
 		return  Result.success(map);
@@ -74,7 +74,6 @@ public class UserController extends BaseController {
 		return "admin/main";
 	}
 
-
 	@ResponseBody
 	@PostMapping("/info")
 	public User info(HttpServletRequest request){
@@ -90,7 +89,7 @@ public class UserController extends BaseController {
 	}
 
 
-	@GetMapping("/Loginout")
+	@GetMapping("/LoginOut")
 	public String LoginOut(){
 		return "redirect:/admin/user/login";
 	}
@@ -126,7 +125,7 @@ public class UserController extends BaseController {
 	@PostMapping("/remove")
 	@ResponseBody
 	public Result remove(int id){
-		int b=userService.deleteByPrimaryKey(id);
+		int b = userService.deleteByPrimaryKey(id);
 		return b == 0 ? Result.fail():Result.success();
 	}
 
@@ -136,7 +135,7 @@ public class UserController extends BaseController {
 		modelMap.put("user", userService.selectByPrimaryKey(id));
         return "admin/user/edit";
     }
-	
+
 
     @PostMapping("/edit")
     @ResponseBody

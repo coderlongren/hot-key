@@ -29,4 +29,11 @@ public interface UserService {
     int updateUser(User user);
 
     List<String> listApp();
+
+    /**
+     * 初始化APP
+     * @param app
+     * @return
+     */
+    int initApp(String app);
 }

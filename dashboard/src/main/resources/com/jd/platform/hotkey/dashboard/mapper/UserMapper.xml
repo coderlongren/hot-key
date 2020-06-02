@@ -139,7 +139,7 @@
 
   <select id="listApp" resultType="java.lang.String">
     select app_name
-    from hk_user
+    from hk_user where app_name &lt;&gt; ""
     group by app_name
   </select>
 

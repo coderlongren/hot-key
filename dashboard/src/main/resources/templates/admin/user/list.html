@@ -89,14 +89,14 @@
                                <button onclick="updatePwd()" type="button" class="btn btn-danger">
                                     <span class="entypo-tools"></span>&nbsp;&nbsp;修改密码
                                </button>
-
+                                <button onclick="addApp()" type="button" class="btn btn-primary">
+                                    <span class="entypo-plus-squared"></span>&nbsp;&nbsp;新增App
+                                </button>
                            </div>
                             <!-- 工具条 end-->
                            <table id="dataTable" class="table-striped footable-res footable metro-blue" data-page-size="6">
-                                   
-                                    
+
                            </table>
-                           
                            
                         </div>
                     </div>
@@ -125,13 +125,11 @@ var dataUrl="/user/list";
 var removeUrl="/user/remove";
 var createUrl="/user/add";
 var updateUrl="/user/edit/{id}";
-var exportUrl="/user/export";
 var options = {
 		dataUrl: dataUrl,
         createUrl: createUrl,
         updateUrl: updateUrl,
         removeUrl:removeUrl,
-        exportUrl: exportUrl,
         sortName: "roleSort",
         modalName: "用户",
         search: false,
@@ -177,7 +175,13 @@ $(function(){
 
 
 <script type="text/javascript">
-	var editPwdUrl="/user/editPwd/{id}";
+
+
+    function addApp(){
+        $.modal.open("添加App" , "/user/viewApp");
+    }
+
+	let editPwdUrl="/user/editPwd/{id}";
 	function updatePwd(){
 		 var rows = $.common.isEmpty($.table._option.id) ? $.table.selectFirstColumns() : $.table.selectColumns($.table._option.id);
          if (rows.length == 0) {

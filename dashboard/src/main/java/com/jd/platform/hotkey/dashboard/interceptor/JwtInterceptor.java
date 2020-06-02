@@ -23,7 +23,8 @@ public class JwtInterceptor extends HandlerInterceptorAdapter{
         //判断是否为ajax请求，默认不是
         boolean isAjaxRequest = false;
         if(!StringUtils.isEmpty(request.getHeader("x-requested-with"))
-                && request.getHeader("x-requested-with").equals("XMLHttpRequest")){
+                && request.getHeader("x-requested-with").equals("XMLHttpRequest")
+                && request.getMethod().equals("POST")){
             isAjaxRequest = true;
         }
         String url = request.getRequestURI();
