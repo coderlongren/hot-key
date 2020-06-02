@@ -301,11 +301,10 @@
             },
             success : function(data) {
                 $('#myWord').val(data.rules);
-                $('#json-src').html(data.rules);
+                $('#json-src').val(data.rules);
                 $('#json-src').keyup();
             }
         });
-
     }
 </script>
 
