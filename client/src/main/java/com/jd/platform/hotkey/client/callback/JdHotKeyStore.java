@@ -12,14 +12,55 @@ import com.jd.platform.hotkey.common.tool.Constant;
  */
 public class JdHotKeyStore {
 
+
+    /**
+     * 判断是否是key，如果不是，则发往netty
+     */
+    public static boolean isHotKey(String key) {
+        if (!inRule(key)) {
+            return false;
+        }
+        Object value = getValueSimple(key);
+        if (value == null) {
+            HotKeyPusher.push(key, null);
+        }
+        return value != null;
+    }
+
+    /**
+     * 从本地caffeine取值
+     */
+    public static Object get(String key) {
+        Object value = getValueSimple(key);
+        //如果是默认值也返回null
+        if(value instanceof Integer && Constant.MAGIC_NUMBER == (int) value) {
+            return null;
+        }
+        return value;
+    }
+
+    /**
+     * 判断是否是热key，如果是热key，则给value赋值
+     */
+    public static void smartSet(String key, Object value) {
+        setValue(key, value);
+    }
+
+    /**
+     * 获取value，如果value不存在则发往netty
+     */
     public static Object getValue(String key, KeyType keyType) {
         //如果没有为该key配置规则，就不用上报key
         if (!inRule(key)) {
             return null;
         }
-        Object value = getCache(key).get(key);
+        Object value = getValueSimple(key);
         if (value == null) {
             HotKeyPusher.push(key, keyType);
+        }
+        //如果是默认值，也返回null
+        if(value instanceof Integer && Constant.MAGIC_NUMBER == (int) value) {
+            return null;
         }
         return value;
     }
@@ -31,12 +72,12 @@ public class JdHotKeyStore {
     /**
      * 仅获取value，如果不存在也不上报热key
      */
-    public static Object getValueSimple(String key) {
+    private static Object getValueSimple(String key) {
         return getCache(key).get(key);
     }
 
     public static void setValue(String key, Object value) {
-        if (isHotKey(key)) {
+        if (isHot(key)) {
             setValueDirectly(key, value);
         }
     }
@@ -53,15 +94,12 @@ public class JdHotKeyStore {
         HotKeyPusher.remove(key);
     }
 
+
     /**
      * 判断是否是热key。适用于只需要判断key，而不需要value的场景
      */
-    public static boolean isHotKey(String key) {
-        return getCache(key).get(key) != null;
-    }
-
-    public static boolean isValueCached(String key) {
-        return isValueCached(key, KeyType.REDIS_KEY);
+    public static boolean isHot(String key) {
+        return getValueSimple(key) != null;
     }
 
     /**
@@ -74,6 +112,13 @@ public class JdHotKeyStore {
             return false;
         }
         return !(value instanceof Integer) || Constant.MAGIC_NUMBER != (int) value;
+    }
+
+    /**
+     * 判断某key的value是否已经缓存过了
+     */
+    public static boolean isValueCached(String key) {
+        return isValueCached(key, KeyType.REDIS_KEY);
     }
 
     private static LocalCache getCache(String key) {
