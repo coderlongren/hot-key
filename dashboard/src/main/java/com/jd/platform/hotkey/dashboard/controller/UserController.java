@@ -124,8 +124,8 @@ public class UserController extends BaseController {
 
 	@PostMapping("/remove")
 	@ResponseBody
-	public Result remove(int id){
-		int b = userService.deleteByPrimaryKey(id);
+	public Result remove(Integer key){
+		int b = userService.deleteByPrimaryKey(key);
 		return b == 0 ? Result.fail():Result.success();
 	}
 

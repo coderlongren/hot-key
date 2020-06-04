@@ -96,7 +96,6 @@ public class EtcdMonitor {
 
                 String appKey = event.getKv().getKey().toStringUtf8().replace(ConfigConstant.hotKeyPath, "");
                 eventWrapper.setKey(appKey);
-
                 dataHandler.offer(eventWrapper);
             }
         });
@@ -123,7 +122,6 @@ public class EtcdMonitor {
 
     private EventWrapper build(Event event) {
         KeyValue kv = event.getKv();
-
         long ttl = configCenter.timeToLive(kv.getLease());
         String v = kv.getValue().toStringUtf8();
         Event.EventType eventType = event.getType();
@@ -134,37 +132,10 @@ public class EtcdMonitor {
         eventWrapper.setVersion(kv.getVersion());
         eventWrapper.setEventType(eventType);
         eventWrapper.setUuid(v);
-
         return eventWrapper;
     }
 
-//    @PostConstruct
-//    public void watchRules() {
-//        CompletableFuture.runAsync(() -> {
-//            KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.rulePath);
-//            while (watchIterator.hasNext()) {
-//                Event event = event(watchIterator);
-//                KeyValue kv = event.getKv();
-//                Event.EventType eventType = event.getType();
-//                String k = kv.getKey().toStringUtf8();
-//                String v = kv.getValue().toStringUtf8();
-//                long version = kv.getModRevision();
-//                String app = k.replace(ConfigConstant.rulePath, "");
-//                String uuid = app + Constant.JOIN  + version;
-//
-//                try {
-//                    if (eventType.equals(Event.EventType.PUT)) {
-//                        logMapper.insertSelective(new ChangeLog(app, 1, "", v,  Constant.SYSTEM, app, uuid));
-//                    } else if (eventType.equals(Event.EventType.DELETE)) {
-//                        logMapper.insertSelective(new ChangeLog(app, 1, v, "",  Constant.SYSTEM, app, uuid));
-//                    }
-//                }catch (DuplicateKeyException e){
-//                    log.warn("DuplicateKeyException");
-//                }
-//            }
-//        });
-//
-//    }
+
 
     /**
      * 启动后从etcd拉取所有rule

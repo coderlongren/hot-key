@@ -23,4 +23,6 @@ public interface KeyRecordMapper {
     int batchInsert(List<KeyRecord> list);
 
     List<Statistics> maxHotKey(ChartReq chartParam);
+
+    List<Statistics> statisticsByRule(ChartReq chartReq);
 }
