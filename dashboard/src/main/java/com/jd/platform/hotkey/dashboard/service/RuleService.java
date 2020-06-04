@@ -23,4 +23,8 @@ public interface RuleService {
     Integer add(Rules rules);
 
     int delRule(String key, String updater);
+
+    PageInfo<Rules> pageKeyRule(PageReq page, SearchReq param);
+
+    int save(Rules rules);
 }

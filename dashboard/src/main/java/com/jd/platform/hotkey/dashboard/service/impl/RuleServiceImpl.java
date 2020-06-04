@@ -67,7 +67,7 @@ public class RuleServiceImpl implements RuleService {
         String app = rules.getApp();
         Rules oldRules = rulesMapper.select(app);
         String from = JSON.toJSONString(oldRules);
-        configCenter.put(ConfigConstant.rulePath+app,rules.getRules());
+        configCenter.put(ConfigConstant.rulePath+app, rules.getRules());
         String to = JSON.toJSONString(rules);
         logMapper.insertSelective(new ChangeLog(app, 1, from, to,
                 rules.getUpdateUser(), app, UUID.fastUUID().toString(true)));
@@ -90,9 +90,44 @@ public class RuleServiceImpl implements RuleService {
         Rules oldRules = rulesMapper.select(app);
         String from = JSON.toJSONString(oldRules);
         configCenter.delete(ConfigConstant.rulePath + app);
-        logMapper.insertSelective(new ChangeLog(app, 1, from, "",updater, app, UUID.fastUUID().toString(true)));
+        logMapper.insertSelective(new ChangeLog(app, 1, from, "",updater, app, SystemClock.nowDate()));
         return rulesMapper.delete(app);
     }
 
+    @Override
+    public PageInfo<Rules> pageKeyRule(PageReq page, SearchReq param) {
+        String app = param.getAppName();
+        String prefix = StringUtil.isEmpty(app) ? ConfigConstant.rulePath : ConfigConstant.rulePath + app;
+        List<KeyValue> keyValues = configCenter.getPrefix(prefix);
+        List<Rules> rules = new ArrayList<>();
+        for (KeyValue kv : keyValues) {
 
+            String v = kv.getValue().toStringUtf8();
+            if(StringUtil.isEmpty(v)){
+                continue;
+            }
+            String key = kv.getKey().toStringUtf8();
+            String k = key.replace(ConfigConstant.rulePath,"");
+            rules.add(new Rules(k, v));
+        }
+        return new PageInfo<>(rules);
+    }
+
+    @Override
+    public int save(Rules rules) {
+        String app = rules.getApp();
+        String from = "";
+        Rules oldRules = rulesMapper.select(app);
+        if(oldRules == null){
+            rulesMapper.insert(rules);
+        }else{
+            from = JSON.toJSONString(oldRules);
+            rulesMapper.update(rules);
+        }
+        String to = JSON.toJSONString(rules);
+        logMapper.insertSelective(new ChangeLog(app, 1, from, to,
+                rules.getUpdateUser(), app, SystemClock.nowDate()));
+        configCenter.put(ConfigConstant.rulePath + app, rules.getRules());
+        return 1;
+    }
 }

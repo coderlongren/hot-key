@@ -26,8 +26,8 @@ public class RuleController extends BaseController {
 
 
 
-	@GetMapping("/view")
-	public String view(ModelMap modelMap){
+	@GetMapping("/view2")
+	public String view2(ModelMap modelMap){
 		modelMap.put("title", Constant.RULE_CONFIG_VIEW);
 		return "admin/rule/view";
 	}
@@ -62,14 +62,50 @@ public class RuleController extends BaseController {
 		return b == 0 ? Result.fail():Result.success();
 	}
 
-
-	@PostMapping("/remove")
+	@PostMapping("/save")
 	@ResponseBody
-	public Result remove(String app){
-		int b = ruleService.delRule(app, userName());
+	public Result save(Rules rules){
+		rules.setUpdateUser(userName());
+		int b = ruleService.save(rules);
 		return b == 0 ? Result.fail():Result.success();
 	}
 
+
+	@PostMapping("/remove")
+	@ResponseBody
+	public Result remove(String key){
+		int b = ruleService.delRule(key, userName());
+		return b == 0 ? Result.fail():Result.success();
+	}
+
+
+	@GetMapping("/view")
+	public String view(ModelMap modelMap){
+		modelMap.put("title", Constant.RULE_CONFIG_VIEW);
+		return "admin/rule/list";
+	}
+
+	@PostMapping("/list")
+	@ResponseBody
+	public Page<Rules> list2(PageReq page, String searchText){
+		page.setPageSize(30);
+		PageInfo<Rules> info = ruleService.pageKeyRule(page, param(searchText));
+		return new Page<>(info.getPageNum(),(int)info.getTotal(),info.getList());
+	}
+
+	@GetMapping("/edit/{app}")
+	public String edit(ModelMap modelMap,@PathVariable("app") String app){
+		modelMap.put("title", Constant.RULE_CONFIG_VIEW);
+		modelMap.put("rules", ruleService.selectRules(app));
+		return "admin/rule/view";
+	}
+
+
+	@GetMapping("/add")
+	public String add(ModelMap modelMap){
+		modelMap.put("title", Constant.RULE_CONFIG_VIEW);
+		return "admin/rule/view";
+	}
 
 }
 

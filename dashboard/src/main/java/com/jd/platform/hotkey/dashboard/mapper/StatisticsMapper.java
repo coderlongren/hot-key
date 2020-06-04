@@ -25,4 +25,11 @@ public interface StatisticsMapper {
      * @return row
      */
     int batchInsert(List<Statistics> records);
+
+    /**
+     * 多个时间聚合统计列表
+     * @param chartReq req
+     * @return list
+     */
+    List<Statistics> sumStatistics(ChartReq chartReq);
 }

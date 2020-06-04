@@ -194,15 +194,18 @@ public class DataHandler {
         try {
             // 每小时 统计一次record 表 结果记录到统计表
             LocalDateTime now = LocalDateTime.now();
+            Date nowTime = DateUtil.localDateTimeToDate(now);
+            int day = DateUtil.nowDay(now);
+            int hour = DateUtil.nowHour(now);
+
             List<Statistics> records = keyRecordMapper.maxHotKey(new ChartReq(now.minusHours(1), now, 1000));
             if (records.size() == 0) {
                 return;
             }
             records.forEach(x->{
                 x.setBizType(1);
-                x.setCreateTime(DateUtil.localDateTimeToDate(now));
-                x.setDays(DateUtil.nowDay(now));
-                int hour = DateUtil.nowHour(now);
+                x.setCreateTime(nowTime);
+                x.setDays(day);
                 x.setHours(hour);
                 x.setUuid(1+"_"+x.getKeyName()+"_"+hour);
             });

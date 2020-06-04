@@ -15,8 +15,14 @@
 
 
   <select id="listStatistics" resultMap="BaseResultMap" >
-    select id, key_name, count, days, hours, minutes, biz_type, uuid, create_time
-    from hk_statistics
+    select id, key_name, count, app, days, hours, minutes, biz_type, uuid, create_time
+    from hk_statistics order by count desc
+  </select>
+
+
+  <select id="sumStatistics" resultMap="BaseResultMap" >
+    SELECT app,key_name,sum(count) as count
+     from hk_statistics GROUP BY key_name, app ORDER BY count desc
   </select>
 
 

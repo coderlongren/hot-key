@@ -36,6 +36,8 @@ public interface KeyService {
 
     PageInfo<KeyTimely> pageKeyTimely(PageReq page, SearchReq param);
 
+    PageInfo<Statistics> pageMaxHot(PageReq page, SearchReq param);
+
     HotKeyLineChartVo getLineChart(ChartReq chartReq);
 
     List<Statistics> listExportKey(SearchReq searchReq);

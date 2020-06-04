@@ -59,10 +59,19 @@ public class KeyServiceImpl implements KeyService {
         List<KeyTimely> listKey = keyTimelyMapper.listKeyTimely(param);
         for (KeyTimely timely : listKey) {
             timely.setKey(CommonUtil.keyName(timely.getKey()));
-            timely.setRuleDesc(RuleUtil.ruleDesc(timely.getAppName() + "/" + timely.getKey()));
+         //   timely.setRuleDesc(RuleUtil.ruleDesc(timely.getAppName() + "/" + timely.getKey()));
         }
         return new PageInfo<>(listKey);
     }
+
+    @Override
+    public PageInfo<Statistics> pageMaxHot(PageReq page, SearchReq param) {
+        PageHelper.startPage(page.getPageNum(), page.getPageSize());
+        ChartReq chartReq = convert(param);
+        List<Statistics> statistics = statisticsMapper.sumStatistics(chartReq);
+        return new PageInfo<>(statistics);
+    }
+
 
     @Override
     public HotKeyLineChartVo getLineChart(ChartReq chartReq) {
@@ -211,6 +220,17 @@ public class KeyServiceImpl implements KeyService {
             }
         }
         return map;
+    }
+
+
+
+    private ChartReq convert(SearchReq param) {
+        ChartReq chartReq = new ChartReq();
+        chartReq.setStartTime(param.getStartTime());
+        chartReq.setEndTime(param.getEndTime());
+        chartReq.setAppName(param.getAppName());
+        chartReq.setKey(param.getKey());
+        return chartReq;
     }
 }
 

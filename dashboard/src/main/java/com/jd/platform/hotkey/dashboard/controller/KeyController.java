@@ -89,6 +89,21 @@ public class KeyController extends BaseController {
 	}
 
 
+	@GetMapping("/viewMaxHot")
+	public String viewMaxHot(ModelMap modelMap){
+		modelMap.put("title","实时热点");
+		return prefix + "/listmaxhot";
+	}
+
+
+	@PostMapping("/listMaxHot")
+	@ResponseBody
+	public Page<Statistics> listMaxHot(PageReq page, SearchReq searchReq){
+		PageInfo<Statistics> info = keyService.pageMaxHot(page, param2(searchReq));
+		return new Page<>(info.getPageNum(),(int)info.getTotal(),info.getList());
+	}
+
+
 	@GetMapping("/add")
     public String add(){
         return prefix + "/add";

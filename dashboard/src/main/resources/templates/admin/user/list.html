@@ -89,9 +89,6 @@
                                <button onclick="updatePwd()" type="button" class="btn btn-danger">
                                     <span class="entypo-tools"></span>&nbsp;&nbsp;修改密码
                                </button>
-                                <button onclick="addApp()" type="button" class="btn btn-primary">
-                                    <span class="entypo-plus-squared"></span>&nbsp;&nbsp;新增App
-                                </button>
                            </div>
                             <!-- 工具条 end-->
                            <table id="dataTable" class="table-striped footable-res footable metro-blue" data-page-size="6">
@@ -175,11 +172,6 @@ $(function(){
 
 
 <script type="text/javascript">
-
-
-    function addApp(){
-        $.modal.open("添加App" , "/user/viewApp");
-    }
 
 	let editPwdUrl="/user/editPwd/{id}";
 	function updatePwd(){
