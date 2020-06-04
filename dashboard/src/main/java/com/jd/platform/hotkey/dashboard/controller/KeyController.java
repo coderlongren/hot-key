@@ -1,11 +1,12 @@
 package com.jd.platform.hotkey.dashboard.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.github.pagehelper.util.StringUtil;
 import com.jd.platform.hotkey.dashboard.common.base.BaseController;
-import com.jd.platform.hotkey.dashboard.common.domain.*;
-import com.jd.platform.hotkey.dashboard.common.domain.dto.KeyCountDto;
+import com.jd.platform.hotkey.dashboard.common.domain.Constant;
+import com.jd.platform.hotkey.dashboard.common.domain.ExcelData;
+import com.jd.platform.hotkey.dashboard.common.domain.Page;
+import com.jd.platform.hotkey.dashboard.common.domain.Result;
 import com.jd.platform.hotkey.dashboard.common.domain.req.ChartReq;
 import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
 import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
@@ -22,11 +23,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 
@@ -47,8 +45,8 @@ public class KeyController extends BaseController {
 	@PostMapping("/lineChart")
 	@ResponseBody
 	public HotKeyLineChartVo lineChart(ChartReq chartReq){
-		System.out.println("===========");
-		return keyService.getLineChart(chartReq);
+//		return keyService.getLineChart(chartReq);
+		return null;
 	}
 
 	//@PostMapping("/qps")
