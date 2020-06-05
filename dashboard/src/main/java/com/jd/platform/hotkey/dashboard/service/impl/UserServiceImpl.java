@@ -3,7 +3,6 @@ package com.jd.platform.hotkey.dashboard.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.github.pagehelper.util.StringUtil;
-import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
 import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
 import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
 import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
@@ -90,12 +89,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int initApp(String app) {
-        configCenter.put(ConfigConstant.appsPath,app);
-        configCenter.put(ConfigConstant.rulePath,app);
-        configCenter.put(ConfigConstant.whiteListPath,app);
-        configCenter.put(ConfigConstant.clientCountPath,app);
-        configCenter.put(ConfigConstant.hotKeyPath,app);
-        configCenter.put(ConfigConstant.hotKeyRecordPath,app);
         return 1;
     }
 

@@ -174,6 +174,9 @@ public class EtcdStarter {
      */
     private synchronized void ruleChange(KeyValue keyValue) {
         String appName = keyValue.getKey().toStringUtf8().replace(ConfigConstant.rulePath, "");
+        if (StrUtil.isEmpty(appName)) {
+            return;
+        }
         String ruleJson = keyValue.getValue().toStringUtf8();
         List<KeyRule> keyRules = FastJsonUtils.toList(ruleJson, KeyRule.class);
         KeyRuleHolder.put(appName, keyRules);
