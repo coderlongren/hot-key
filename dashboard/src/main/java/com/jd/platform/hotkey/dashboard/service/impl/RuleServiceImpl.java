@@ -1,7 +1,5 @@
 package com.jd.platform.hotkey.dashboard.service.impl;
 
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.date.SystemClock;
 import cn.hutool.core.lang.UUID;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
@@ -9,13 +7,11 @@ import com.github.pagehelper.util.StringUtil;
 import com.ibm.etcd.api.KeyValue;
 import com.jd.platform.hotkey.common.configcenter.ConfigConstant;
 import com.jd.platform.hotkey.common.configcenter.IConfigCenter;
-import com.jd.platform.hotkey.dashboard.common.domain.Constant;
 import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
 import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
 import com.jd.platform.hotkey.dashboard.mapper.ChangeLogMapper;
 import com.jd.platform.hotkey.dashboard.mapper.RulesMapper;
 import com.jd.platform.hotkey.dashboard.model.ChangeLog;
-import com.jd.platform.hotkey.dashboard.model.KeyRule;
 import com.jd.platform.hotkey.dashboard.model.Rule;
 import com.jd.platform.hotkey.dashboard.model.Rules;
 import com.jd.platform.hotkey.dashboard.service.RuleService;
@@ -71,7 +67,8 @@ public class RuleServiceImpl implements RuleService {
         String to = JSON.toJSONString(rules);
         logMapper.insertSelective(new ChangeLog(app, 1, from, to,
                 rules.getUpdateUser(), app, UUID.fastUUID().toString(true)));
-        return rulesMapper.update(rules);
+//        return rulesMapper.update(rules);
+        return 1;
     }
 
     @Override
@@ -81,17 +78,19 @@ public class RuleServiceImpl implements RuleService {
         String to = JSON.toJSONString(rules);
         logMapper.insertSelective(new ChangeLog(app, 1, "", to,
                 rules.getUpdateUser(), app, UUID.fastUUID().toString(true)));
-        return rulesMapper.insert(rules);
+//        return rulesMapper.insert(rules);
+        return 1;
     }
 
 
     @Override
     public int delRule(String app, String updater) {
-        Rules oldRules = rulesMapper.select(app);
-        String from = JSON.toJSONString(oldRules);
+//        Rules oldRules = rulesMapper.select(app);
+//        String from = JSON.toJSONString(oldRules);
         configCenter.delete(ConfigConstant.rulePath + app);
-        logMapper.insertSelective(new ChangeLog(app, 1, from, "",updater, app, SystemClock.nowDate()));
-        return rulesMapper.delete(app);
+//        logMapper.insertSelective(new ChangeLog(app, 1, from, "",updater, app, SystemClock.nowDate()));
+//        return rulesMapper.delete(app);
+        return 1;
     }
 
     @Override
@@ -117,16 +116,16 @@ public class RuleServiceImpl implements RuleService {
     public int save(Rules rules) {
         String app = rules.getApp();
         String from = "";
-        Rules oldRules = rulesMapper.select(app);
-        if(oldRules == null){
-            rulesMapper.insert(rules);
-        }else{
-            from = JSON.toJSONString(oldRules);
-            rulesMapper.update(rules);
-        }
+//        Rules oldRules = rulesMapper.select(app);
+//        if(oldRules == null){
+//            rulesMapper.insert(rules);
+//        }else{
+//            from = JSON.toJSONString(oldRules);
+//            rulesMapper.update(rules);
+//        }
         String to = JSON.toJSONString(rules);
-        logMapper.insertSelective(new ChangeLog(app, 1, from, to,
-                rules.getUpdateUser(), app, SystemClock.nowDate()));
+//        logMapper.insertSelective(new ChangeLog(app, 1, from, to,
+//                rules.getUpdateUser(), app, SystemClock.nowDate()));
         configCenter.put(ConfigConstant.rulePath + app, rules.getRules());
         return 1;
     }
