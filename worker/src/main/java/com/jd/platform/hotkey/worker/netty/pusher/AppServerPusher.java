@@ -33,10 +33,17 @@ public class AppServerPusher implements IPusher {
 
                 HotKeyMsg hotKeyMsg = new HotKeyMsg(MessageType.RESPONSE_NEW_KEY, FastJsonUtils.convertObjectToJSON(model));
                 String hotMsg = FastJsonUtils.convertObjectToJSON(hotKeyMsg);
-                for (ChannelHandlerContext channel : map.values()) {
+
+//                for (ChannelHandlerContext channel : map.values()) {
+//                    ByteBuf byteBuf = MsgBuilder.buildByteBuf(hotMsg);
+//                    FlushUtil.flush(channel, byteBuf);
+//                }
+
+                //并行发送
+                map.values().parallelStream().forEach(channel -> {
                     ByteBuf byteBuf = MsgBuilder.buildByteBuf(hotMsg);
                     FlushUtil.flush(channel, byteBuf);
-                }
+                });
 
                 return;
             }

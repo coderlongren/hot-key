@@ -246,7 +246,7 @@ public class KeyServiceImpl implements KeyService {
     @Override
     public int delKeyByUser(KeyTimely keyTimely) {
         //app + "_" + key
-        String[] arr = keyTimely.getKey().split("_");
+        String[] arr = keyTimely.getKey().split("/");
         //删除client监听目录的key
         String ectdKey = ConfigConstant.hotKeyPath + arr[0] + "/" + arr[1];
         configCenter.delete(ectdKey);
