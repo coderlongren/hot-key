@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -40,6 +39,8 @@ public class DataHandler {
     @Resource
     private StatisticsMapper statisticsMapper;
 
+    private volatile boolean hasBegin = false;
+
     /**
      * 队列
      */
@@ -56,15 +57,20 @@ public class DataHandler {
         }
     }
 
-    @PostConstruct
     public void insertRecords() {
+        if (hasBegin) {
+            return;
+        }
+        hasBegin = true;
         CompletableFuture.runAsync(() -> {
             while (true) {
-                TwoTuple<KeyTimely, KeyRecord> twoTuple = null;
+                TwoTuple<KeyTimely, KeyRecord> twoTuple;
                 try {
                     twoTuple = handHotKey(queue.take());
                 } catch (Exception e) {
                     e.printStackTrace();
+                    log.error("handHotKey error ," + e.getMessage());
+                    continue;
                 }
                 KeyRecord keyRecord = twoTuple.getSecond();
                 KeyTimely keyTimely = twoTuple.getFirst();
@@ -79,11 +85,11 @@ public class DataHandler {
                     }
                 }
 
-                if (keyRecord == null) {
-                    return;
+                if (keyRecord != null) {
+                    //插入记录
+                    keyRecordMapper.insertSelective(keyRecord);
                 }
-                //插入记录
-                keyRecordMapper.insertSelective(keyRecord);
+
             }
         });
 

@@ -58,12 +58,12 @@ public class EtcdMonitor {
 //    public void init() {
 //        CompletableFuture.runAsync(() -> {
 //            try {
-//                Thread.sleep(3000);
+//                Thread.sleep(100);
 //            } catch (InterruptedException e) {
 //                e.printStackTrace();
 //            }
 //            for (int i = 0; i < 20000; i++) {
-//                configCenter.put(ConfigConstant.hotKeyPath + "sample/" + i, UUID.randomUUID().toString());
+//                configCenter.put(ConfigConstant.hotKeyRecordPath + "abc/" + i, UUID.randomUUID().toString());
 //            }
 //        });
 //    }
@@ -164,6 +164,9 @@ public class EtcdMonitor {
                 }
 
             }
+
+            //规则拉取完毕后才能去开始入库
+            dataHandler.insertRecords();
         } catch (StatusRuntimeException ex) {
             //etcd连不上
             log.error("etcd connected fail. Check the etcd address!!!");
