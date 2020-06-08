@@ -173,7 +173,7 @@ var options = {
             formatter: function (value, row, index) {
                 var id = row.id;
                 var actions = [];
-                actions.push('<a class="btn btn-danger btn-xs" href="#" onclick="$.operate.remove(\'' + (row.appName+"_"+row.key) + '\')"><i class="fa fa-remove"></i>删除</a>');
+                actions.push('<a class="btn btn-danger btn-xs" href="#" onclick="$.operate.remove(\'' + (row.appName+"/"+row.key) + '\')"><i class="fa fa-remove"></i>删除</a>');
                 return actions.join('');
             }
         }]

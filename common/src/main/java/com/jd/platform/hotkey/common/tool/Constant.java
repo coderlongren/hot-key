@@ -16,7 +16,7 @@ public class Constant {
     public static int MAGIC_NUMBER = 0x12fcf76;
     public static String DELIMITER = "$(* *)$";
 
-    //单次包最大16M
-    public static int MAX_LENGTH = 16 * 1024 * 1024;
+    //单次包最大2M
+    public static int MAX_LENGTH = 2 * 1024 * 1024;
 
 }

@@ -19,7 +19,7 @@ public class FlushUtil {
         if (channelHandlerContext.channel().isWritable()) {
             channelHandlerContext.channel().writeAndFlush(byteBuf).addListener(future -> {
                 if (!future.isSuccess()) {
-                    logger.warn(future.cause().getMessage());
+                    logger.warn("flush error " + future.cause().getMessage());
                 }
             });
         } else {
@@ -27,7 +27,7 @@ public class FlushUtil {
                 //同步发送
                 channelHandlerContext.channel().writeAndFlush(byteBuf).sync();
             } catch (InterruptedException e) {
-                logger.error(e.getMessage());
+                logger.error("flush error " + e.getMessage());
             }
         }
     }
