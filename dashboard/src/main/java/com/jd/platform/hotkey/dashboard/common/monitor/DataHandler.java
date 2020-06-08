@@ -5,6 +5,7 @@ import com.ibm.etcd.api.Event;
 import com.jd.platform.hotkey.dashboard.common.domain.Constant;
 import com.jd.platform.hotkey.dashboard.common.domain.EventWrapper;
 import com.jd.platform.hotkey.dashboard.common.domain.req.ChartReq;
+import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
 import com.jd.platform.hotkey.dashboard.mapper.KeyRecordMapper;
 import com.jd.platform.hotkey.dashboard.mapper.KeyTimelyMapper;
 import com.jd.platform.hotkey.dashboard.mapper.StatisticsMapper;
@@ -139,7 +140,7 @@ public class DataHandler {
             int day = DateUtil.nowDay(now);
             int hour = DateUtil.nowHour(now);
 
-            List<Statistics> records = keyRecordMapper.maxHotKey(new ChartReq(now.minusHours(1), now, 1000));
+            List<Statistics> records = keyRecordMapper.maxHotKey(new SearchReq(now.minusHours(1)));
             if (records.size() == 0) {
                 return;
             }
@@ -168,7 +169,7 @@ public class DataHandler {
             int day = DateUtil.nowDay(now);
             int hour = DateUtil.nowHour(now);
 
-            List<Statistics> records = keyRecordMapper.statisticsByRule(new ChartReq(now.minusHours(1), now, 1000));
+            List<Statistics> records = keyRecordMapper.statisticsByRule(null);
             if (records.size() == 0) {
                 return;
             }

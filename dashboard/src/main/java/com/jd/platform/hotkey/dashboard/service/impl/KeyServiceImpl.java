@@ -11,6 +11,8 @@ import com.jd.platform.hotkey.dashboard.common.domain.req.ChartReq;
 import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
 import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
 import com.jd.platform.hotkey.dashboard.common.domain.vo.HotKeyLineChartVo;
+import com.jd.platform.hotkey.dashboard.common.eunm.ResultEnum;
+import com.jd.platform.hotkey.dashboard.common.ex.BizException;
 import com.jd.platform.hotkey.dashboard.mapper.KeyRecordMapper;
 import com.jd.platform.hotkey.dashboard.mapper.KeyTimelyMapper;
 import com.jd.platform.hotkey.dashboard.mapper.ReceiveCountMapper;
@@ -53,6 +55,84 @@ public class KeyServiceImpl implements KeyService {
     private StatisticsMapper statisticsMapper;
 
 
+    public HotKeyLineChartVo ruleLineChart2(SearchReq req) {
+        int type = req.getType();
+        if(req.getEndTime() == null){
+            req.setEndTime(new Date());
+        }
+        switch (type){
+            case 1:
+                req.setStartTime(DateUtil.preMinus(30));
+                List<Statistics> list = statisticsList();
+                System.out.println("30 min");
+                break;
+            case 2:
+                req.setStartTime(DateUtil.preDays(1));
+                System.out.println("24 hours");
+                break;
+            case 3:
+                req.setStartTime(DateUtil.preDays(7));
+                System.out.println("7 days");
+                break;
+            default:
+                System.out.println("=============");
+        }
+        return null;
+    }
+
+
+    @Override
+    public HotKeyLineChartVo ruleLineChart(SearchReq req) {
+        int type = req.getType();
+        if(req.getEndTime() == null){
+            req.setEndTime(new Date());
+        }
+        switch (type){
+            case 1:
+                req.setStartTime(DateUtil.preMinus(30));
+                List<Statistics> list = statisticsList();
+                Map<String, int[]> map = new HashMap<>(10);
+                Map<String, List<Statistics>> listMap = list.stream().collect(Collectors.groupingBy(Statistics::getKeyName));
+                for (Map.Entry<String, List<Statistics>> m : listMap.entrySet()) {
+                    int start = 1;
+                    map.put(m.getKey(),new int[30]);
+                    int[] data = map.get(m.getKey());
+                    int tmp = 0;
+                    for (int i = 0; i < 30; i++) {
+                        Statistics st;
+                        try {
+                            st = m.getValue().get(tmp);
+                            if(String.valueOf(start).endsWith("24")){ start = start + 77; }
+                            if(start != st.getHours()){
+                                data[i] = 0;
+                            }else{
+                                tmp ++;
+                                data[i] = st.getCount();
+                            }
+                            start++;
+                        }catch (Exception e){
+                            data[i] = 0;
+                        }
+                    }
+                }
+
+                System.out.println("30 min");
+                break;
+            case 2:
+                req.setStartTime(DateUtil.preDays(1));
+                System.out.println("24 hours");
+                break;
+            case 3:
+                req.setStartTime(DateUtil.preDays(7));
+                System.out.println("7 days");
+                break;
+            default:
+                System.out.println("=============");
+        }
+        return null;
+    }
+
+
     @Override
     public PageInfo<KeyTimely> pageKeyTimely(PageReq page, SearchReq param) {
         PageHelper.startPage(page.getPageNum(), page.getPageSize());
@@ -65,11 +145,17 @@ public class KeyServiceImpl implements KeyService {
     }
 
     @Override
-    public PageInfo<Statistics> pageMaxHot(PageReq page, SearchReq param) {
+    public PageInfo<Statistics> pageMaxHot(PageReq page, SearchReq req) {
+        checkParam(req);
         PageHelper.startPage(page.getPageNum(), page.getPageSize());
-        ChartReq chartReq = convert(param);
-        List<Statistics> statistics = statisticsMapper.sumStatistics(chartReq);
+        List<Statistics> statistics = statisticsMapper.sumStatistics(req);
         return new PageInfo<>(statistics);
+    }
+
+    @Override
+    public List<Statistics> listMaxHot(SearchReq req) {
+        checkParam(req);
+        return statisticsMapper.sumStatistics(req);
     }
 
 
@@ -95,11 +181,6 @@ public class KeyServiceImpl implements KeyService {
         return new HotKeyLineChartVo(list,keyDateMap);
     }
 
-    @Override
-    public List<Statistics> listExportKey(SearchReq req) {
-        ChartReq chartReq = new ChartReq(req.getStartTime(), req.getEndTime(), req.getAppName(), req.getKey());
-        return recordMapper.maxHotKey(chartReq);
-    }
 
     @Override
     public HotKeyLineChartVo getQpsLineChart(ChartReq chartReq) {
@@ -119,7 +200,7 @@ public class KeyServiceImpl implements KeyService {
                 ReceiveCount dto = cts.get(i);
                 String k = dto.getWorkerName();
                 Long v = dto.getReceiveCount();
-                Long ms = dto.getMinutes();
+                Integer ms = dto.getMinutes();
                 minutes.add(ms.toString());
                 if(map.get(k) == null){
                     int [] data = new int[size];
@@ -224,14 +305,62 @@ public class KeyServiceImpl implements KeyService {
 
 
 
-    private ChartReq convert(SearchReq param) {
-        ChartReq chartReq = new ChartReq();
-        chartReq.setStartTime(param.getStartTime());
-        chartReq.setEndTime(param.getEndTime());
-        chartReq.setAppName(param.getAppName());
-        chartReq.setKey(param.getKey());
-        return chartReq;
+    private void checkParam(SearchReq req) {
+        if(req.getStartTime() == null || req.getEndTime() == null){
+            req.setStartTime(DateUtil.preTime(5));
+            req.setEndTime(new Date());
+        }
+       /* long day = (req.getEndTime().getTime() - req.getStartTime().getTime()) / 86400000;
+        if( day > Constant.MAX_DAY_RANGE){
+            throw new BizException(ResultEnum.TIME_RANGE_LARGE);
+        }*/
     }
+
+
+    private List<Statistics> statisticsList(){
+        Random rd = new Random();
+        List<Statistics> list = new ArrayList<>();
+        for (int i = 0; i < 30 ; i++) {
+            Statistics st = new Statistics();
+            st.setApp("rule1");
+            st.setKeyName("key1");
+            st.setCount(rd.nextInt(100));
+            st.setBizType(1);
+            st.setMinutes(2006052140+i);
+            if(String.valueOf(st.getMinutes()).endsWith("60")){
+                st.setMinutes(st.getMinutes()+1);
+            }
+            list.add(st);
+        }
+        List<Statistics> list2 = new ArrayList<>();
+        for (int i = 0; i < 30 ; i++) {
+            Statistics st2 = new Statistics();
+            st2.setApp("rule2");
+            st2.setKeyName("key2");
+            st2.setCount(rd.nextInt(100));
+            st2.setBizType(1);
+            st2.setMinutes(2006052140+i);
+            list2.add(st2);
+        }
+        list.addAll(list2);
+        return list;
+    }
+
+    private List<Statistics> statisticsList1(){
+        Random rd = new Random();
+        List<Statistics> list = new ArrayList<>();
+        for (int i = 0; i < 24 ; i++) {
+            Statistics st = new Statistics();
+            st.setApp("rule1");
+            st.setKeyName("key1");
+            st.setCount(rd.nextInt(100));
+            st.setBizType(1);
+            st.setHours(20060500+i);
+        }
+        return list;
+    }
+
+
 }
 
 

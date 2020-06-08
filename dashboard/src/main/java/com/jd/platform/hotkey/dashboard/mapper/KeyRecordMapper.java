@@ -18,11 +18,11 @@ public interface KeyRecordMapper {
 
     KeyRecord selectByPrimaryKey(Long id);
 
-    List<KeyRecord> listKeyRecord(SearchReq param);
+    List<KeyRecord> listKeyRecord(SearchReq req);
 
     int batchInsert(List<KeyRecord> list);
 
-    List<Statistics> maxHotKey(ChartReq chartParam);
+    List<Statistics> maxHotKey(SearchReq req);
 
-    List<Statistics> statisticsByRule(ChartReq chartReq);
+    List<Statistics> statisticsByRule(SearchReq req);
 }

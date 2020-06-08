@@ -21,11 +21,13 @@ public class Statistics implements Serializable {
 
     private Integer hours;
 
-    private Long minutes;
+    private Integer minutes;
 
     private Integer bizType;
 
     private String uuid;
+
+    private String rule;
 
     private Date createTime;
 
@@ -77,11 +79,11 @@ public class Statistics implements Serializable {
         this.hours = hours;
     }
 
-    public Long getMinutes() {
+    public Integer getMinutes() {
         return minutes;
     }
 
-    public void setMinutes(Long minutes) {
+    public void setMinutes(Integer minutes) {
         this.minutes = minutes;
     }
 
@@ -99,6 +101,14 @@ public class Statistics implements Serializable {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public String getRule() {
+        return rule;
+    }
+
+    public void setRule(String rule) {
+        this.rule = rule;
     }
 
     public Date getCreateTime() {

@@ -32,7 +32,12 @@ public class DashboardApplication implements CommandLineRunner {
 
 
     public static void main(String[] args) {
-        SpringApplication.run(DashboardApplication.class, args);
+        try {
+            SpringApplication.run(DashboardApplication.class, args);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     @Override

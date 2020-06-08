@@ -36,23 +36,31 @@ public class DateUtil {
     }
 
 
-    public static Long nowMinus(LocalDateTime now){
-        return Long.parseLong(now.format(TIME_FORMAT1)) ;
+    public static int nowMinus(LocalDateTime now){
+        return Integer.parseInt(now.format(TIME_FORMAT1)) ;
     }
 
     public static int nowHour(LocalDateTime now){
         return Integer.parseInt(now.format(TIME_FORMAT2));
     }
 
+    public static int nowDay(LocalDateTime now){ return Integer.parseInt(now.format(TIME_FORMAT3));}
+
+
     public static int preHours(LocalDateTime now, int hours){
         return Integer.parseInt(now.minusHours(hours).format(TIME_FORMAT2));
     }
-
-    public static int nowDay(LocalDateTime now){ return Integer.parseInt(now.format(TIME_FORMAT3));}
 
     public static Date preTime(int hours){
        return localDateTimeToDate(LocalDateTime.now().minusHours(hours));
     }
 
 
+    public static Date preMinus(int minus){
+        return localDateTimeToDate(LocalDateTime.now().minusMinutes(minus));
+    }
+
+    public static Date preDays(int days){
+        return localDateTimeToDate(LocalDateTime.now().minusDays(days));
+    }
 }

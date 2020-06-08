@@ -25,6 +25,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -42,12 +43,19 @@ public class KeyController extends BaseController {
 	private KeyService keyService;
 
 
+	@PostMapping("/ruleLineChart")
+	@ResponseBody
+	public HotKeyLineChartVo ruleLineChart(SearchReq req){
+		return keyService.ruleLineChart(req);
+	}
+
+
 	@PostMapping("/lineChart")
 	@ResponseBody
 	public HotKeyLineChartVo lineChart(ChartReq chartReq){
-//		return keyService.getLineChart(chartReq);
-		return null;
+		return keyService.getLineChart(chartReq);
 	}
+
 
 	//@PostMapping("/qps")
 	@GetMapping("/qps")
@@ -74,7 +82,7 @@ public class KeyController extends BaseController {
 
 	@GetMapping("/viewTimely")
 	public String viewTimely(ModelMap modelMap){
-		modelMap.put("title","实时热点");
+		modelMap.put("title", Constant.TIMELY_KEY_VIEW);
 		return prefix + "/listtimely";
 	}
 
@@ -89,7 +97,7 @@ public class KeyController extends BaseController {
 
 	@GetMapping("/viewMaxHot")
 	public String viewMaxHot(ModelMap modelMap){
-		modelMap.put("title","实时热点");
+		modelMap.put("title", Constant.TIMELY_KEY_VIEW);
 		return prefix + "/listmaxhot";
 	}
 
@@ -97,7 +105,7 @@ public class KeyController extends BaseController {
 	@PostMapping("/listMaxHot")
 	@ResponseBody
 	public Page<Statistics> listMaxHot(PageReq page, SearchReq searchReq){
-		PageInfo<Statistics> info = keyService.pageMaxHot(page, param2(searchReq));
+		PageInfo<Statistics> info = keyService.pageMaxHot(page, searchReq);
 		return new Page<>(info.getPageNum(),(int)info.getTotal(),info.getList());
 	}
 
@@ -141,8 +149,7 @@ public class KeyController extends BaseController {
 
 	@RequestMapping(value = "/export", method = RequestMethod.GET)
 	@ResponseBody
-	public void export(HttpServletResponse response,
-						  String startTime,String endTime,String appName,String key){
+	public void export(HttpServletResponse resp,String startTime,String endTime,String appName,String key){
 		SearchReq req = new SearchReq();
 		if(StringUtil.isNotEmpty(startTime)){
 			req.setStartTime(DateUtil.strToDate(startTime));
@@ -152,8 +159,16 @@ public class KeyController extends BaseController {
 		}
 		req.setAppName(appName);
 		req.setKey(key);
-		List<Statistics> records = keyService.listExportKey(req);
-		List<List<String> > rows = new ArrayList<>();
+		List<Statistics> records = keyService.listMaxHot(req);
+		List<List<String>> rows = transform(records);
+		ExcelData data = new ExcelData("hotKey.xlsx", Constant.HEAD,rows);
+		ExcelUtil.exportExcel(resp,data);
+	}
+
+
+
+	private List<List<String>> transform(List<Statistics> records){
+		List<List<String>> rows = new ArrayList<>();
 		for (Statistics record : records) {
 			List<String> list = new ArrayList<>();
 			list.add(record.getKeyName());
@@ -161,9 +176,7 @@ public class KeyController extends BaseController {
 			list.add(record.getApp());
 			rows.add(list);
 		}
-		String[] s = {"热点key","次数","所属APP"};
-		ExcelData data = new ExcelData("hotKey.xlsx", Arrays.asList(s),rows);
-		ExcelUtil.exportExcel(response,data);
+		return rows;
 	}
 }
 

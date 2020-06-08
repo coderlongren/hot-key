@@ -22,7 +22,18 @@
 
   <select id="sumStatistics" resultMap="BaseResultMap" >
     SELECT app,key_name,sum(count) as count
-     from hk_statistics GROUP BY key_name, app ORDER BY count desc
+     from hk_statistics
+     where 1=1
+    <if test="key !=null and key !=''">
+      and key_name LIKE CONCAT(CONCAT('%', #{key}), '%')
+    </if >
+    <if test="appName !=null and appName !=''">
+      and app = #{appName}
+    </if >
+    <if test="startTime != null">
+      <![CDATA[ and create_time >= #{startTime} and create_time < #{endTime}]]>
+    </if>
+      GROUP BY key_name, app ORDER BY count desc
   </select>
 
 

@@ -23,7 +23,7 @@ public class ReceiveCount implements Serializable {
 
     private Integer hour;
 
-    private Long minutes;
+    private Integer minutes;
 
 
     public ReceiveCount() {
@@ -88,11 +88,11 @@ public class ReceiveCount implements Serializable {
         this.hour = hour;
     }
 
-    public Long getMinutes() {
+    public Integer getMinutes() {
         return minutes;
     }
 
-    public void setMinutes(Long minutes) {
+    public void setMinutes(Integer minutes) {
         this.minutes = minutes;
     }
 }

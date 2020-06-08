@@ -38,9 +38,11 @@ public interface KeyService {
 
     PageInfo<Statistics> pageMaxHot(PageReq page, SearchReq param);
 
+    List<Statistics> listMaxHot(SearchReq searchReq);
+
     HotKeyLineChartVo getLineChart(ChartReq chartReq);
 
-    List<Statistics> listExportKey(SearchReq searchReq);
-
     HotKeyLineChartVo getQpsLineChart(ChartReq chartReq);
+
+    HotKeyLineChartVo ruleLineChart(SearchReq req);
 }

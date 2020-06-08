@@ -4,6 +4,7 @@
 			_option: {},
 			oTableInit:function(parms){//初始化表单
 				$.table._option=parms;
+				console.log("option"+JSON.stringify($.table._option));
 			    var oTableInit = {};
 			    //初始化Table
 			    oTableInit.Init = function () {
@@ -28,12 +29,12 @@
 			           // height: 460,            //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
 			            uniqueId: "id",           //每一行的唯一标识，一般为主键列
 			            queryParamsType: "",//参数类型  为null 后台用pageHelp  默认为limit
-			            search: !0,
-                        showRefresh: !0,//刷新按钮
-			            showColumns: !0,//显示列按钮
+			            search: parms.search == null,      //是否显示表格搜索
+                        showRefresh: parms.showRefresh == null,//刷新按钮
+			            showColumns: parms.showRefresh == null,//显示列按钮
 			            columns:parms.dataColumns,
 			            showToggle : false, //是否显示详细视图和列表视图的切换按钮
-			            showExport: true,  //是否显示导出按钮
+			            showExport: false,  //是否显示导出按钮
 			            buttonsAlign:"right",  //按钮位置
 			            exportDataType : "all",
 			            Icons:'glyphicon-export',

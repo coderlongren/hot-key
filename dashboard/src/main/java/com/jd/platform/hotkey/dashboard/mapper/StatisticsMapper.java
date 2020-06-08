@@ -1,6 +1,7 @@
 package com.jd.platform.hotkey.dashboard.mapper;
 
 import com.jd.platform.hotkey.dashboard.common.domain.req.ChartReq;
+import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
 import com.jd.platform.hotkey.dashboard.model.Statistics;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -28,8 +29,8 @@ public interface StatisticsMapper {
 
     /**
      * 多个时间聚合统计列表
-     * @param chartReq req
+     * @param req req
      * @return list
      */
-    List<Statistics> sumStatistics(ChartReq chartReq);
+    List<Statistics> sumStatistics(SearchReq req);
 }

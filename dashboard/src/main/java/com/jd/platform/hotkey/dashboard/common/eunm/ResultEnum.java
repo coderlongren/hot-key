@@ -22,7 +22,10 @@ public enum ResultEnum {
 
     BIZ_ERROR(1006, "业务异常"),
 
-    CONFLICT_ERROR(1007, "用户名/手机号已存在");
+    CONFLICT_ERROR(1007, "用户名/手机号已存在"),
+
+    TIME_RANGE_LARGE(1008, "查询时间过大");
+
 
     private int code;
 
