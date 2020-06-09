@@ -1,14 +1,18 @@
 package com.jd.platform.hotkey.worker.netty.filter;
 
+import cn.hutool.core.date.SystemClock;
 import com.jd.platform.hotkey.common.model.HotKeyModel;
 import com.jd.platform.hotkey.common.model.HotKeyMsg;
 import com.jd.platform.hotkey.common.model.typeenum.MessageType;
 import com.jd.platform.hotkey.common.tool.FastJsonUtils;
+import com.jd.platform.hotkey.common.tool.NettyIpUtil;
 import com.jd.platform.hotkey.worker.disruptor.MessageProducer;
 import com.jd.platform.hotkey.worker.disruptor.hotkey.HotKeyEvent;
 import com.jd.platform.hotkey.worker.mq.IMqMessageReceiver;
 import com.jd.platform.hotkey.worker.netty.holder.WhiteListHolder;
 import io.netty.channel.ChannelHandlerContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -30,12 +34,14 @@ public class HotKeyFilter implements INettyMsgFilter, IMqMessageReceiver {
 
     public static AtomicLong totalReceiveKeyCount = new AtomicLong();
 
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
     @Override
     public boolean chain(HotKeyMsg message, ChannelHandlerContext ctx) {
         if (MessageType.REQUEST_NEW_KEY == message.getMessageType()) {
             totalReceiveKeyCount.incrementAndGet();
 
-            publishMsg(message.getBody());
+            publishMsg(message.getBody(), ctx);
 
             return false;
         }
@@ -45,10 +51,10 @@ public class HotKeyFilter implements INettyMsgFilter, IMqMessageReceiver {
 
     @Override
     public void receive(String msg) {
-        publishMsg(msg);
+        publishMsg(msg, null);
     }
 
-    private void publishMsg(String message) {
+    private void publishMsg(String message, ChannelHandlerContext ctx) {
         //老版的用的单个HotKeyModel，新版用的数组
         if (message.startsWith("[")) {
             List<HotKeyModel> models = FastJsonUtils.toList(message, HotKeyModel.class);
@@ -56,6 +62,10 @@ public class HotKeyFilter implements INettyMsgFilter, IMqMessageReceiver {
                 //白名单key不处理
                 if (WhiteListHolder.contains(model.getKey())) {
                     continue;
+                }
+                long timeOut = SystemClock.now() - model.getCreateTime();
+                if (timeOut > 1000) {
+                    logger.info("key timeout " + timeOut + ", from ip : " + NettyIpUtil.clientIp(ctx));
                 }
                 messageProducer.publish(new HotKeyEvent(model));
             }
