@@ -3,6 +3,7 @@ package com.jd.platform.hotkey.worker.disruptor;
 import com.lmax.disruptor.BlockingWaitStrategy;
 import com.lmax.disruptor.EventFactory;
 import com.lmax.disruptor.EventHandler;
+import com.lmax.disruptor.WorkHandler;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 
@@ -16,24 +17,37 @@ import java.util.concurrent.Executors;
  */
 public class DisruptorEventModeBuilder<T extends BaseEvent> {
     private int bufferSize;
-    private EventHandler<T>[] workHandlers;
+    private EventHandler<T>[] eventHandlers;
+    private WorkHandler<T>[] workHandlers;
     private EventFactory<T> eventFactory;
 
     public Disruptor<T> build() {
         Disruptor<T> disruptor = new Disruptor<>(eventFactory, bufferSize, Executors.defaultThreadFactory(),
                 ProducerType.SINGLE, new BlockingWaitStrategy());
 
-        disruptor.handleEventsWith(workHandlers);
+        if (eventHandlers != null) {
+            disruptor.handleEventsWith(eventHandlers);
+        }
+        if (workHandlers != null) {
+            disruptor.handleEventsWithWorkerPool(workHandlers);
+        }
 
         disruptor.start();
         return disruptor;
     }
 
-
     /**
      * 每个worker会重复消费
      */
-    public DisruptorEventModeBuilder<T> setWorkerHandlers(EventHandler<T>... workHandlers) {
+    public DisruptorEventModeBuilder<T> setEventHandlers(EventHandler<T>... eventHandlers) {
+        this.eventHandlers = eventHandlers;
+        return this;
+    }
+
+    /**
+     * 每个worker不会重复消费
+     */
+    public DisruptorEventModeBuilder<T> setWorkerHandlers(WorkHandler<T>... workHandlers) {
         this.workHandlers = workHandlers;
         return this;
     }

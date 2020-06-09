@@ -36,6 +36,9 @@ public class KeyListener implements IKeyListener {
     private static final String NEW_KEY_EVENT = "new key created event, key : ";
     private static final String DELETE_KEY_EVENT = "key delete event key : ";
 
+    //兴许将来用的上
+    private static final Object LOCK = new Object();
+
     @Override
     public void newKey(HotKeyModel hotKeyModel, KeyEventOriginal original) {
         //cache里的key
@@ -50,13 +53,14 @@ public class KeyListener implements IKeyListener {
         //看看hot没
         boolean hot = slidingWindow.addCount(hotKeyModel.getCount());
 
-        //删掉该key
-        CaffeineCacheHolder.getCache(hotKeyModel.getAppName()).invalidate(key);
         if (!hot) {
             //如果没hot，重新put，cache会自动刷新过期时间
             CaffeineCacheHolder.getCache(hotKeyModel.getAppName()).put(key, slidingWindow);
         } else {
             hotCache.put(key, 1);
+
+            //删掉该key
+            CaffeineCacheHolder.getCache(hotKeyModel.getAppName()).invalidate(key);
 
             //开启推送
             hotKeyModel.setCreateTime(SystemClock.now());
@@ -89,7 +93,7 @@ public class KeyListener implements IKeyListener {
     }
 
     /**
-     * 生成或返回该key的滑窗
+     * 生成或返回该key的滑窗，该方法存在并发问题（当多线程同时命中slidingWindow为null时，会出现计数变少的情况）
      */
     private SlidingWindow checkWindow(HotKeyModel hotKeyModel, String key) {
         //取该key的滑窗
@@ -99,6 +103,7 @@ public class KeyListener implements IKeyListener {
             //是个新key，获取它的规则
             KeyRule keyRule = KeyRuleHolder.getRuleByAppAndKey(hotKeyModel);
             slidingWindow = new SlidingWindow(keyRule.getInterval(), keyRule.getThreshold());
+
         }
         return slidingWindow;
     }

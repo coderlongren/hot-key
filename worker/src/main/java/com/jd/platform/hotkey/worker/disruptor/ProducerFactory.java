@@ -1,7 +1,7 @@
 package com.jd.platform.hotkey.worker.disruptor;
 
 import com.jd.platform.hotkey.common.tool.Constant;
-import com.jd.platform.hotkey.worker.disruptor.hotkey.HotKeyConsumer;
+import com.jd.platform.hotkey.worker.disruptor.hotkey.HotKeyEventConsumer;
 import com.jd.platform.hotkey.worker.disruptor.hotkey.HotKeyEvent;
 import com.jd.platform.hotkey.worker.disruptor.hotkey.HotKeyEventProducer;
 import com.jd.platform.hotkey.worker.keylistener.IKeyListener;
@@ -26,16 +26,18 @@ public class ProducerFactory {
         //将实际值赋给static变量
         Constant.Default_Threads = threadCount;
 
-        HotKeyConsumer[] array = new HotKeyConsumer[threadCount];
+        HotKeyEventConsumer[] array = new HotKeyEventConsumer[threadCount];
         for (int i = 0; i < threadCount; i++) {
-            array[i] = new HotKeyConsumer(i);
+            array[i] = new HotKeyEventConsumer(i);
             array[i].setKeyListener(iKeyListener);
         }
         DisruptorEventModeBuilder<HotKeyEvent> builder = new DisruptorEventModeBuilder<>();
         Disruptor<HotKeyEvent> disruptor = builder
                 .setBufferSize(InitConstant.bufferSize * 1024 * 1024)
                 .setEventFactory(HotKeyEvent::new)
-                .setWorkerHandlers(array).build();
+//                .setEventHandlers(array)   //重复消费的
+                .setWorkerHandlers(array)    //不重复消费的
+                .build();
 
         return new HotKeyEventProducer(disruptor);
     }

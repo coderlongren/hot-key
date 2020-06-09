@@ -3,6 +3,8 @@ package com.jd.platform.hotkey.worker.tool;
 
 import cn.hutool.core.date.SystemClock;
 
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -42,18 +44,35 @@ public class SlidingWindow {
 
     public static void main(String[] args) {
         //1秒一个时间片，窗口共5个
-        SlidingWindow window = new SlidingWindow(100, 4, 8);
-        for (int i = 0; i < 100; i++) {
-            System.out.println(window.addCount(2));
+        SlidingWindow window = new SlidingWindow(2, 20);
 
-            window.print();
-            System.out.println("--------------------------");
-            try {
-                Thread.sleep(102);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        CyclicBarrier cyclicBarrier = new CyclicBarrier(10);
+        for (int i = 0; i < 10; i++) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        cyclicBarrier.await();
+                    } catch (InterruptedException | BrokenBarrierException e) {
+                        e.printStackTrace();
+                    }
+                    boolean hot = window.addCount(2);
+                    System.out.println(hot);
+                }
+            }).start();
         }
+
+//        for (int i = 0; i < 100; i++) {
+//            System.out.println(window.addCount(2));
+//
+//            window.print();
+//            System.out.println("--------------------------");
+//            try {
+//                Thread.sleep(102);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
     public SlidingWindow(int duration, int threshold) {
@@ -125,7 +144,7 @@ public class SlidingWindow {
     /**
      * 增加count个数量
      */
-    public boolean addCount(int count) {
+    public synchronized boolean addCount(int count) {
         //当前自己所在的位置，是哪个小时间窗
         int index = locationIndex();
 //        System.out.println("index:" + index);
