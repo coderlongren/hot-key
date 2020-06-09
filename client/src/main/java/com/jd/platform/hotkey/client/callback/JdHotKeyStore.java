@@ -72,7 +72,7 @@ public class JdHotKeyStore {
     /**
      * 仅获取value，如果不存在也不上报热key
      */
-    private static Object getValueSimple(String key) {
+    static Object getValueSimple(String key) {
         return getCache(key).get(key);
     }
 

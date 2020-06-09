@@ -22,11 +22,14 @@ public abstract class AbsReceiveNewKey implements ReceiveNewKeyListener {
         if (hotKeyModel.isRemove()) {
             deleteKey(hotKeyModel.getKey(), hotKeyModel.getKeyType(), hotKeyModel.getCreateTime());
         } else {
-            //这句有可能会不生效，譬如etcd、worker同时推送来了同一个key
+            //已经是热key了，又推过来同样的热key，做个日志记录，并刷新一下
             if (JdHotKeyStore.isHot(hotKeyModel.getKey())) {
-                return;
+                JdLogger.warn(getClass(), "receive repeat hot key ：" + hotKeyModel.getKey() + " at " + now);
+                JdHotKeyStore.setValueDirectly(hotKeyModel.getKey(), JdHotKeyStore.getValueSimple(hotKeyModel.getKey()));
+            } else {
+                //不是重复热key时，新建热key
+                addKey(hotKeyModel.getKey(), hotKeyModel.getKeyType(), hotKeyModel.getCreateTime());
             }
-            addKey(hotKeyModel.getKey(), hotKeyModel.getKeyType(), hotKeyModel.getCreateTime());
         }
 
     }
