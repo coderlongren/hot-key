@@ -6,8 +6,7 @@ import com.jd.platform.hotkey.common.model.HotKeyMsg;
 import com.jd.platform.hotkey.common.model.typeenum.MessageType;
 import com.jd.platform.hotkey.common.tool.FastJsonUtils;
 import com.jd.platform.hotkey.common.tool.NettyIpUtil;
-import com.jd.platform.hotkey.worker.disruptor.MessageProducer;
-import com.jd.platform.hotkey.worker.disruptor.hotkey.HotKeyEvent;
+import com.jd.platform.hotkey.worker.keydispatcher.KeyProducer;
 import com.jd.platform.hotkey.worker.mq.IMqMessageReceiver;
 import com.jd.platform.hotkey.worker.netty.holder.WhiteListHolder;
 import io.netty.channel.ChannelHandlerContext;
@@ -30,7 +29,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @Order(3)
 public class HotKeyFilter implements INettyMsgFilter, IMqMessageReceiver {
     @Resource
-    private MessageProducer<HotKeyEvent> messageProducer;
+    private KeyProducer keyProducer;
 
     public static AtomicLong totalReceiveKeyCount = new AtomicLong();
 
@@ -56,25 +55,17 @@ public class HotKeyFilter implements INettyMsgFilter, IMqMessageReceiver {
 
     private void publishMsg(String message, ChannelHandlerContext ctx) {
         //老版的用的单个HotKeyModel，新版用的数组
-        if (message.startsWith("[")) {
-            List<HotKeyModel> models = FastJsonUtils.toList(message, HotKeyModel.class);
-            for (HotKeyModel model : models) {
-                //白名单key不处理
-                if (WhiteListHolder.contains(model.getKey())) {
-                    continue;
-                }
-                long timeOut = SystemClock.now() - model.getCreateTime();
-                if (timeOut > 1000) {
-                    logger.info("key timeout " + timeOut + ", from ip : " + NettyIpUtil.clientIp(ctx));
-                }
-                messageProducer.publish(new HotKeyEvent(model));
-            }
-        } else if (message.startsWith("{")) {
-            HotKeyModel model = FastJsonUtils.toBean(message, HotKeyModel.class);
+        List<HotKeyModel> models = FastJsonUtils.toList(message, HotKeyModel.class);
+        for (HotKeyModel model : models) {
+            //白名单key不处理
             if (WhiteListHolder.contains(model.getKey())) {
-                return;
+                continue;
             }
-            messageProducer.publish(new HotKeyEvent(model));
+            long timeOut = SystemClock.now() - model.getCreateTime();
+            if (timeOut > 1000) {
+                logger.info("key timeout " + timeOut + ", from ip : " + NettyIpUtil.clientIp(ctx));
+            }
+            keyProducer.push(model);
         }
 
     }
