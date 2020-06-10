@@ -4,6 +4,8 @@ import cn.hutool.core.date.SystemClock;
 import com.jd.platform.hotkey.common.model.BaseModel;
 import com.jd.platform.hotkey.worker.tool.InitConstant;
 import com.lmax.disruptor.WorkHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.LongAdder;
 
@@ -20,6 +22,8 @@ public abstract class AbsWorkConsumer<T extends BaseEvent> implements WorkHandle
     //过期的
     public static final LongAdder expireTotalCount = new LongAdder();
 
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
     public AbsWorkConsumer(int hashIndex) {
         this.hashIndex = hashIndex;
     }
@@ -33,6 +37,8 @@ public abstract class AbsWorkConsumer<T extends BaseEvent> implements WorkHandle
         //5秒前的过时消息就不处理了
         if (SystemClock.now() - model.getCreateTime() > InitConstant.timeOut) {
             expireTotalCount.increment();
+            logger.warn("this key timeout : " + model.getKey() + " createAt : " + model.getCreateTime() +
+                    " event at " +  SystemClock.now());
             if (InitConstant.openTimeOut) {
                 return;
             }
