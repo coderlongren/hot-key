@@ -1,3 +1,4 @@
+package com.jd.platform.hotkey.worker.tool;
 
 import java.util.function.Consumer;
 
