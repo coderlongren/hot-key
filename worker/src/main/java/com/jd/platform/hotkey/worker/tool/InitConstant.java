@@ -1,5 +1,7 @@
 package com.jd.platform.hotkey.worker.tool;
 
+import java.util.concurrent.atomic.LongAdder;
+
 /**
  * @author wuweifeng
  * @version 1.0
@@ -14,4 +16,10 @@ public class InitConstant {
     public static boolean openTimeOut;
 
     public static int threadCount;
+
+    public static final LongAdder expireTotalCount = new LongAdder();
+
+    public static final LongAdder totalDealCount = new LongAdder();
+
+    public static final LongAdder totalOfferCount = new LongAdder();
 }

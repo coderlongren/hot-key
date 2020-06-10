@@ -6,8 +6,7 @@ import com.jd.platform.hotkey.common.model.HotKeyMsg;
 import com.jd.platform.hotkey.common.model.typeenum.MessageType;
 import com.jd.platform.hotkey.common.tool.FastJsonUtils;
 import com.jd.platform.hotkey.common.tool.NettyIpUtil;
-import com.jd.platform.hotkey.worker.disruptor.MessageProducer;
-import com.jd.platform.hotkey.worker.disruptor.hotkey.HotKeyEvent;
+import com.jd.platform.hotkey.worker.keydispatcher.KeyProducer;
 import com.jd.platform.hotkey.worker.mq.IMqMessageReceiver;
 import com.jd.platform.hotkey.worker.netty.holder.WhiteListHolder;
 import io.netty.channel.ChannelHandlerContext;
@@ -29,10 +28,8 @@ import java.util.concurrent.atomic.AtomicLong;
 @Component
 @Order(3)
 public class HotKeyFilter implements INettyMsgFilter, IMqMessageReceiver {
-//    @Resource
-//    private KeyProducer keyProducer;
     @Resource
-    private MessageProducer<HotKeyEvent> messageProducer;
+    private KeyProducer keyProducer;
 
     public static AtomicLong totalReceiveKeyCount = new AtomicLong();
 
@@ -63,8 +60,7 @@ public class HotKeyFilter implements INettyMsgFilter, IMqMessageReceiver {
             if (WhiteListHolder.contains(model.getKey())) {
                 return;
             }
-//            keyProducer.push(model);
-            messageProducer.publish(new HotKeyEvent(model));
+            keyProducer.push(model);
             return;
         }
         //老版的用的单个HotKeyModel，新版用的数组
@@ -78,8 +74,7 @@ public class HotKeyFilter implements INettyMsgFilter, IMqMessageReceiver {
             if (timeOut > 1000) {
                 logger.info("key timeout " + timeOut + ", from ip : " + NettyIpUtil.clientIp(ctx));
             }
-//            keyProducer.push(model);
-            messageProducer.publish(new HotKeyEvent(model));
+            keyProducer.push(model);
         }
 
     }

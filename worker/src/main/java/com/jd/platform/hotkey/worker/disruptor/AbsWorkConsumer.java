@@ -5,7 +5,8 @@ import com.jd.platform.hotkey.common.model.BaseModel;
 import com.jd.platform.hotkey.worker.tool.InitConstant;
 import com.lmax.disruptor.WorkHandler;
 
-import java.util.concurrent.atomic.LongAdder;
+import static com.jd.platform.hotkey.worker.tool.InitConstant.expireTotalCount;
+import static com.jd.platform.hotkey.worker.tool.InitConstant.totalDealCount;
 
 /**
  * 各个消费者不重复消费
@@ -15,10 +16,6 @@ import java.util.concurrent.atomic.LongAdder;
 public abstract class AbsWorkConsumer<T extends BaseEvent> implements WorkHandler<T> {
 
     private int hashIndex;
-
-    public static final LongAdder totalDealCount = new LongAdder();
-    //过期的
-    public static final LongAdder expireTotalCount = new LongAdder();
 
     public AbsWorkConsumer(int hashIndex) {
         this.hashIndex = hashIndex;
