@@ -11,7 +11,6 @@ import com.jd.platform.hotkey.common.rule.KeyRule;
 import com.jd.platform.hotkey.common.tool.FastJsonUtils;
 import com.jd.platform.hotkey.common.tool.IpUtils;
 import com.jd.platform.hotkey.worker.cache.CaffeineCacheHolder;
-import com.jd.platform.hotkey.worker.disruptor.AbsWorkConsumer;
 import com.jd.platform.hotkey.worker.model.AppInfo;
 import com.jd.platform.hotkey.worker.model.TotalCount;
 import com.jd.platform.hotkey.worker.netty.filter.HotKeyFilter;
@@ -36,6 +35,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import static com.jd.platform.hotkey.worker.tool.InitConstant.*;
 
 /**
  * worker端对etcd相关的处理
@@ -160,9 +161,9 @@ public class EtcdStarter {
             configCenter.putAndGrant(ConfigConstant.caffeineSizePath + ip, FastJsonUtils.convertObjectToJSON(CaffeineCacheHolder.getSize()), 13);
 
             //上报每秒QPS（接收key数量、处理key数量）
-            String totalCount = FastJsonUtils.convertObjectToJSON(new TotalCount(HotKeyFilter.totalReceiveKeyCount.get(), AbsWorkConsumer.totalDealCount.longValue()));
+            String totalCount = FastJsonUtils.convertObjectToJSON(new TotalCount(HotKeyFilter.totalReceiveKeyCount.get(), totalDealCount.longValue()));
             configCenter.putAndGrant(ConfigConstant.totalReceiveKeyCount + ip, totalCount, 13);
-            logger.info(totalCount + " expireCount:" + AbsWorkConsumer.expireTotalCount);
+            logger.info(totalCount + " expireCount:" + expireTotalCount + " offerCount:" + totalOfferCount);
 //            configCenter.putAndGrant(ConfigConstant.bufferPoolPath + ip, MemoryTool.getBufferPool() + "", 10);
         } catch (Exception ex) {
             logger.error(ETCD_DOWN);
