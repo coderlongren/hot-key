@@ -50,9 +50,9 @@
                 </div>
                 <div class="form-group" >
                     <label class="control-label timeBut2">热点：</label>
-                    <input type="text" name="key" placeholder="key"class="form-control" style="width: 32%;float: left;margin-left: 1%">
+                    <input type="text" name="key" placeholder="key"class="form-control" style="width: 34%;float: left;margin-left: 1%">
 
-                    <label class="control-label timeBut2" style="margin-left: 8%">所属APP：</label>
+                    <label class="control-label timeBut2" style="margin-left: 9%">所属APP：</label>
                     <select name="appName" id="apps" class="form-control" style="width: 32%">
                     </select>
                 </div>
@@ -133,6 +133,11 @@ $(function(){
         forceParse: 0,
         minuteStep: 1           //用于构建小时视图。就是最小的视图是每1分钟可选一次。是以分钟为单位的
     });
+
+    let now = new Date();
+    $("#datetimepicker2").datetimepicker("setDate", now);
+    let pre5hours = now.setHours(now.getHours() - 5);
+    $("#datetimepicker1").datetimepicker("setDate", new Date(pre5hours));
 })
 
 function exportHot() {
