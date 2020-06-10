@@ -15,7 +15,7 @@ import java.util.concurrent.Executors;
  * @author wuweifeng wrote on 2019-12-10
  * @version 1.0
  */
-public class DisruptorEventModeBuilder<T extends BaseEvent> {
+public class DisruptorBuilder<T extends BaseEvent> {
     private int bufferSize;
     private EventHandler<T>[] eventHandlers;
     private WorkHandler<T>[] workHandlers;
@@ -39,7 +39,7 @@ public class DisruptorEventModeBuilder<T extends BaseEvent> {
     /**
      * 每个worker会重复消费
      */
-    public DisruptorEventModeBuilder<T> setEventHandlers(EventHandler<T>... eventHandlers) {
+    public DisruptorBuilder<T> setEventHandlers(EventHandler<T>... eventHandlers) {
         this.eventHandlers = eventHandlers;
         return this;
     }
@@ -47,17 +47,17 @@ public class DisruptorEventModeBuilder<T extends BaseEvent> {
     /**
      * 每个worker不会重复消费
      */
-    public DisruptorEventModeBuilder<T> setWorkerHandlers(WorkHandler<T>... workHandlers) {
+    public DisruptorBuilder<T> setWorkerHandlers(WorkHandler<T>... workHandlers) {
         this.workHandlers = workHandlers;
         return this;
     }
 
-    public DisruptorEventModeBuilder<T> setEventFactory(EventFactory<T> eventFactory) {
+    public DisruptorBuilder<T> setEventFactory(EventFactory<T> eventFactory) {
         this.eventFactory = eventFactory;
         return this;
     }
 
-    public DisruptorEventModeBuilder<T> setBufferSize(int bufferSize) {
+    public DisruptorBuilder<T> setBufferSize(int bufferSize) {
         this.bufferSize = bufferSize;
         return this;
     }

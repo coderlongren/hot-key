@@ -2,6 +2,10 @@ netty:
   port: ${netty-port:11111}
   heartBeat: ${heart-beat:10}
   timeOut: ${timeOut:5000}
+open:
+  timeout: ${openTimeOut:true}
+thread:
+  count: ${threadCount:0}
 disruptor:
   bufferSize: ${bufferSize:2} #必须是2的整数倍
 #etcd的地址，如有多个用逗号分隔

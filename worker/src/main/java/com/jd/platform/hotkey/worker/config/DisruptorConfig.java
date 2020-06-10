@@ -4,6 +4,8 @@ import com.jd.platform.hotkey.worker.disruptor.MessageProducer;
 import com.jd.platform.hotkey.worker.disruptor.ProducerFactory;
 import com.jd.platform.hotkey.worker.disruptor.hotkey.HotKeyEvent;
 import com.jd.platform.hotkey.worker.keylistener.IKeyListener;
+import com.jd.platform.hotkey.worker.tool.InitConstant;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,8 +20,19 @@ public class DisruptorConfig {
     @Resource
     private IKeyListener iKeyListener;
 
+    @Value("${open.timeout}")
+    private boolean openTimeOut;
+    @Value("${thread.count}")
+    private int threadCount;
+
     @Bean
     public MessageProducer<HotKeyEvent> messageProducer() {
+        InitConstant.openTimeOut = openTimeOut;
+        //将实际值赋给static变量
+        InitConstant.threadCount = threadCount;
+
         return ProducerFactory.createHotKeyProducer(iKeyListener);
     }
+
+
 }

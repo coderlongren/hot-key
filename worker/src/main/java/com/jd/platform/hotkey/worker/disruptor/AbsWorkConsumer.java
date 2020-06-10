@@ -33,7 +33,9 @@ public abstract class AbsWorkConsumer<T extends BaseEvent> implements WorkHandle
         //5秒前的过时消息就不处理了
         if (SystemClock.now() - model.getCreateTime() > InitConstant.timeOut) {
             expireTotalCount.increment();
-            return;
+            if (InitConstant.openTimeOut) {
+                return;
+            }
         }
         onNewEvent(t);
 

@@ -1,8 +1,7 @@
 package com.jd.platform.hotkey.worker.disruptor;
 
-import com.jd.platform.hotkey.common.tool.Constant;
-import com.jd.platform.hotkey.worker.disruptor.hotkey.HotKeyEventConsumer;
 import com.jd.platform.hotkey.worker.disruptor.hotkey.HotKeyEvent;
+import com.jd.platform.hotkey.worker.disruptor.hotkey.HotKeyEventConsumer;
 import com.jd.platform.hotkey.worker.disruptor.hotkey.HotKeyEventProducer;
 import com.jd.platform.hotkey.worker.keylistener.IKeyListener;
 import com.jd.platform.hotkey.worker.tool.CpuNum;
@@ -23,15 +22,17 @@ public class ProducerFactory {
      */
     public static MessageProducer<HotKeyEvent> createHotKeyProducer(IKeyListener iKeyListener) {
         int threadCount = CpuNum.workerCount();
-        //将实际值赋给static变量
-        Constant.Default_Threads = threadCount;
+        //如果手工指定了线程数，就用手工指定的
+        if (InitConstant.threadCount != 0) {
+            threadCount = InitConstant.threadCount;
+        }
 
         HotKeyEventConsumer[] array = new HotKeyEventConsumer[threadCount];
         for (int i = 0; i < threadCount; i++) {
             array[i] = new HotKeyEventConsumer(i);
             array[i].setKeyListener(iKeyListener);
         }
-        DisruptorEventModeBuilder<HotKeyEvent> builder = new DisruptorEventModeBuilder<>();
+        DisruptorBuilder<HotKeyEvent> builder = new DisruptorBuilder<>();
         Disruptor<HotKeyEvent> disruptor = builder
                 .setBufferSize(InitConstant.bufferSize * 1024 * 1024)
                 .setEventFactory(HotKeyEvent::new)
