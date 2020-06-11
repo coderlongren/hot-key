@@ -48,6 +48,12 @@
 
 该开源项目战略意义重大，要经历百万级并发，参与京东开源中间件项目建设，一直在等你。
 
+#### 强悍的性能表现
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0611/152200_331d5991_303698.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0611/152336_78597937_303698.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0611/152249_4ac01178_303698.png "屏幕截图.png")
+
+
 #### 安装教程
 
 1.  xxxx
