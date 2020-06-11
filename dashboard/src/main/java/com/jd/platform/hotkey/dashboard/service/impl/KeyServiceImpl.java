@@ -1,6 +1,7 @@
 package com.jd.platform.hotkey.dashboard.service.impl;
 
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ibm.etcd.api.Event;
@@ -11,8 +12,6 @@ import com.jd.platform.hotkey.dashboard.common.domain.req.ChartReq;
 import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
 import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
 import com.jd.platform.hotkey.dashboard.common.domain.vo.HotKeyLineChartVo;
-import com.jd.platform.hotkey.dashboard.common.eunm.ResultEnum;
-import com.jd.platform.hotkey.dashboard.common.ex.BizException;
 import com.jd.platform.hotkey.dashboard.mapper.KeyRecordMapper;
 import com.jd.platform.hotkey.dashboard.mapper.KeyTimelyMapper;
 import com.jd.platform.hotkey.dashboard.mapper.ReceiveCountMapper;
@@ -54,82 +53,45 @@ public class KeyServiceImpl implements KeyService {
     @Resource
     private StatisticsMapper statisticsMapper;
 
-
-    public HotKeyLineChartVo ruleLineChart2(SearchReq req) {
-        int type = req.getType();
-        if(req.getEndTime() == null){
-            req.setEndTime(new Date());
-        }
-        switch (type){
-            case 1:
-                req.setStartTime(DateUtil.preMinus(30));
-                List<Statistics> list = statisticsList();
-                System.out.println("30 min");
-                break;
-            case 2:
-                req.setStartTime(DateUtil.preDays(1));
-                System.out.println("24 hours");
-                break;
-            case 3:
-                req.setStartTime(DateUtil.preDays(7));
-                System.out.println("7 days");
-                break;
-            default:
-                System.out.println("=============");
-        }
-        return null;
+    public static void main(String[] args) {
+        HotKeyLineChartVo result = new KeyServiceImpl().ruleLineChart(new SearchReq());
+        System.out.println(result);
     }
 
 
     @Override
     public HotKeyLineChartVo ruleLineChart(SearchReq req) {
-        int type = req.getType();
+        System.out.println("req-->   "+JSON.toJSONString(req));
+        int type = 1;
         if(req.getEndTime() == null){
             req.setEndTime(new Date());
         }
         switch (type){
             case 1:
                 req.setStartTime(DateUtil.preMinus(30));
-                List<Statistics> list = statisticsList();
-                Map<String, int[]> map = new HashMap<>(10);
-                Map<String, List<Statistics>> listMap = list.stream().collect(Collectors.groupingBy(Statistics::getKeyName));
-                for (Map.Entry<String, List<Statistics>> m : listMap.entrySet()) {
-                    int start = 1;
-                    map.put(m.getKey(),new int[30]);
-                    int[] data = map.get(m.getKey());
-                    int tmp = 0;
-                    for (int i = 0; i < 30; i++) {
-                        Statistics st;
-                        try {
-                            st = m.getValue().get(tmp);
-                            if(String.valueOf(start).endsWith("24")){ start = start + 77; }
-                            if(start != st.getHours()){
-                                data[i] = 0;
-                            }else{
-                                tmp ++;
-                                data[i] = st.getCount();
-                            }
-                            start++;
-                        }catch (Exception e){
-                            data[i] = 0;
-                        }
-                    }
-                }
-
-                System.out.println("30 min");
-                break;
+                LocalDateTime startTime = DateUtil.strToLdt("2006082355",DateUtil.PATTERN_MINUS);
+                List<Statistics> list = statisticsList(req.getRules());
+                HotKeyLineChartVo vo = CommonUtil.assembleData(list, startTime, 30,1);
+                System.out.println(JSON.toJSONString(vo));
+                return vo;
             case 2:
                 req.setStartTime(DateUtil.preDays(1));
-                System.out.println("24 hours");
-                break;
+                LocalDateTime startTime2 = DateUtil.strToLdt("20063022",DateUtil.PATTERN_HOUR);
+                List<Statistics> list2 = statisticsList1();
+                HotKeyLineChartVo vo2 = CommonUtil.assembleData(list2, startTime2, 24,2);
+                System.out.println(JSON.toJSONString(vo2));
+                return vo2;
             case 3:
                 req.setStartTime(DateUtil.preDays(7));
-                System.out.println("7 days");
-                break;
+                List<Statistics> list3 = statisticsListDay();
+                System.out.println(JSON.toJSONString(list3));
+                LocalDateTime startTime3 = DateUtil.strToLdt("20062800",DateUtil.PATTERN_HOUR);
+                HotKeyLineChartVo vo3 = CommonUtil.assembleData(list3, startTime3, 28,2);
+                return vo3;
             default:
                 System.out.println("=============");
         }
-        return null;
+        return new HotKeyLineChartVo(null,null);
     }
 
 
@@ -317,32 +279,75 @@ public class KeyServiceImpl implements KeyService {
     }
 
 
-    private List<Statistics> statisticsList(){
+    private static List<Statistics> statisticsList(String strings){
         Random rd = new Random();
         List<Statistics> list = new ArrayList<>();
-        for (int i = 0; i < 30 ; i++) {
-            Statistics st = new Statistics();
-            st.setApp("rule1");
-            st.setKeyName("key1");
-            st.setCount(rd.nextInt(100));
-            st.setBizType(1);
-            st.setMinutes(2006052140+i);
-            if(String.valueOf(st.getMinutes()).endsWith("60")){
-                st.setMinutes(st.getMinutes()+1);
+
+        if(strings.contains("428k2")){
+            return list;
+        }
+        System.out.println("strings-->    "+JSON.toJSONString(strings));
+
+        if(strings.contains("k21") && !strings.contains("k22") ){
+            System.out.println("strings.contains(21)-->    "+strings.contains("k21"));
+
+            for (int i = 0; i < 30 ; i++) {
+                if(i == 12 || i ==13){
+                }else{
+                    Statistics st = new Statistics();
+                    st.setApp("rule1");
+                    st.setKeyName("key1");
+                    st.setCount(rd.nextInt(100));
+                    st.setBizType(1);
+                    //   LocalDateTime ldf = DateUtil.strToLdt("2006082355");
+                    //    System.out.println(ldf.toString()+"  -   "+DateUtil.strToLdt("2006082355"));
+                    int time = DateUtil.reviseTime(DateUtil.strToLdt("2006082355",DateUtil.PATTERN_MINUS), i, 1);
+                    //    System.out.println(time);
+                    st.setMinutes(time);
+                    list.add(st);
+                }
             }
-            list.add(st);
+            return list;
         }
-        List<Statistics> list2 = new ArrayList<>();
-        for (int i = 0; i < 30 ; i++) {
-            Statistics st2 = new Statistics();
-            st2.setApp("rule2");
-            st2.setKeyName("key2");
-            st2.setCount(rd.nextInt(100));
-            st2.setBizType(1);
-            st2.setMinutes(2006052140+i);
-            list2.add(st2);
+
+
+        if(strings.contains("k21") && strings.contains("k22")){
+            System.out.println("strings.contains(21 + 22)-->    "+strings.contains("k21"));
+
+            for (int i = 0; i < 30 ; i++) {
+                if(i == 12 || i ==13){
+                }else{
+                    Statistics st = new Statistics();
+                    st.setApp("rule1");
+                    st.setKeyName("key1");
+                    st.setCount(rd.nextInt(100));
+                    st.setBizType(1);
+                    //   LocalDateTime ldf = DateUtil.strToLdt("2006082355");
+                    //    System.out.println(ldf.toString()+"  -   "+DateUtil.strToLdt("2006082355"));
+                    int time = DateUtil.reviseTime(DateUtil.strToLdt("2006082355",DateUtil.PATTERN_MINUS), i, 1);
+                    //    System.out.println(time);
+                    st.setMinutes(time);
+                    list.add(st);
+                }
+            }
+            List<Statistics> list2 = new ArrayList<>();
+            for (int i = 0; i < 30 ; i++) {
+                if(i == 0 || i == 1  || i == 18 || i == 19 || i == 25){
+
+                }else{
+                    Statistics st2 = new Statistics();
+                    st2.setApp("rule2");
+                    st2.setKeyName("key2");
+                    st2.setCount(rd.nextInt(100));
+                    st2.setBizType(1);
+                    st2.setMinutes(DateUtil.reviseTime(DateUtil.strToLdt("2006082355", DateUtil.PATTERN_MINUS),i,1));
+                    list2.add(st2);
+                }
+            }
+            list.addAll(list2);
+            return list;
         }
-        list.addAll(list2);
+
         return list;
     }
 
@@ -353,13 +358,32 @@ public class KeyServiceImpl implements KeyService {
             Statistics st = new Statistics();
             st.setApp("rule1");
             st.setKeyName("key1");
-            st.setCount(rd.nextInt(100));
+            st.setCount(rd.nextInt(1000));
             st.setBizType(1);
-            st.setHours(20060500+i);
+            st.setHours(DateUtil.reviseTime(DateUtil.strToLdt("20063022",DateUtil.PATTERN_HOUR),i,2));
+            list.add(st);
         }
         return list;
     }
 
+
+    private List<Statistics> statisticsListDay(){
+        Random rd = new Random();
+        List<Statistics> list = new ArrayList<>();
+        for (int j = 0; j < 7; j++) {
+            for (int i = 0; i < 24 ; i++) {
+                Statistics st = new Statistics();
+                st.setApp("rule");
+                st.setKeyName("key");
+                st.setCount(rd.nextInt(5000));
+                st.setBizType(1);
+                st.setDays(DateUtil.reviseTime(DateUtil.strToLdt("20062800",DateUtil.PATTERN_HOUR),j,3));
+                st.setHours(DateUtil.reviseTime(DateUtil.strToLdt("20062800",DateUtil.PATTERN_HOUR).plusDays(j), i,2));
+                list.add(st);
+            }
+        }
+        return list;
+    }
 
 }
 

@@ -495,8 +495,8 @@ modal_status = {
 function getCookie(cname){
     let token = window.localStorage.getItem('token');
     let time = window.localStorage.getItem('time');
-    console.log("token--->   "+token);
-    console.log("存入的时间--->   "+time+"  当前的时间--->   "+Date.now());
+    // console.log("token--->   "+token);
+    // console.log("存入的时间--->   "+time+"  当前的时间--->   "+Date.now());
     if(token != null && token !==""){
         let time = window.localStorage.getItem('time');
         if(Date.now()-time>7*24*360000){

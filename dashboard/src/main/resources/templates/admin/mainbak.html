@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+>
+
+
+<body id="listbody" th:fragment="main">
+
+<!-- 右边内容 -->
+<div class="wrap-fluid">
+    <div class="container-fluid paper-wrap bevel tlbr">
+        <div style="margin-top: 3%;margin-left: 20%;"> hotKey </div>
+        <div id="ww" style="width: 600px;height:400px;margin-left: 5%"></div>
+
+    </div>
+</div>
+
+</div>
+<script th:src="@{/static/admin/assets/js/echarts.min.js}" type="text/javascript"></script>
+<script th:src="@{/static/admin/assets/js/jquery.min.js}" type="text/javascript"></script>
+<script th:src="@{/static/admin/assets/js/bootstrap/js/base_list.js}" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+  //  $(function(){
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('ww'));
+        // 指定图表的配置项和数据
+        var option = {
+            xAxis: {
+                type: 'category',
+                data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+            },
+            yAxis: {
+                type: 'value'
+            },
+            tooltip: {
+                trigger: 'axis'   // axis   item   none三个值
+            },
+            series: [
+                {
+                    name: 'key1',
+                    data: [300, 265, 350, 874, 299, 500, 700],
+                    type: 'line'
+                },
+                {
+                    name: 'key2',
+                    data: [820, 932, 901, 934, 1290, 1330, 1320],
+                    type: 'line'
+                },
+                {
+                    name: 'key3',
+                    data: [999, 888, 666, 333, 222, 111, 555],
+                    type: 'line'
+                }
+                ]
+        };
+        //加载数据
+       // loadData(option);
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+//})
+
+    function loadData(option){
+        $.ajax({
+            type : "post",
+            async : false, //同步执行
+            url : "/key/lineChart",
+            data : {},
+            headers: {
+                "Authorization":getCookie("token")
+            },
+            dataType : "json", //返回数据形式为json
+            success : function(result) {
+                if (result) {
+                    //初始化option.xAxis[0]中的data
+                    console.log(result.xAxis);
+                    option.xAxis.data = result.xAxis;
+                    //初始化option.series[0]中的data
+                    option.series=[];
+                    console.log(result.series);
+                    var i = 0;
+                    for(let key in result.series){
+                        console.log(key);
+                        console.log(result.series[key]);
+                        i++;
+                        let seriesData = {"name":key, "data": result.series[key],"type":"line"};
+                        option.series.push(seriesData);
+                        console.log(option.series);
+                    }
+
+                }
+            },
+            error: function(result){  //加载失败时执行
+                let token = getCookie("token");
+                if(result.status == 500 && ( token == "undefined" || token =="")){
+                    top.location.href = '/user/login';
+                }
+                console.info("加载数据失败");
+            }
+        });
+    }
+</script>
+
+</body>
+
+</html>

@@ -6,6 +6,7 @@ import com.jd.platform.hotkey.dashboard.util.DateUtil;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @ProjectName: hotkey
@@ -29,6 +30,8 @@ public class SearchReq implements Serializable {
     private String appName;
 
     private String key;
+
+    private String rules;
 
     public SearchReq() {
     }
@@ -81,9 +84,16 @@ public class SearchReq implements Serializable {
         this.key = key;
     }
 
+    public String getRules() {
+        return rules;
+    }
+
+    public void setRules(String rules) {
+        this.rules = rules;
+    }
 
     public SearchReq(LocalDateTime st) {
-        this.startTime = DateUtil.localDateTimeToDate(st);
+        this.startTime = DateUtil.ldtToDate(st);
         this.endTime = new Date();
     }
 }

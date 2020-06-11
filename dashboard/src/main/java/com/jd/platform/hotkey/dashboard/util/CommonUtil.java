@@ -1,32 +1,40 @@
 package com.jd.platform.hotkey.dashboard.util;
 
+import com.alibaba.fastjson.JSON;
+import com.jd.platform.hotkey.dashboard.common.domain.vo.HotKeyLineChartVo;
+import com.jd.platform.hotkey.dashboard.model.Statistics;
+
 import java.io.UnsupportedEncodingException;
-import java.util.Base64;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class CommonUtil {
 
 	/**
 	 * 获取父级Key
+	 *
 	 * @param key key
 	 * @return string
 	 */
-	public static String parentK(String key){
-		if(key.endsWith("/")){
-			key = key.substring(0,key.length()-1);
+	public static String parentK(String key) {
+		if (key.endsWith("/")) {
+			key = key.substring(0, key.length() - 1);
 		}
 		int index = key.lastIndexOf("/");
-		return key.substring(0,index+1);
+		return key.substring(0, index + 1);
 	}
 
 	/**
 	 * 获取AppName
+	 *
 	 * @param k k
 	 * @return str
 	 */
-	public static String appName(String k){
+	public static String appName(String k) {
 		String[] arr = k.split("/");
-		for (int i = 0; i < arr.length ; i++) {
-			if(i == 3){
+		for (int i = 0; i < arr.length; i++) {
+			if (i == 3) {
 				return arr[i];
 			}
 		}
@@ -34,12 +42,10 @@ public class CommonUtil {
 	}
 
 
-
-	public static String keyName(String k){
+	public static String keyName(String k) {
 		int index = k.lastIndexOf("/");
-		return k.substring(index+1);
+		return k.substring(index + 1);
 	}
-
 
 
 	public static String encoder(String text) {
@@ -53,13 +59,81 @@ public class CommonUtil {
 
 
 	public static String decoder(String text) {
-		byte[] bytes=Base64.getDecoder().decode(text);
+		byte[] bytes = Base64.getDecoder().decode(text);
 		try {
-			return new String(bytes,"utf-8");
+			return new String(bytes, "utf-8");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 		return "";
+	}
+
+
+	/**
+	 * 拼装数据
+	 * @param list list-data
+	 * @param startTime 开始时间
+	 * @param size 格子数
+	 * @param type 类型 1分钟 2小时
+	 * @return vo
+	 */
+	public static HotKeyLineChartVo assembleData(List<Statistics> list, LocalDateTime startTime, int size, int type) {
+		Set<String> set = new TreeSet<>();
+		boolean isHour = type == 1;
+		boolean sevenDays = size == 28;
+		String suffix = isHour ? "60" : "24";
+		String pattern = isHour ? DateUtil.PATTERN_MINUS : DateUtil.PATTERN_HOUR;
+		Map<String, int[]> map = new HashMap<>(10);
+		Map<String, List<Statistics>> listMap = listGroup(list, sevenDays);
+		for (Map.Entry<String, List<Statistics>> m : listMap.entrySet()) {
+			int start = DateUtil.reviseTime(startTime, 0, type);
+			map.put(m.getKey(), new int[size]);
+			int[] data = map.get(m.getKey());
+			int tmp = 0;
+			for (int i = 0; i < size; i++) {
+				if (String.valueOf(start).endsWith(suffix)) {
+					LocalDateTime tmpTime = DateUtil.strToLdt((start - 1) + "", pattern);
+					start = DateUtil.reviseTime(tmpTime, 1, type);
+				}
+				set.add(DateUtil.strToLdt(start + "", pattern).toString().replace("T", " "));
+				Statistics st = m.getValue().get(tmp);
+				int val = isHour ? st.getMinutes() : st.getHours();
+				if (start != val) {
+					data[i] = 0;
+				} else {
+					tmp++;
+					data[i] = st.getCount();
+				}
+				if (sevenDays) {
+					start += 6;
+				} else {
+					start++;
+				}
+
+			}
+		}
+		System.out.println("-------");
+
+		System.out.println(JSON.toJSONString(new HotKeyLineChartVo(new ArrayList<>(set), map)));
+		return new HotKeyLineChartVo(new ArrayList<>(set), map);
+	}
+
+
+	/**
+	 * 分组
+	 * @param list list
+	 * @param sevenDays 是否7天
+	 * @return map
+	 */
+	private static Map<String, List<Statistics>> listGroup(List<Statistics> list, boolean sevenDays){
+		return  list.stream().filter(x -> {
+			if(sevenDays){
+				String hs = String.valueOf(x.getHours());
+				return Integer.parseInt(hs.substring(hs.length() - 2)) % 6 == 0;
+			}else{
+				return true;
+			}
+		}).collect(Collectors.groupingBy(Statistics::getKeyName));
 	}
 
 

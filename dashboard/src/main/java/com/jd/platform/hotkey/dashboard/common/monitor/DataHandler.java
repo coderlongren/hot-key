@@ -136,7 +136,7 @@ public class DataHandler {
         try {
             // 每小时 统计一次record 表 结果记录到统计表
             LocalDateTime now = LocalDateTime.now();
-            Date nowTime = DateUtil.localDateTimeToDate(now);
+            Date nowTime = DateUtil.ldtToDate(now);
             int day = DateUtil.nowDay(now);
             int hour = DateUtil.nowHour(now);
 
@@ -165,7 +165,7 @@ public class DataHandler {
         try {
             // 每分钟小时 统计一次record 表 结果记录到统计表
             LocalDateTime now = LocalDateTime.now();
-            Date nowTime = DateUtil.localDateTimeToDate(now);
+            Date nowTime = DateUtil.ldtToDate(now);
             int day = DateUtil.nowDay(now);
             int hour = DateUtil.nowHour(now);
 
