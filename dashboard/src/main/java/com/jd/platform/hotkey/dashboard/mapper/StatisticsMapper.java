@@ -18,7 +18,14 @@ public interface StatisticsMapper {
      * 查看
      * @return list
      */
-    List<Statistics> listStatistics(ChartReq chartReq);
+    List<Statistics> listStatistics(SearchReq req);
+
+
+    /**
+     * 查看
+     * @return list
+     */
+    List<Statistics> listOrderByTime(SearchReq req);
 
     /**
      * records
@@ -33,4 +40,10 @@ public interface StatisticsMapper {
      * @return list
      */
     List<Statistics> sumStatistics(SearchReq req);
+
+    /**
+     * 清理
+     * @param type type
+     */
+    void clear(int type);
 }

@@ -31,8 +31,6 @@ public class SearchReq implements Serializable {
 
     private String key;
 
-    private String rules;
-
     public SearchReq() {
     }
 
@@ -82,14 +80,6 @@ public class SearchReq implements Serializable {
 
     public void setKey(String key) {
         this.key = key;
-    }
-
-    public String getRules() {
-        return rules;
-    }
-
-    public void setRules(String rules) {
-        this.rules = rules;
     }
 
     public SearchReq(LocalDateTime st) {

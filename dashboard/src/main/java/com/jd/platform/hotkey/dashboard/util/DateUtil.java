@@ -80,8 +80,12 @@ public class DateUtil {
     public static int nowDay(LocalDateTime now){ return Integer.parseInt(now.format(FORMAT_DAY));}
 
 
-    public static int preHours(LocalDateTime now, int hours){
-        return Integer.parseInt(now.minusHours(hours).format(FORMAT_HOUR));
+    public static int preHoursInt(int hours){
+        return Integer.parseInt(LocalDateTime.now().minusHours(hours).format(FORMAT_HOUR));
+    }
+
+    public static Date preHours(int hours){
+        return ldtToDate(LocalDateTime.now().minusHours(hours));
     }
 
     public static Date preTime(int hours){

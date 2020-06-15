@@ -101,6 +101,82 @@
     }
 </script>
 
+<!--
+       <div id="mainRules" style="margin-top: 2%;background-color: aliceblue;width: 90%;height:20%;margin-left: 3%">
+                </div>
+
+function ckRule(doc){
+let rule = $(doc).attr("rule");
+let color = $(doc).attr("color");
+let ckStatus = $(doc).attr("ckStatus");
+if(ckStatus == 0){
+globalRules.push(rule);
+$(doc).attr("ckStatus",1);
+}else{
+globalRules.forEach(function(item, index, arr) {
+if(item == rule) {
+arr.splice(index, 1);
+}
+});
+$(doc).attr("ckStatus",0);
+}
+let st = $("#datetimepicker1").val();
+let et = $("#datetimepicker2").val();
+let type = $("#type").val();
+let param = {"startTime":st,"endTime":et,"type":type};
+loadData(option,color,param);
+myChart.setOption(option);
+}
+
+
+
+            let colo =  '#'+(function(h){
+                    return new Array(7-h.length).join("0")+h
+                })((Math.random()*0x1000000<<0).toString(16))
+                let html = '<div style="float: left;width: 20%; margin-top: 3%" ' +
+                    ' rule ="'+data[i]+'"   color ="'+colo+'" ckStatus = 0  onclick="ckRule(this)">' +
+                    '<span style="margin-left: 8%;font-size: 25px;float: left">' + data[i] + '</span>' +
+                    '<span style="display: block; margin-left:40%; height:17px;' +
+                    ' border-bottom:2px solid '+colo+';width:90px;margin-block-end:7px "></span></div>';
+               // $("#mainRules").append(html);
+                ruleColorMap.set(data[i],colo);
+
+
+   let globalRules = [];
+    let ruleColorMap = new Map();
+
+    $.ajax({
+        cache : true,
+        type : "POST",
+        url : "/rule/listRules",
+        headers: {
+            "Authorization":getCookie("token")
+        },
+        async : false,
+        error : function() {
+            $.modal.alertError("系统错误");
+        },
+        success : function(data) {
+            console.log(data)
+            for (let i = 0; i < data.length; i++) {
+                let colo =  '#'+(function(h){
+                    return new Array(7-h.length).join("0")+h
+                })((Math.random()*0x1000000<<0).toString(16))
+                let html = '<div style="float: left;width: 20%; margin-top: 3%" ' +
+                    ' rule ="'+data[i]+'"   color ="'+colo+'" ckStatus = 0  onclick="ckRule(this)">' +
+                    '<span style="margin-left: 8%;font-size: 25px;float: left">' + data[i] + '</span>' +
+                    '<span style="display: block; margin-left:40%; height:17px;' +
+                    ' border-bottom:2px solid '+colo+';width:90px;margin-block-end:7px "></span></div>';
+               // $("#mainRules").append(html);
+                ruleColorMap.set(data[i],colo);
+            }
+        }
+    });
+
+
+-->
+
+
 </body>
 
 </html>

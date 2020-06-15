@@ -80,11 +80,11 @@ public class CommonUtil {
 	public static HotKeyLineChartVo assembleData(List<Statistics> list, LocalDateTime startTime, int size, int type) {
 		Set<String> set = new TreeSet<>();
 		boolean isHour = type == 1;
-		boolean sevenDays = size == 28;
 		String suffix = isHour ? "60" : "24";
 		String pattern = isHour ? DateUtil.PATTERN_MINUS : DateUtil.PATTERN_HOUR;
 		Map<String, int[]> map = new HashMap<>(10);
-		Map<String, List<Statistics>> listMap = listGroup(list, sevenDays);
+		Map<String, List<Statistics>> listMap = listGroup(list);
+
 		for (Map.Entry<String, List<Statistics>> m : listMap.entrySet()) {
 			int start = DateUtil.reviseTime(startTime, 0, type);
 			map.put(m.getKey(), new int[size]);
@@ -98,22 +98,16 @@ public class CommonUtil {
 				set.add(DateUtil.strToLdt(start + "", pattern).toString().replace("T", " "));
 				Statistics st = m.getValue().get(tmp);
 				int val = isHour ? st.getMinutes() : st.getHours();
+				System.out.println("start-->  "+start+"     val---> "+val+"   tmp---> "+tmp);
 				if (start != val) {
 					data[i] = 0;
 				} else {
 					tmp++;
 					data[i] = st.getCount();
 				}
-				if (sevenDays) {
-					start += 6;
-				} else {
-					start++;
-				}
-
+				start++;
 			}
 		}
-		System.out.println("-------");
-
 		System.out.println(JSON.toJSONString(new HotKeyLineChartVo(new ArrayList<>(set), map)));
 		return new HotKeyLineChartVo(new ArrayList<>(set), map);
 	}
@@ -122,18 +116,10 @@ public class CommonUtil {
 	/**
 	 * 分组
 	 * @param list list
-	 * @param sevenDays 是否7天
 	 * @return map
 	 */
-	private static Map<String, List<Statistics>> listGroup(List<Statistics> list, boolean sevenDays){
-		return  list.stream().filter(x -> {
-			if(sevenDays){
-				String hs = String.valueOf(x.getHours());
-				return Integer.parseInt(hs.substring(hs.length() - 2)) % 6 == 0;
-			}else{
-				return true;
-			}
-		}).collect(Collectors.groupingBy(Statistics::getKeyName));
+	private static Map<String, List<Statistics>> listGroup(List<Statistics> list){
+		return  list.stream().collect(Collectors.groupingBy(Statistics::getKeyName));
 	}
 
 
