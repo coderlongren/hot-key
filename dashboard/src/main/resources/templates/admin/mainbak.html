@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+>
+
+
+<body id="listbody" th:fragment="main">
+
+<!-- 右边内容 -->
+<div class="wrap-fluid">
+    <div class="container-fluid paper-wrap bevel tlbr">
+        <div style="margin-top: 3%;margin-left: 20%;"> hotKey </div>
+        <div id="ww" style="width: 600px;height:400px;margin-left: 5%"></div>
+
+    </div>
+</div>
+
+</div>
+<script th:src="@{/static/admin/assets/js/echarts.min.js}" type="text/javascript"></script>
+<script th:src="@{/static/admin/assets/js/jquery.min.js}" type="text/javascript"></script>
+<script th:src="@{/static/admin/assets/js/bootstrap/js/base_list.js}" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+  //  $(function(){
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('ww'));
+        // 指定图表的配置项和数据
+        var option = {
+            xAxis: {
+                type: 'category',
+                data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+            },
+            yAxis: {
+                type: 'value'
+            },
+            tooltip: {
+                trigger: 'axis'   // axis   item   none三个值
+            },
+            series: [
+                {
+                    name: 'key1',
+                    data: [300, 265, 350, 874, 299, 500, 700],
+                    type: 'line'
+                },
+                {
+                    name: 'key2',
+                    data: [820, 932, 901, 934, 1290, 1330, 1320],
+                    type: 'line'
+                },
+                {
+                    name: 'key3',
+                    data: [999, 888, 666, 333, 222, 111, 555],
+                    type: 'line'
+                }
+                ]
+        };
+        //加载数据
+       // loadData(option);
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+//})
+
+    function loadData(option){
+        $.ajax({
+            type : "post",
+            async : false, //同步执行
+            url : "/key/lineChart",
+            data : {},
+            headers: {
+                "Authorization":getCookie("token")
+            },
+            dataType : "json", //返回数据形式为json
+            success : function(result) {
+                if (result) {
+                    //初始化option.xAxis[0]中的data
+                    console.log(result.xAxis);
+                    option.xAxis.data = result.xAxis;
+                    //初始化option.series[0]中的data
+                    option.series=[];
+                    console.log(result.series);
+                    var i = 0;
+                    for(let key in result.series){
+                        console.log(key);
+                        console.log(result.series[key]);
+                        i++;
+                        let seriesData = {"name":key, "data": result.series[key],"type":"line"};
+                        option.series.push(seriesData);
+                        console.log(option.series);
+                    }
+
+                }
+            },
+            error: function(result){  //加载失败时执行
+                let token = getCookie("token");
+                if(result.status == 500 && ( token == "undefined" || token =="")){
+                    top.location.href = '/user/login';
+                }
+                console.info("加载数据失败");
+            }
+        });
+    }
+</script>
+
+<!--
+       <div id="mainRules" style="margin-top: 2%;background-color: aliceblue;width: 90%;height:20%;margin-left: 3%">
+                </div>
+
+function ckRule(doc){
+let rule = $(doc).attr("rule");
+let color = $(doc).attr("color");
+let ckStatus = $(doc).attr("ckStatus");
+if(ckStatus == 0){
+globalRules.push(rule);
+$(doc).attr("ckStatus",1);
+}else{
+globalRules.forEach(function(item, index, arr) {
+if(item == rule) {
+arr.splice(index, 1);
+}
+});
+$(doc).attr("ckStatus",0);
+}
+let st = $("#datetimepicker1").val();
+let et = $("#datetimepicker2").val();
+let type = $("#type").val();
+let param = {"startTime":st,"endTime":et,"type":type};
+loadData(option,color,param);
+myChart.setOption(option);
+}
+
+
+
+            let colo =  '#'+(function(h){
+                    return new Array(7-h.length).join("0")+h
+                })((Math.random()*0x1000000<<0).toString(16))
+                let html = '<div style="float: left;width: 20%; margin-top: 3%" ' +
+                    ' rule ="'+data[i]+'"   color ="'+colo+'" ckStatus = 0  onclick="ckRule(this)">' +
+                    '<span style="margin-left: 8%;font-size: 25px;float: left">' + data[i] + '</span>' +
+                    '<span style="display: block; margin-left:40%; height:17px;' +
+                    ' border-bottom:2px solid '+colo+';width:90px;margin-block-end:7px "></span></div>';
+               // $("#mainRules").append(html);
+                ruleColorMap.set(data[i],colo);
+
+
+   let globalRules = [];
+    let ruleColorMap = new Map();
+
+    $.ajax({
+        cache : true,
+        type : "POST",
+        url : "/rule/listRules",
+        headers: {
+            "Authorization":getCookie("token")
+        },
+        async : false,
+        error : function() {
+            $.modal.alertError("系统错误");
+        },
+        success : function(data) {
+            console.log(data)
+            for (let i = 0; i < data.length; i++) {
+                let colo =  '#'+(function(h){
+                    return new Array(7-h.length).join("0")+h
+                })((Math.random()*0x1000000<<0).toString(16))
+                let html = '<div style="float: left;width: 20%; margin-top: 3%" ' +
+                    ' rule ="'+data[i]+'"   color ="'+colo+'" ckStatus = 0  onclick="ckRule(this)">' +
+                    '<span style="margin-left: 8%;font-size: 25px;float: left">' + data[i] + '</span>' +
+                    '<span style="display: block; margin-left:40%; height:17px;' +
+                    ' border-bottom:2px solid '+colo+';width:90px;margin-block-end:7px "></span></div>';
+               // $("#mainRules").append(html);
+                ruleColorMap.set(data[i],colo);
+            }
+        }
+    });
+
+
+-->
+
+
+</body>
+
+</html>

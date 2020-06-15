@@ -100,7 +100,6 @@ public class RuleServiceImpl implements RuleService {
         List<KeyValue> keyValues = configCenter.getPrefix(prefix);
         List<Rules> rules = new ArrayList<>();
         for (KeyValue kv : keyValues) {
-
             String v = kv.getValue().toStringUtf8();
             if(StringUtil.isEmpty(v)){
                 continue;
@@ -128,5 +127,24 @@ public class RuleServiceImpl implements RuleService {
 //                rules.getUpdateUser(), app, SystemClock.nowDate()));
         configCenter.put(ConfigConstant.rulePath + app, rules.getRules());
         return 1;
+    }
+
+    @Override
+    public List<String> listRules(String app) {
+        List<KeyValue> keyValues = configCenter.getPrefix(ConfigConstant.rulePath);
+        List<String> rules = new ArrayList<>();
+        for (KeyValue kv : keyValues) {
+            String v = kv.getValue().toStringUtf8();
+            if(StringUtil.isEmpty(v)){
+                continue;
+            }
+            String key = kv.getKey().toStringUtf8();
+            String appKey = key.replace(ConfigConstant.rulePath,"");
+            List<Rule> rs = JSON.parseArray(v, Rule.class);
+            for (Rule r : rs) {
+                rules.add(r.getKey());
+            }
+        }
+        return rules;
     }
 }

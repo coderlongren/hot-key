@@ -14,9 +14,28 @@
   </resultMap>
 
 
-  <select id="listStatistics" resultMap="BaseResultMap" >
+  <select id="listStatistics" resultMap="BaseResultMap" parameterType="com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq">
     select id, key_name, count, app, days, hours, minutes, biz_type, uuid, create_time
-    from hk_statistics order by count desc
+    from hk_statistics
+    where 1=1
+    <if test="startTime != null">
+      <![CDATA[ and create_time >= #{startTime} and create_time < #{endTime}]]>
+    </if>
+    order by count desc
+  </select>
+
+
+  <select id="listOrderByTime" resultMap="BaseResultMap" parameterType="com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq">
+    select id, key_name, count, app, days, hours, minutes, biz_type, uuid, create_time
+    from hk_statistics
+    where 1=1
+    <if test="type != null">
+     and biz_type = #{type}
+    </if>
+    <if test="startTime != null">
+      <![CDATA[ and create_time >= #{startTime} and create_time < #{endTime}]]>
+    </if>
+    order by id
   </select>
 
 
@@ -53,4 +72,10 @@
 
 
 
+
+  <select id="clear">
+    delete
+    from hk_statistics
+    where biz_type = #{type}
+  </select>
 </mapper>

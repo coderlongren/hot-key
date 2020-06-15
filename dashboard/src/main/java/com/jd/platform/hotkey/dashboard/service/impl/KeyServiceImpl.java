@@ -1,6 +1,7 @@
 package com.jd.platform.hotkey.dashboard.service.impl;
 
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ibm.etcd.api.Event;
@@ -11,8 +12,6 @@ import com.jd.platform.hotkey.dashboard.common.domain.req.ChartReq;
 import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
 import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
 import com.jd.platform.hotkey.dashboard.common.domain.vo.HotKeyLineChartVo;
-import com.jd.platform.hotkey.dashboard.common.eunm.ResultEnum;
-import com.jd.platform.hotkey.dashboard.common.ex.BizException;
 import com.jd.platform.hotkey.dashboard.mapper.KeyRecordMapper;
 import com.jd.platform.hotkey.dashboard.mapper.KeyTimelyMapper;
 import com.jd.platform.hotkey.dashboard.mapper.ReceiveCountMapper;
@@ -55,81 +54,33 @@ public class KeyServiceImpl implements KeyService {
     private StatisticsMapper statisticsMapper;
 
 
-    public HotKeyLineChartVo ruleLineChart2(SearchReq req) {
-        int type = req.getType();
-        if(req.getEndTime() == null){
-            req.setEndTime(new Date());
-        }
-        switch (type){
-            case 1:
-                req.setStartTime(DateUtil.preMinus(30));
-                List<Statistics> list = statisticsList();
-                System.out.println("30 min");
-                break;
-            case 2:
-                req.setStartTime(DateUtil.preDays(1));
-                System.out.println("24 hours");
-                break;
-            case 3:
-                req.setStartTime(DateUtil.preDays(7));
-                System.out.println("7 days");
-                break;
-            default:
-                System.out.println("=============");
-        }
-        return null;
-    }
-
-
+    /**
+     * 折线图
+     * @param req req
+     * @return vo
+     */
     @Override
     public HotKeyLineChartVo ruleLineChart(SearchReq req) {
         int type = req.getType();
-        if(req.getEndTime() == null){
-            req.setEndTime(new Date());
+        LocalDateTime now = LocalDateTime.now();
+        req.setEndTime(req.getEndTime() == null ? DateUtil.ldtToDate(now) : req.getEndTime());
+        if(type == 5){
+            LocalDateTime startTime = now.minusMinutes(31);
+            req.setStartTime(DateUtil.ldtToDate(startTime));
+            List<Statistics> list = statisticsMapper.listOrderByTime(req);
+            return CommonUtil.assembleData(list, startTime, 30,1);
+        }else if(type == 6){
+            LocalDateTime startTime2 = now.minusHours(25);
+            req.setStartTime(DateUtil.ldtToDate(startTime2));
+            List<Statistics> list2 = statisticsMapper.listOrderByTime(req);
+            return CommonUtil.assembleData(list2, startTime2, 24,2);
+        }else{
+            LocalDateTime startTime3 = now.minusDays(7).minusHours(1);
+            req.setStartTime(DateUtil.ldtToDate(startTime3));
+            req.setType(6);
+            List<Statistics> list3 = statisticsMapper.listOrderByTime(req);
+            return CommonUtil.assembleData(list3, startTime3, 7*24,2);
         }
-        switch (type){
-            case 1:
-                req.setStartTime(DateUtil.preMinus(30));
-                List<Statistics> list = statisticsList();
-                Map<String, int[]> map = new HashMap<>(10);
-                Map<String, List<Statistics>> listMap = list.stream().collect(Collectors.groupingBy(Statistics::getKeyName));
-                for (Map.Entry<String, List<Statistics>> m : listMap.entrySet()) {
-                    int start = 1;
-                    map.put(m.getKey(),new int[30]);
-                    int[] data = map.get(m.getKey());
-                    int tmp = 0;
-                    for (int i = 0; i < 30; i++) {
-                        Statistics st;
-                        try {
-                            st = m.getValue().get(tmp);
-                            if(String.valueOf(start).endsWith("24")){ start = start + 77; }
-                            if(start != st.getHours()){
-                                data[i] = 0;
-                            }else{
-                                tmp ++;
-                                data[i] = st.getCount();
-                            }
-                            start++;
-                        }catch (Exception e){
-                            data[i] = 0;
-                        }
-                    }
-                }
-
-                System.out.println("30 min");
-                break;
-            case 2:
-                req.setStartTime(DateUtil.preDays(1));
-                System.out.println("24 hours");
-                break;
-            case 3:
-                req.setStartTime(DateUtil.preDays(7));
-                System.out.println("7 days");
-                break;
-            default:
-                System.out.println("=============");
-        }
-        return null;
     }
 
 
@@ -163,12 +114,10 @@ public class KeyServiceImpl implements KeyService {
     public HotKeyLineChartVo getLineChart(ChartReq chartReq) {
         int hours = 6;
         // 默认查询6小时内的数据
-        if(chartReq.getStartTime() == null || chartReq.getEndTime() == null){
-            chartReq.setStartTime(DateUtil.preTime(hours));
-            chartReq.setEndTime(new Date());
-        }
-
-        List<Statistics> statistics = statisticsMapper.listStatistics(chartReq);
+        SearchReq req = new SearchReq();
+        req.setStartTime(DateUtil.preTime(hours));
+        req.setEndTime(new Date());
+        List<Statistics> statistics = statisticsMapper.listStatistics(req);
         // 获取data Y轴
         Map<String, int[]> keyDateMap = keyDateMap(statistics, hours);
         // 获取时间x轴
@@ -279,7 +228,7 @@ public class KeyServiceImpl implements KeyService {
         Map<String, int[]> map = new HashMap<>(10);
         Map<String, List<Statistics>> listMap = statistics.stream().collect(Collectors.groupingBy(Statistics::getKeyName));
         for (Map.Entry<String, List<Statistics>> m : listMap.entrySet()) {
-            int start = DateUtil.preHours(LocalDateTime.now(),5);
+            int start = DateUtil.preHoursInt(5);
             map.put(m.getKey(),new int[hours]);
             int[] data = map.get(m.getKey());
             int tmp = 0;
@@ -317,47 +266,163 @@ public class KeyServiceImpl implements KeyService {
     }
 
 
-    private List<Statistics> statisticsList(){
+    private  List<Statistics> statisticsList(){
         Random rd = new Random();
+        List<Statistics> records = new ArrayList<>();
+        statisticsMapper.clear(1);
+        for (int i = 0; i < 35; i++) {
+            // 每分钟小时 统计一次record 表 结果记录到统计表
+            LocalDateTime now = LocalDateTime.now().minusMinutes(35-i);
+            Date nowTime = DateUtil.ldtToDate(now);
+            int day = DateUtil.nowDay(now);
+            int hour = DateUtil.nowHour(now);
+            int minus = DateUtil.nowMinus(now);
+
+            Statistics s1 = new Statistics();
+            s1.setKeyName("k21");
+            s1.setApp("key21APP");
+            s1.setCreateTime(nowTime);
+            s1.setDays(day);
+            s1.setHours(hour);
+            s1.setCount(rd.nextInt(800));
+            s1.setBizType(1);
+            s1.setMinutes(minus);
+            s1.setUuid(1 + "_" + s1.getKeyName() + "_" + hour+ UUID.randomUUID().toString());
+            records.add(s1);
+
+            Statistics s11 = new Statistics();
+            s11.setKeyName("k22");
+            s11.setApp("key22APP");
+            s11.setBizType(1);
+            s11.setCreateTime(nowTime);
+            s11.setDays(day);
+            s11.setMinutes(minus);
+            s11.setCount(rd.nextInt(600));
+            s11.setHours(hour);
+            s11.setUuid(2 + "_" + s1.getKeyName() + "_" + hour+ UUID.randomUUID().toString());
+            records.add(s11);
+        }
+        statisticsMapper.batchInsert(records);
         List<Statistics> list = new ArrayList<>();
         for (int i = 0; i < 30 ; i++) {
-            Statistics st = new Statistics();
-            st.setApp("rule1");
-            st.setKeyName("key1");
-            st.setCount(rd.nextInt(100));
-            st.setBizType(1);
-            st.setMinutes(2006052140+i);
-            if(String.valueOf(st.getMinutes()).endsWith("60")){
-                st.setMinutes(st.getMinutes()+1);
+            if(i == 12 || i ==13){
+            }else{
+                Statistics st = new Statistics();
+                st.setApp("k21");
+                st.setKeyName("k21");
+                st.setCount(rd.nextInt(100));
+                st.setBizType(1);
+                //   LocalDateTime ldf = DateUtil.strToLdt("2006082355");
+                //    System.out.println(ldf.toString()+"  -   "+DateUtil.strToLdt("2006082355"));
+                int time = DateUtil.reviseTime(DateUtil.strToLdt("2006082355",DateUtil.PATTERN_MINUS), i, 1);
+                //    System.out.println(time);
+                st.setMinutes(time);
+                list.add(st);
             }
-            list.add(st);
         }
         List<Statistics> list2 = new ArrayList<>();
         for (int i = 0; i < 30 ; i++) {
-            Statistics st2 = new Statistics();
-            st2.setApp("rule2");
-            st2.setKeyName("key2");
-            st2.setCount(rd.nextInt(100));
-            st2.setBizType(1);
-            st2.setMinutes(2006052140+i);
-            list2.add(st2);
+            if(i == 0 || i == 1  || i == 18 || i == 19 || i == 25){
+
+            }else{
+                Statistics st2 = new Statistics();
+                st2.setApp("k22");
+                st2.setKeyName("k22");
+                st2.setCount(rd.nextInt(100));
+                st2.setBizType(1);
+                st2.setMinutes(DateUtil.reviseTime(DateUtil.strToLdt("2006082355", DateUtil.PATTERN_MINUS),i,1));
+                list2.add(st2);
+            }
         }
         list.addAll(list2);
         return list;
+
     }
 
-    private List<Statistics> statisticsList1(){
+    private List<Statistics> statisticsList1(int type){
         Random rd = new Random();
-        List<Statistics> list = new ArrayList<>();
-        for (int i = 0; i < 24 ; i++) {
-            Statistics st = new Statistics();
-            st.setApp("rule1");
-            st.setKeyName("key1");
-            st.setCount(rd.nextInt(100));
-            st.setBizType(1);
-            st.setHours(20060500+i);
+        List<Statistics> records = new ArrayList<>();
+        statisticsMapper.clear(6);
+
+        if(type == 3){
+            int temp = 1;
+            for (int j = 0; j < 9; j++) {
+                for (int i = 0; i < 24; i++) {
+                    // 每分钟小时 统计一次record 表 结果记录到统计表
+                    LocalDateTime now = LocalDateTime.now().minusHours(9 * 24 - temp);
+
+                    Date nowTime = DateUtil.ldtToDate(now);
+                    int day = DateUtil.nowDay(now);
+                    int hour = DateUtil.nowHour(now);
+                    Statistics s1 = new Statistics();
+                    s1.setKeyName("k21");
+                    s1.setApp("key21APP");
+                    s1.setCreateTime(nowTime);
+                    s1.setDays(day);
+                    s1.setHours(hour);
+                    s1.setCount(rd.nextInt(200));
+                    s1.setBizType(6);
+                    s1.setUuid(1 + "_" + s1.getKeyName() + "_" + hour+ UUID.randomUUID().toString());
+                    records.add(s1);
+
+                    Statistics s11 = new Statistics();
+                    s11.setKeyName("k22");
+                    s11.setApp("key22APP");
+                    s11.setBizType(6);
+                    s11.setCreateTime(nowTime);
+                    s11.setDays(day);
+                    s11.setCount(rd.nextInt(500));
+                    s11.setHours(hour);
+                    s11.setUuid(2 + "_" + s1.getKeyName() + "_" + hour+ UUID.randomUUID().toString());
+                    records.add(s11);
+
+                    Statistics s33 = new Statistics();
+                    s33.setKeyName("k33");
+                    s33.setApp("key33APP");
+                    s33.setBizType(6 );
+                    s33.setCreateTime(nowTime);
+                    s33.setDays(day);
+                    s33.setCount(rd.nextInt(300));
+                    s33.setHours(hour);
+                    s33.setUuid(3 + "_" + s1.getKeyName() + "_" + hour+ UUID.randomUUID().toString());
+                    records.add(s33);
+                    temp++;
+                }
+            }
+
+
+        }else{
+            for (int i = 0; i < 30; i++) {
+                // 每分钟小时 统计一次record 表 结果记录到统计表
+                LocalDateTime now = LocalDateTime.now().minusHours(30-i);
+                Date nowTime = DateUtil.ldtToDate(now);
+                int day = DateUtil.nowDay(now);
+                int hour = DateUtil.nowHour(now);
+                Statistics s1 = new Statistics();
+                s1.setKeyName("key21");
+                s1.setApp("key21APP");
+                s1.setCreateTime(nowTime);
+                s1.setDays(day);
+                s1.setHours(hour);
+                s1.setCount(rd.nextInt(800));
+                s1.setBizType(2);
+                s1.setUuid(1 + "_" + s1.getKeyName() + "_" + hour+ UUID.randomUUID().toString());
+                records.add(s1);
+
+                Statistics s11 = new Statistics();
+                s11.setKeyName("key22");
+                s11.setApp("key22APP");
+                s11.setBizType(2);
+                s11.setCreateTime(nowTime);
+                s11.setDays(day);
+                s11.setCount(rd.nextInt(600));
+                s11.setHours(hour);
+                s11.setUuid(2 + "_" + s1.getKeyName() + "_" + hour+ UUID.randomUUID().toString());
+                records.add(s11);
+            }
         }
-        return list;
+        statisticsMapper.batchInsert(records);
+        return records;
     }
 
 

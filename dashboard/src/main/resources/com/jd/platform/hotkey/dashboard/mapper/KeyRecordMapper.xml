@@ -184,8 +184,8 @@
 
 
   <select id="statisticsByRule"  resultType="com.jd.platform.hotkey.dashboard.model.Statistics">
-    select key_name as keyName, count(1) as count, app_name as app,rule,
-    from hk_key_record
+    select  count(1) as count, app_name as app, val as keyName
+    from  hk_key_record
     where type = 0
     <if test="appName !=null and appName !=''">
       and app_name = #{appName}
@@ -196,10 +196,7 @@
     <if test="startTime != null">
       <![CDATA[ and create_time >= #{startTime} and create_time < #{endTime}]]>
     </if>
-    GROUP BY app_name, rule order by null
-    <if test="limit !=null">
-      limit #{limit}
-    </if >
+    GROUP BY app_name, val order by null
   </select>
 
 

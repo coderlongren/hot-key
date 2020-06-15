@@ -117,42 +117,56 @@ public class DataHandler {
             //手工添加的是时间戳13位，worker传过来的是uuid
             String source = v.length() == 13 ? Constant.HAND : Constant.SYSTEM;
             timelyKeyRecordTwoTuple.setFirst(new KeyTimely(arr[1], v, arr[0], ttl, uuid, date));
-            KeyRecord keyRecord = new KeyRecord(arr[1], v, arr[0], ttl, source, type, uuid, date);
-            keyRecord.setRule(RuleUtil.rule(appKey));
+
+            // 这是一个骚操作 在线上不方便新增rule字段的时候 临时用下val
+            String rule = RuleUtil.rule(appKey);
+            KeyRecord keyRecord = new KeyRecord(arr[1], rule, arr[0], ttl, source, type, uuid, date);
+            keyRecord.setRule(rule);
             timelyKeyRecordTwoTuple.setSecond(keyRecord);
             return timelyKeyRecordTwoTuple;
         } else if (eventType.equals(Event.EventType.DELETE)) {
             timelyKeyRecordTwoTuple.setFirst(new KeyTimely(arr[1], null, arr[0], 0L, null, null));
-            //删除事件就不记录了
-//            timelyKeyRecordTwoTuple.setSecond(new KeyRecord(arr[1], v, arr[0], 0L, Constant.SYSTEM, type, uuid, date));
             return timelyKeyRecordTwoTuple;
         }
         return timelyKeyRecordTwoTuple;
     }
 
 
+
+    /**
+     * 每小时 统计一次record 表 结果记录到统计表
+     */
     @Scheduled(cron = "0 0 * * * ?")
     public void offlineStatistics() {
         try {
-            // 每小时 统计一次record 表 结果记录到统计表
             LocalDateTime now = LocalDateTime.now();
-            Date nowTime = DateUtil.localDateTimeToDate(now);
+            Date nowTime = DateUtil.ldtToDate(now);
             int day = DateUtil.nowDay(now);
             int hour = DateUtil.nowHour(now);
-
-            List<Statistics> records = keyRecordMapper.maxHotKey(new SearchReq(now.minusHours(1)));
-            if (records.size() == 0) {
-                return;
+            SearchReq preHour = new SearchReq(now.minusHours(1));
+            List<Statistics> records = keyRecordMapper.maxHotKey(preHour);
+            if (records.size() != 0) {
+                records.forEach(x -> {
+                    x.setBizType(1);
+                    x.setCreateTime(nowTime);
+                    x.setDays(day);
+                    x.setHours(hour);
+                    x.setUuid(1 + "_" + x.getKeyName() + "_" + hour);
+                });
             }
-            records.forEach(x -> {
-                x.setBizType(1);
-                x.setCreateTime(nowTime);
-                x.setDays(day);
-                x.setHours(hour);
-                x.setUuid(1 + "_" + x.getKeyName() + "_" + hour);
-            });
+            List<Statistics> statistics = keyRecordMapper.statisticsByRule(preHour);
+            if (statistics.size() != 0) {
+                statistics.forEach(x -> {
+                    x.setBizType(6);
+                    x.setCreateTime(nowTime);
+                    x.setDays(day);
+                    x.setHours(hour);
+                    x.setUuid(6 + "_" + x.getKeyName() + "_" + hour);
+                });
+                records.addAll(statistics);
+            }
             int row = statisticsMapper.batchInsert(records);
-            log.info("定时统计热点记录时间：{}, 影响行数：{}", now.toString(), row);
+            log.info("每小时统计最热点和规则，时间：{}, 影响行数：{}", now.toString(), row);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -160,28 +174,33 @@ public class DataHandler {
     }
 
 
-    //@Scheduled(cron = "0 0 * * * ?")
+    /**
+     * 每分钟统计一次record 表 结果记录到统计表
+     */
+   // @Scheduled(cron = "0 */1 * * * ?")
     public void offlineStatisticsRule() {
         try {
-            // 每分钟小时 统计一次record 表 结果记录到统计表
             LocalDateTime now = LocalDateTime.now();
-            Date nowTime = DateUtil.localDateTimeToDate(now);
+            Date nowTime = DateUtil.ldtToDate(now);
             int day = DateUtil.nowDay(now);
             int hour = DateUtil.nowHour(now);
+            int minus = DateUtil.nowMinus(now);
 
-            List<Statistics> records = keyRecordMapper.statisticsByRule(null);
+            List<Statistics> records = keyRecordMapper.statisticsByRule(new SearchReq(now.minusMinutes(1)));
             if (records.size() == 0) {
                 return;
             }
             records.forEach(x -> {
-                x.setBizType(1);
+                x.setBizType(5);
                 x.setCreateTime(nowTime);
                 x.setDays(day);
                 x.setHours(hour);
-                x.setUuid(1 + "_" + x.getKeyName() + "_" + hour);
+                x.setMinutes(minus);
+                // 骚操作 临时解决没有rule字段的问题
+                x.setUuid(5 + "_" + x.getKeyName() + "_" + minus);
             });
             int row = statisticsMapper.batchInsert(records);
-            log.info("定时统计热点记录时间：{}, 影响行数：{}", now.toString(), row);
+            log.info("每分钟统计规则，时间：{}, 影响行数：{}", now.toString(), row);
         } catch (Exception e) {
             e.printStackTrace();
         }
