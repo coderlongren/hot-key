@@ -29,7 +29,7 @@ public class BaseController {
 
 
     public String userName(){
-        final String authHeader = request.getHeader(JwtTokenUtil.AUTH_HEADER_KEY);
+        final String authHeader = JwtTokenUtil.getAuthHeader(request);
         final String token = authHeader.substring(2);
         return JwtTokenUtil.getUsername(token);
     }
@@ -37,7 +37,7 @@ public class BaseController {
 
 
     public SearchReq param(String text){
-        String authHeader = request.getHeader(JwtTokenUtil.AUTH_HEADER_KEY);
+        String authHeader = JwtTokenUtil.getAuthHeader(request);
         SearchReq dto = JSON.parseObject(text, SearchReq.class);
         if(dto == null){ dto = new SearchReq(); }
         dto.setAppName(JwtTokenUtil.getAppName(authHeader.substring(2)));
@@ -45,7 +45,7 @@ public class BaseController {
     }
 
     public SearchReq param2(SearchReq dto){
-        String authHeader = request.getHeader(JwtTokenUtil.AUTH_HEADER_KEY);
+        String authHeader = JwtTokenUtil.getAuthHeader(request);
         if(dto == null){ dto = new SearchReq(); }
         dto.setAppName(JwtTokenUtil.getAppName(authHeader.substring(2)));
         return dto;

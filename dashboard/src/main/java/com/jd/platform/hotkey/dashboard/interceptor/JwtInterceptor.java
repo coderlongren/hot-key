@@ -29,7 +29,7 @@ public class JwtInterceptor extends HandlerInterceptorAdapter{
         }
         String url = request.getRequestURI();
         if(isAjaxRequest){
-            final String authHeader = request.getHeader(JwtTokenUtil.AUTH_HEADER_KEY);
+            final String authHeader = JwtTokenUtil.getAuthHeader(request);
             if (StringUtils.isEmpty(authHeader)
                     || !authHeader.startsWith(JwtTokenUtil.TOKEN_PREFIX)) {
               //  response.sendRedirect("login");
@@ -41,9 +41,9 @@ public class JwtInterceptor extends HandlerInterceptorAdapter{
             final String token = authHeader.substring(2);
             Claims claims = JwtTokenUtil.parseJWT(token);
             String role = claims.get("role", String.class);
-            if(role.equals("ADMIN") || role.equals("APPADMIN")){
+            /*if(role.equals("ADMIN") || role.equals("APPADMIN")){
                 return true;
-            }
+            }*/
             // appUser只读
             if(url.contains("view")||url.contains("list")){
                 return true;

@@ -74,7 +74,7 @@ public class UserController extends BaseController {
 	@ResponseBody
 	@PostMapping("/info")
 	public User info(HttpServletRequest request){
-		String authHeader = request.getHeader(JwtTokenUtil.AUTH_HEADER_KEY);
+		String authHeader = JwtTokenUtil.getAuthHeader(request);
 		User userPower = JwtTokenUtil.userPower(authHeader.substring(2));
 		String appName = userPower.getAppName();
 		String role = userPower.getRole();
