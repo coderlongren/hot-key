@@ -1,9 +1,6 @@
 package com.jd.platform.hotkey.dashboard.controller;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.github.pagehelper.PageInfo;
 import com.github.pagehelper.util.StringUtil;
@@ -45,10 +42,10 @@ public class UserController extends BaseController {
 	public Result login(User param, HttpServletResponse response) {
 		User user = userService.findByNameAndPwd(param);
 		if(user == null) return Result.error(ResultEnum.PWD_ERROR);
-		String token = JwtTokenUtil.createJWT(user.getId(), user.getUserName(), user.getRole(), user.getAppName());
+		String token = JwtTokenUtil.createJWT(user.getId(), user.getUserName(), user.getRole(), user.getAppName(), user.getNickName());
 		Cookie cookie = new Cookie("token", JwtTokenUtil.TOKEN_PREFIX + token);
 		cookie.setMaxAge(3600*24*7);
-		cookie.setDomain("localhost");
+//		cookie.setDomain("localhost");
 		cookie.setPath("/");
 		response.addCookie(cookie);
 		Map<String, String> map = new HashMap<>(2);
@@ -90,8 +87,18 @@ public class UserController extends BaseController {
 
 
 	@GetMapping("/LoginOut")
-	public String LoginOut(){
-		return "redirect:/admin/user/login";
+	public String LoginOut(HttpServletRequest request, HttpServletResponse response){
+		Cookie[] cookies = request.getCookies();
+		for(Cookie cookie : cookies){
+			if("token".equals(cookie.getName())){
+				Cookie tempCookie = new Cookie(cookie.getName(), null);
+				tempCookie.setPath("/");//路径要相同
+				tempCookie.setMaxAge(0);//生命周期设置为0
+				response.addCookie(tempCookie);
+				break;
+			}
+		}
+		return "redirect:/user/login";
 	}
 
 
@@ -177,5 +184,19 @@ public class UserController extends BaseController {
 		return "redirect:/error/500";
 	}
 
+	@PostMapping("getUserName")
+	@ResponseBody
+	public String getUserName(HttpServletRequest request, HttpServletResponse response){
+		/*Cookie[] cookies = request.getCookies();
+		String userName = "";
+		for(Cookie cookie : cookies){
+			if("erp".equals(cookie.getName())){
+				userName = cookie.getValue();
+				break;
+			}
+		}
+		return userName;*/
+		return userName();
+	}
 }
 

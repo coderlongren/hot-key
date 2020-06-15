@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.DatatypeConverter;
 import java.security.Key;
 import java.text.SimpleDateFormat;
@@ -47,7 +49,7 @@ public class JwtTokenUtil {
      * @param role
      * @return
      */
-    public static String createJWT(Integer userId, String username, String role, String appName) {
+    public static String createJWT(Integer userId, String username, String role, String appName, String nickName) {
         try {
             // 使用HS256加密算法
             SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
@@ -63,6 +65,7 @@ public class JwtTokenUtil {
                     .claim("userId", encryId)
                     .claim("role", role)
                     .claim("appName", appName)
+                    .claim("nickName", nickName)
                     .setSubject(username)           // 代表这个JWT的主体，即它的所有人
                  //   .setIssuer(audience.getClientId())              // 代表这个JWT的签发主体；
                     .setIssuedAt(new Date())        // 是一个时间戳，代表这个JWT的签发时间；
@@ -147,6 +150,14 @@ public class JwtTokenUtil {
         return parseJWT(token).getExpiration().before(new Date());
     }
 
-
+    public static String getAuthHeader(HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        for(Cookie cookie : cookies){
+            if("token".equals(cookie.getName())){
+                return cookie.getValue();
+            }
+        }
+        return null;
+    }
 
 }
