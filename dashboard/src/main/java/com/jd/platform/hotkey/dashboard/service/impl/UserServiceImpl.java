@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService {
             user.setCreateTime(new Date());
             user.setPwd(DigestUtils.md5DigestAsHex(defaultPwd.getBytes()));
             userMapper.insertSelective(user);
-            String token = JwtTokenUtil.createJWT(user.getId(), user.getUserName(), null, user.getAppName(), user.getNickName());
+            String token = JwtTokenUtil.createJWT(user.getId(), user.getUserName(), "", user.getAppName(), user.getNickName());
             Cookie cookie = new Cookie("token", JwtTokenUtil.TOKEN_PREFIX + token);
             cookie.setMaxAge(3600*24*7);
             //cookie.setDomain("localhost");
@@ -100,7 +100,7 @@ public class UserServiceImpl implements UserService {
             return cookie;
         }else{
             user =users.get(0);
-            String token = JwtTokenUtil.createJWT(user.getId(), user.getUserName(), null, user.getAppName(), user.getNickName());
+            String token = JwtTokenUtil.createJWT(user.getId(), user.getUserName(), "", user.getAppName(), user.getNickName());
             Cookie cookie = new Cookie("token", JwtTokenUtil.TOKEN_PREFIX + token);
             cookie.setMaxAge(3600*24*7);
             //cookie.setDomain("localhost");

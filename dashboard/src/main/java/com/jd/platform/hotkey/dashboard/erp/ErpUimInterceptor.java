@@ -43,6 +43,7 @@ public class ErpUimInterceptor extends SpringSSOInterceptor {
         user.setUserName(pin);
         user.setNickName(nickName);
         user.setPhone(mobile);
+        user.setRole("");
         Cookie cookie = userService.loginErpUser(user);
         Cookie[] cookies = request.getCookies();
         if(cookies != null){

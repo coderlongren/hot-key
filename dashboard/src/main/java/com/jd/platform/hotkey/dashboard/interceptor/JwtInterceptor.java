@@ -48,7 +48,8 @@ public class JwtInterceptor extends HandlerInterceptorAdapter{
             if(url.contains("view")||url.contains("list")){
                 return true;
             }
-            throw new BizException(ResultEnum.NO_PERMISSION);
+
+            //throw new BizException(ResultEnum.NO_PERMISSION);
            // throw new RuntimeException("NO_PERMISSION");
            // response.setStatus(HttpServletResponse.SC_FORBIDDEN);
            // return  false;
