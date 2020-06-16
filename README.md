@@ -1,4 +1,5 @@
 # hotkey
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0616/105737_e5b876cd_303698.png "redis热key探测及缓存到JVM (1).png")
 
 正在京东APP后台灰度了几千台机器，等618海量并发检验后再推广使用，暂时不要下载使用它。
 
