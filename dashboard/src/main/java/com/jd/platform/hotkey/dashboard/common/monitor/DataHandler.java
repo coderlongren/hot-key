@@ -177,7 +177,7 @@ public class DataHandler {
     /**
      * 每分钟统计一次record 表 结果记录到统计表
      */
-   // @Scheduled(cron = "0 */1 * * * ?")
+    @Scheduled(cron = "0 */1 * * * ?")
     public void offlineStatisticsRule() {
         try {
             LocalDateTime now = LocalDateTime.now();

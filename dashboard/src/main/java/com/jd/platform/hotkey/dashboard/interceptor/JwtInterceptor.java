@@ -45,7 +45,7 @@ public class JwtInterceptor extends HandlerInterceptorAdapter{
                 return true;
             }
             // appUser只读
-            if(url.contains("view")||url.contains("list")){
+            if(url.contains("view")||url.contains("list")||url.contains("info")){
                 return true;
             }
             throw new BizException(ResultEnum.NO_PERMISSION);

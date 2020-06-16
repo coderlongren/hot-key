@@ -36,7 +36,7 @@ import java.util.concurrent.CompletableFuture;
  * @Date: 2020/4/18 18:29
  */
 @SuppressWarnings("ALL")
-//@Component
+@Component
 public class EtcdMonitor {
 
     private static Logger log = LoggerFactory.getLogger(EtcdMonitor.class);
