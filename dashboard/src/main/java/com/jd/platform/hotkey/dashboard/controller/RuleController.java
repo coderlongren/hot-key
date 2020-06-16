@@ -4,9 +4,8 @@ import com.github.pagehelper.PageInfo;
 import com.jd.platform.hotkey.dashboard.common.base.BaseController;
 import com.jd.platform.hotkey.dashboard.common.domain.Constant;
 import com.jd.platform.hotkey.dashboard.common.domain.Page;
-import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
 import com.jd.platform.hotkey.dashboard.common.domain.Result;
-import com.jd.platform.hotkey.dashboard.model.KeyRule;
+import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
 import com.jd.platform.hotkey.dashboard.model.Rules;
 import com.jd.platform.hotkey.dashboard.service.RuleService;
 import org.springframework.stereotype.Controller;
@@ -14,6 +13,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 
 @Controller
@@ -105,6 +105,14 @@ public class RuleController extends BaseController {
 	public String add(ModelMap modelMap){
 		modelMap.put("title", Constant.RULE_CONFIG_VIEW);
 		return "admin/rule/view";
+	}
+
+
+	@PostMapping("/listRules")
+	@ResponseBody
+	public List<String> rules(){
+		List<String> info = ruleService.listRules(null);
+		return info;
 	}
 
 }

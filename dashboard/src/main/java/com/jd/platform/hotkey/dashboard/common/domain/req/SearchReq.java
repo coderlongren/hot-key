@@ -81,9 +81,8 @@ public class SearchReq implements Serializable {
         this.key = key;
     }
 
-
     public SearchReq(LocalDateTime st) {
-        this.startTime = DateUtil.localDateTimeToDate(st);
+        this.startTime = DateUtil.ldtToDate(st);
         this.endTime = new Date();
     }
 }
