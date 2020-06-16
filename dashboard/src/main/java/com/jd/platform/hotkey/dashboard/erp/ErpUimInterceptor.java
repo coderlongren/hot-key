@@ -4,7 +4,6 @@ import com.jd.common.springmvc.interceptor.SpringSSOInterceptor;
 import com.jd.common.web.LoginContext;
 import com.jd.platform.hotkey.dashboard.model.User;
 import com.jd.platform.hotkey.dashboard.service.UserService;
-import com.jd.platform.hotkey.dashboard.util.JwtTokenUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -43,7 +42,7 @@ public class ErpUimInterceptor extends SpringSSOInterceptor {
         user.setUserName(pin);
         user.setNickName(nickName);
         user.setPhone(mobile);
-        user.setRole("");
+        user.setRole("APPUSER");
         Cookie cookie = userService.loginErpUser(user);
         Cookie[] cookies = request.getCookies();
         if(cookies != null){
