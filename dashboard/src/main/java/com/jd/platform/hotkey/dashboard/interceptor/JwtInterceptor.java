@@ -41,11 +41,11 @@ public class JwtInterceptor extends HandlerInterceptorAdapter{
             final String token = authHeader.substring(2);
             Claims claims = JwtTokenUtil.parseJWT(token);
             String role = claims.get("role", String.class);
-            /*if(role.equals("ADMIN") || role.equals("APPADMIN")){
+            if(role.equals("ADMIN") || role.equals("APPADMIN")){
                 return true;
-            }*/
+            }
             // appUser只读
-            if(url.contains("view")||url.contains("list")){
+            if(url.contains("view")||url.contains("list")||url.contains("info")){
                 return true;
             }
 
