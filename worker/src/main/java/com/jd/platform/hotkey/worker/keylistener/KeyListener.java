@@ -2,6 +2,7 @@ package com.jd.platform.hotkey.worker.keylistener;
 
 import cn.hutool.core.date.SystemClock;
 import com.github.benmanes.caffeine.cache.Cache;
+import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.jd.platform.hotkey.common.model.HotKeyModel;
 import com.jd.platform.hotkey.common.rule.KeyRule;
@@ -103,19 +104,15 @@ public class KeyListener implements IKeyListener {
     }
 
     /**
-     * 生成或返回该key的滑窗，该方法存在并发问题（当多线程同时命中slidingWindow为null时，会出现计数变少的情况）
+     * 生成或返回该key的滑窗
      */
     private SlidingWindow checkWindow(HotKeyModel hotKeyModel, String key) {
         //取该key的滑窗
-        SlidingWindow slidingWindow = (SlidingWindow) CaffeineCacheHolder.getCache(hotKeyModel.getAppName()).getIfPresent(key);
-        //考虑在某个APP的rule变化后，清空该APP所有key
-        if (slidingWindow == null) {
+        return (SlidingWindow) CaffeineCacheHolder.getCache(hotKeyModel.getAppName()).get(key, (Function<String, SlidingWindow>) s -> {
             //是个新key，获取它的规则
             KeyRule keyRule = KeyRuleHolder.getRuleByAppAndKey(hotKeyModel);
-            slidingWindow = new SlidingWindow(keyRule.getInterval(), keyRule.getThreshold());
-
-        }
-        return slidingWindow;
+            return new SlidingWindow(keyRule.getInterval(), keyRule.getThreshold());
+        });
     }
 
     private String buildKey(HotKeyModel hotKeyModel) {
