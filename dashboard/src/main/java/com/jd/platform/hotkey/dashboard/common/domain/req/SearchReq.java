@@ -6,7 +6,6 @@ import com.jd.platform.hotkey.dashboard.util.DateUtil;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @ProjectName: hotkey
