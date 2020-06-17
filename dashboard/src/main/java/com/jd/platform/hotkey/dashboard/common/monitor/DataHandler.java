@@ -1,6 +1,7 @@
 package com.jd.platform.hotkey.dashboard.common.monitor;
 
 
+import com.alibaba.fastjson.JSON;
 import com.ibm.etcd.api.Event;
 import com.jd.platform.hotkey.dashboard.common.domain.Constant;
 import com.jd.platform.hotkey.dashboard.common.domain.EventWrapper;
@@ -153,6 +154,7 @@ public class DataHandler {
                     x.setUuid(1 + "_" + x.getKeyName() + "_" + hour);
                 });
             }
+            log.info("每小时统计最热点,时间：{}, 行数：{}", now.toString(), records.size());
             List<Statistics> statistics = keyRecordMapper.statisticsByRule(preHour);
             if (statistics.size() != 0) {
                 statistics.forEach(x -> {
@@ -162,10 +164,10 @@ public class DataHandler {
                     x.setHours(hour);
                     x.setUuid(6 + "_" + x.getKeyName() + "_" + hour);
                 });
+                log.info("每小时统计规则,时间：{}, data list：{}", now.toString(), JSON.toJSONString(statistics));
                 records.addAll(statistics);
             }
             int row = statisticsMapper.batchInsert(records);
-            log.info("每小时统计最热点和规则，时间：{}, 影响行数：{}", now.toString(), row);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -199,7 +201,7 @@ public class DataHandler {
                 x.setUuid(5 + "_" + x.getKeyName() + "_" + minus);
             });
             int row = statisticsMapper.batchInsert(records);
-            log.info("每分钟统计规则，时间：{}, 影响行数：{}", now.toString(), row);
+            log.info("每分钟统计规则，时间：{}, 影响行数：{}, data list:{}", now.toString(), row, JSON.toJSONString(records));
         } catch (Exception e) {
             e.printStackTrace();
         }
