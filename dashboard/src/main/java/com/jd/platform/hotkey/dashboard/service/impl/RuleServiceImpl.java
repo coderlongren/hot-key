@@ -142,7 +142,7 @@ public class RuleServiceImpl implements RuleService {
             String appKey = key.replace(ConfigConstant.rulePath,"");
             List<Rule> rs = JSON.parseArray(v, Rule.class);
             for (Rule r : rs) {
-                rules.add(r.getKey());
+                rules.add(appKey+"-"+r.getKey());
             }
         }
         return rules;
