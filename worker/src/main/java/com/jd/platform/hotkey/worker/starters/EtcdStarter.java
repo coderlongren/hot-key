@@ -163,6 +163,7 @@ public class EtcdStarter {
             //上报每秒QPS（接收key数量、处理key数量）
             String totalCount = FastJsonUtils.convertObjectToJSON(new TotalCount(HotKeyFilter.totalReceiveKeyCount.get(), totalDealCount.longValue()));
             configCenter.putAndGrant(ConfigConstant.totalReceiveKeyCount + ip, totalCount, 13);
+
             logger.info(totalCount + " expireCount:" + expireTotalCount + " offerCount:" + totalOfferCount);
 //            configCenter.putAndGrant(ConfigConstant.bufferPoolPath + ip, MemoryTool.getBufferPool() + "", 10);
         } catch (Exception ex) {

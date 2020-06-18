@@ -20,7 +20,7 @@ public class CaffeineBuilder {
         //老版本jdk1.8.0_20之前，caffeine默认的forkJoinPool在及其密集的淘汰过期时，会有forkJoinPool报错。建议用新版jdk
         return Caffeine.newBuilder()
                 .initialCapacity(8192)//初始大小
-                .maximumSize(20000000)//最大数量
+                .maximumSize(5000000)//最大数量。这个数值我设置的很大，按30万每秒，每分钟是1800万，实际可以调小
                 .expireAfterWrite(1, TimeUnit.MINUTES)//过期时间
                 .executor(executorService)
                 .softValues()
@@ -33,7 +33,7 @@ public class CaffeineBuilder {
     public static Cache<String, Object> buildRecentHotKeyCache() {
         return Caffeine.newBuilder()
                 .initialCapacity(256)//初始大小
-                .maximumSize(500000)//最大数量
+                .maximumSize(50000)//最大数量
                 .expireAfterWrite(10, TimeUnit.SECONDS)//过期时间
                 .executor(executorService)
                 .softValues()
