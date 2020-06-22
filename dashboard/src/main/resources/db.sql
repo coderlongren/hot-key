@@ -33,7 +33,7 @@ CREATE TABLE `hk_user`  (
 -- ----------------------------
 -- Records of hk_user
 -- ----------------------------
-INSERT INTO `hk_user` VALUES (1, 'lyfa', 'lyf', '202cb962ac59075b964b07152d234b70', '', 'ADMIN', '', '2020-04-24 02:28:33', 1);
+INSERT INTO `hk_user` VALUES (1, 'admin', 'admin', 'e10adc3949ba59abbe56e057f20f883e', '1234567890123', 'ADMIN', '', '2020-04-24 02:28:33', 1);
 
 
 
