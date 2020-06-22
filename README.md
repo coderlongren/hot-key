@@ -150,13 +150,13 @@ Object JdHotKeyStore.getValue(String key)
              if (JdHotKeyStore.isHotKey(key)) {
                   //注意是get，不是getValue。getValue会获取并上报，get是纯粹的本地获取
                   Object skuInfo = JdHotKeyStore.get("skuId__" + skuId);
-             if(skuInfo == null) {
-                  JdHotKeyStore.smartSet("skuId__" + skuId, theSkuInfo);
-             } else {
-                    //使用缓存好的value即可
-             }
+                  if(skuInfo == null) {
+                      JdHotKeyStore.smartSet("skuId__" + skuId, theSkuInfo);
+                  } else {
+                      //使用缓存好的value即可
+                  }
 
-        }
+             }
 
 
 
