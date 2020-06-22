@@ -11,11 +11,15 @@ public class CpuNum {
      * netty worker线程数量. cpu密集型
      */
     public static int workerCount() {
+        int count = 1;
         if (isNewerVersion()) {
-            return Runtime.getRuntime().availableProcessors();
-        } else {
-            return 4;
+            count = Runtime.getRuntime().availableProcessors();
         }
+        if (count >= 4) {
+            count = count / 2;
+        }
+
+        return count;
     }
 
     public static void main(String[] args) {
