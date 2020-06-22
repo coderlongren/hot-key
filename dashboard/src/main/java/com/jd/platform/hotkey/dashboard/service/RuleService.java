@@ -3,7 +3,6 @@ package com.jd.platform.hotkey.dashboard.service;
 import com.github.pagehelper.PageInfo;
 import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
 import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
-import com.jd.platform.hotkey.dashboard.model.KeyRule;
 import com.jd.platform.hotkey.dashboard.model.Rules;
 
 import java.util.List;

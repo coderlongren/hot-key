@@ -1,6 +1,5 @@
 package com.jd.platform.hotkey.dashboard.mapper;
 
-import com.jd.platform.hotkey.dashboard.common.domain.req.ChartReq;
 import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
 import com.jd.platform.hotkey.dashboard.model.Statistics;
 import org.apache.ibatis.annotations.Mapper;
