@@ -38,6 +38,9 @@ function edit() {
 		url :  "/user/editPwd",
 		data : dataFormJson,
 		async : false,
+		headers: {
+			"Authorization":getCookie("token")
+		},
 		error : function(request) {
 			$.modal.alertError("系统错误");
 		},
