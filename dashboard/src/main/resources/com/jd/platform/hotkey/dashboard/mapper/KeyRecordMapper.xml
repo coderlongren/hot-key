@@ -49,9 +49,9 @@
       <if test="duration != null">
         duration,
       </if>
-     <!-- <if test="rule != null">
+     <if test="rule != null">
         rule,
-      </if>-->
+      </if>
       <if test="type != null">
         type,
       </if>
@@ -81,9 +81,9 @@
       <if test="duration != null">
         #{duration,jdbcType=BIGINT},
       </if>
-     <!-- <if test="rule != null">
+      <if test="rule != null">
         #{rule,jdbcType=VARCHAR},
-      </if>-->
+      </if>
       <if test="type != null">
         #{type,jdbcType=INTEGER},
       </if>
