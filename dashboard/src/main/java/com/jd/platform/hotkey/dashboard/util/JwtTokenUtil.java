@@ -134,11 +134,8 @@ public class JwtTokenUtil {
     }
 
 
-    public static User userPower(String token){
-        Claims claims = parseJWT(token);
-        String role = claims.get("role",String.class);
-        String appName = claims.get("appName",String.class);
-        return new User(role,appName);
+    public static Claims claims(String token){
+        return parseJWT(token);
     }
 
     /**

@@ -14,6 +14,7 @@ import com.jd.platform.hotkey.dashboard.model.User;
 import com.jd.platform.hotkey.dashboard.service.UserService;
 import com.jd.platform.hotkey.dashboard.util.CommonUtil;
 import com.jd.platform.hotkey.dashboard.util.JwtTokenUtil;
+import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -41,11 +42,10 @@ public class UserController extends BaseController {
 	@ResponseBody
 	public Result login(User param, HttpServletResponse response) {
 		User user = userService.findByNameAndPwd(param);
-		if(user == null) return Result.error(ResultEnum.PWD_ERROR);
+		if(user == null) { return Result.error(ResultEnum.PWD_ERROR); }
 		String token = JwtTokenUtil.createJWT(user.getId(), user.getUserName(), user.getRole(), user.getAppName(), user.getNickName());
 		Cookie cookie = new Cookie("token", JwtTokenUtil.TOKEN_PREFIX + token);
 		cookie.setMaxAge(3600*24*7);
-//		cookie.setDomain("localhost");
 		cookie.setPath("/");
 		response.addCookie(cookie);
 		Map<String, String> map = new HashMap<>(2);
@@ -75,10 +75,11 @@ public class UserController extends BaseController {
 	@PostMapping("/info")
 	public User info(HttpServletRequest request){
 		String authHeader = JwtTokenUtil.getAuthHeader(request);
-		User userPower = JwtTokenUtil.userPower(authHeader.substring(2));
-		String appName = userPower.getAppName();
-		String role = userPower.getRole();
-		if(role.equals("ADMIN")){
+		assert authHeader != null;
+		Claims claims = JwtTokenUtil.claims(authHeader.substring(2));
+		String role = claims.get("role",String.class);
+		String appName = claims.get("appName",String.class);
+		if(role.equals(Constant.ADMIN)){
 			List<String> apps =	userService.listApp();
 			return new User(role,apps);
 		}

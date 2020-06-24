@@ -11,6 +11,7 @@ import com.jd.platform.hotkey.dashboard.common.domain.req.ChartReq;
 import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
 import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
 import com.jd.platform.hotkey.dashboard.common.domain.vo.HotKeyLineChartVo;
+import com.jd.platform.hotkey.dashboard.common.eunm.ResultEnum;
 import com.jd.platform.hotkey.dashboard.model.KeyRecord;
 import com.jd.platform.hotkey.dashboard.model.KeyTimely;
 import com.jd.platform.hotkey.dashboard.model.Statistics;
@@ -76,7 +77,7 @@ public class KeyController extends BaseController {
 	@PostMapping("/list")
 	@ResponseBody
 	public Page<KeyRecord> list(PageReq page, SearchReq searchReq){
-		PageInfo<KeyRecord> info = keyService.pageKeyRecord(page, param2(searchReq));
+		PageInfo<KeyRecord> info = keyService.pageKeyRecord(page, searchReq);
 		return new Page<>(info.getPageNum(),(int)info.getTotal(),info.getList());
 	}
 
@@ -90,7 +91,7 @@ public class KeyController extends BaseController {
 	@PostMapping("/listTimely")
 	@ResponseBody
 	public Page<KeyTimely> listTimely(PageReq page, SearchReq searchReq){
-		PageInfo<KeyTimely> info = keyService.pageKeyTimely(page, param2(searchReq));
+		PageInfo<KeyTimely> info = keyService.pageKeyTimely(page, searchReq);
 		return new Page<>(info.getPageNum(),(int)info.getTotal(),info.getList());
 	}
 
@@ -118,6 +119,9 @@ public class KeyController extends BaseController {
 	@PostMapping("/add")
 	@ResponseBody
 	public Result add(KeyTimely key){
+		if(!checkApp(key.getAppName())){
+			return Result.error(ResultEnum.NO_PERMISSION);
+		}
 		key.setType(0);
 		key.setSource(userName());
 		int b = keyService.insertKeyByUser(key);
@@ -127,6 +131,10 @@ public class KeyController extends BaseController {
 	@PostMapping("/remove")
 	@ResponseBody
 	public Result remove(String key){
+		String[] arr = key.split("/");
+		if(!checkApp(arr[0])){
+			return Result.error(ResultEnum.NO_PERMISSION);
+		}
 		int b = keyService.delKeyByUser(new KeyTimely(key,userName()));
 		return b == 0 ? Result.fail():Result.success();
 	}
@@ -141,8 +149,11 @@ public class KeyController extends BaseController {
 
     @PostMapping("/edit")
     @ResponseBody
-    public Result editSave(KeyTimely keyTimely) {
-		return Result.success(keyService.updateKeyByUser(keyTimely));
+    public Result editSave(KeyTimely key) {
+		if(!checkApp(key.getAppName())){
+			return Result.error(ResultEnum.NO_PERMISSION);
+		}
+		return Result.success(keyService.updateKeyByUser(key));
     }
 
 

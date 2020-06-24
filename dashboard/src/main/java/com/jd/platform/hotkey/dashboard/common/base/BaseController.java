@@ -4,8 +4,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.alibaba.fastjson.JSON;
+import com.jd.platform.hotkey.dashboard.common.domain.Constant;
 import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
 import com.jd.platform.hotkey.dashboard.util.JwtTokenUtil;
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 
 import org.springframework.web.bind.WebDataBinder;
@@ -27,6 +29,18 @@ public class BaseController {
         binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
     }
 
+    public boolean checkApp(String app){
+        String authHeader = JwtTokenUtil.getAuthHeader(request);
+        assert authHeader != null;
+        Claims claims = JwtTokenUtil.claims(authHeader.substring(2));
+        String role = claims.get("role",String.class);
+        if(role.equals(Constant.ADMIN)){
+            return true;
+        }
+        String appName = claims.get("appName",String.class);
+        return appName.equals(app);
+    }
+
 
     public String userName(){
         final String authHeader = JwtTokenUtil.getAuthHeader(request);
@@ -44,11 +58,5 @@ public class BaseController {
         return dto;
     }
 
-    public SearchReq param2(SearchReq dto){
-        String authHeader = JwtTokenUtil.getAuthHeader(request);
-        if(dto == null){ dto = new SearchReq(); }
-        dto.setAppName(JwtTokenUtil.getAppName(authHeader.substring(2)));
-        return dto;
-    }
 
 }

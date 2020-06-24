@@ -6,6 +6,7 @@ import com.jd.platform.hotkey.dashboard.common.domain.Constant;
 import com.jd.platform.hotkey.dashboard.common.domain.Page;
 import com.jd.platform.hotkey.dashboard.common.domain.Result;
 import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
+import com.jd.platform.hotkey.dashboard.common.eunm.ResultEnum;
 import com.jd.platform.hotkey.dashboard.model.Rules;
 import com.jd.platform.hotkey.dashboard.service.RuleService;
 import org.springframework.stereotype.Controller;
@@ -26,14 +27,8 @@ public class RuleController extends BaseController {
 
 
 
-	@GetMapping("/view2")
-	public String view2(ModelMap modelMap){
-		modelMap.put("title", Constant.RULE_CONFIG_VIEW);
-		return "admin/rule/view";
-	}
-
 	@GetMapping("/viewDetail")
-	public String view3(ModelMap modelMap){
+	public String viewDetail(ModelMap modelMap){
 		modelMap.put("title", Constant.RULE_CONFIG_VIEW);
 		return "admin/rule/jn";
 	}
@@ -45,26 +40,13 @@ public class RuleController extends BaseController {
 	}
 
 
-	@PostMapping("/add")
-	@ResponseBody
-	public Result add(Rules rule){
-		rule.setUpdateUser(userName());
-		int b = ruleService.add(rule);
-		return b == 0 ? Result.fail():Result.success();
-	}
-
-
-	@PostMapping("/update")
-	@ResponseBody
-	public Result update(Rules rules){
-		rules.setUpdateUser(userName());
-		int b = ruleService.updateRule(rules);
-		return b == 0 ? Result.fail():Result.success();
-	}
 
 	@PostMapping("/save")
 	@ResponseBody
 	public Result save(Rules rules){
+		if(!checkApp(rules.getApp())){
+			return Result.error(ResultEnum.NO_PERMISSION);
+		}
 		rules.setUpdateUser(userName());
 		int b = ruleService.save(rules);
 		return b == 0 ? Result.fail():Result.success();
@@ -74,6 +56,9 @@ public class RuleController extends BaseController {
 	@PostMapping("/remove")
 	@ResponseBody
 	public Result remove(String key){
+		if(!checkApp(key)){
+			return Result.error(ResultEnum.NO_PERMISSION);
+		}
 		int b = ruleService.delRule(key, userName());
 		return b == 0 ? Result.fail():Result.success();
 	}
@@ -87,7 +72,7 @@ public class RuleController extends BaseController {
 
 	@PostMapping("/list")
 	@ResponseBody
-	public Page<Rules> list2(PageReq page, String searchText){
+	public Page<Rules> list(PageReq page, String searchText){
 		page.setPageSize(30);
 		PageInfo<Rules> info = ruleService.pageKeyRule(page, param(searchText));
 		return new Page<>(info.getPageNum(),(int)info.getTotal(),info.getList());
@@ -111,8 +96,7 @@ public class RuleController extends BaseController {
 	@PostMapping("/listRules")
 	@ResponseBody
 	public List<String> rules(){
-		List<String> info = ruleService.listRules(null);
-		return info;
+		return ruleService.listRules(null);
 	}
 
 }

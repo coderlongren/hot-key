@@ -15,58 +15,33 @@
 <body id="listbody">
 <!-- 右边内容 -->
 <div class="wrap-fluid">
-<!--
-    <div class="container-fluid paper-wrap bevel tlbr"  style="height:1280px">
--->
-    <div class="container-fluid bevel tlbr"
-         style="min-height: 600px;position: relative;overflow: hidden;">
 
-        <!-- 内容 -->
-     <!--   <div class="content-wrap" style="height: 1000px">-->
-            <!-- 结束内容 -->
-           <!-- <div class="row" style="height: 1000px">
-                <div class="col-sm-12" style="height: 1000px">-->
-                    <!-- 搜索条件 -->
-<!--
-                    <div class="nest" id="inlineClose" style="position: relative">
--->
-                      <!--  <div class="title-alt">
-                            <h6>搜索条件</h6>
-                        </div>-->
-
-                        <div class="body-nest" id="search_div"  style="display: block">
-                            <div class="form_left">
-                                <form role="form" class="form-inline">
-                                    <div class="form-group" style="width: 16%">
-                                        <label class="control-label timeBut2" style="float: left;padding-top: 10px">所属APP：</label>
-                                     <!--  <select name="appName"  class="form-control" style="width: 66%" id="jnApp">
-                                        </select>  -->
-                                        <select name="appName"  class="form-control" style="width: 90px" id="jnApp">
-                                        </select>
-                                    </div>
-                                   <!-- <button onclick="add()" class="btn btn-success" type="button"  style="margin-left: 63%"><i class="fa fa-plus"></i>&nbsp;新建</button>
-                                    <button onclick="edit()" class="btn btn-success" type="button" style="margin-left: 1%"><i class="fa fa-edit"></i>&nbsp;编辑</button>
-                                    <button onclick="del()" class="btn btn-success" type="button" style="margin-left: 1%"><i class="fa fa-remove"></i>&nbsp;删除</button>-->
-                                    <button onclick="save()" class="btn btn-success" type="button" style="margin-left: 75%"><i class="fa fa-edit"></i>&nbsp;保存</button>
-                                </form>
-                            </div>
-                        </div>
-                  <!--  </div>-->
-                    <!-- END搜索条件 -->
-                    <!-- 空白页开始-->
-                    <div class="nest" id="Blank_PageClose" style="height: 1000px;">
-                        <div class="title-alt" style="height: 1px">
-                        </div>
-
-                        <div class="body-nest" id="Blank_Page_Content" style="height: 1000px;">
-                                <iframe  width="100%"  height="90%"  id="jn" name="jn"  src="/rule/viewDetail" frameborder="0" marginheight="0" marginwidth="0" border="false"></iframe>
-                        </div>
+    <div class="container-fluid bevel tlbr" style="min-height: 600px;position: relative;overflow: hidden;">
+        <div class="body-nest" id="search_div"  style="display: block">
+            <div class="form_left">
+                <form role="form" class="form-inline">
+                    <div class="form-group" style="width: 16%">
+                        <label class="control-label timeBut2" style="float: left;padding-top: 10px">所属APP：</label>
+                        <select name="appName"  class="form-control" style="width: 90px" id="jnApp">
+                        </select>
                     </div>
-               <!-- </div>-->
-                <!-- 空白页结束 -->
-           <!-- </div>-->
-            <!-- 结束内容 -->
-       <!-- </div>-->
+                    <button onclick="save()" class="btn btn-success" type="button" style="margin-left: 75%"><i class="fa fa-edit"></i>&nbsp;保存</button>
+                </form>
+            </div>
+        </div>
+        <div class="" style="font-size: 16px;padding-top: 12px;height: 1px;">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            key-(*代表任意以key为前缀),&nbsp;&nbsp; prefix-是否前缀, &nbsp;&nbsp;interval-间隔时间(秒),
+            threshold-阈值,&nbsp;&nbsp; duration-缓存时间(秒),默认60
+        </div>
+        <div class="nest" id="Blank_PageClose" style="height: 1000px;">
+            <div class="title-alt" style="height: 1px;">
+
+            </div>
+            <div class="body-nest" id="Blank_Page_Content" style="height: 1000px;">
+                <iframe  width="100%"  height="90%"  id="jn" name="jn"  src="/rule/viewDetail" frameborder="0" marginheight="0" marginwidth="0" border="false"></iframe>
+            </div>
+        </div>
     </div>
 </div>
 <!-- 结束右边内容 -->

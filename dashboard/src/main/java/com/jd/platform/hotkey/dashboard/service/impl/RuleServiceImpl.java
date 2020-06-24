@@ -95,9 +95,7 @@ public class RuleServiceImpl implements RuleService {
 
     @Override
     public PageInfo<Rules> pageKeyRule(PageReq page, SearchReq param) {
-        String app = param.getAppName();
-        String prefix = StringUtil.isEmpty(app) ? ConfigConstant.rulePath : ConfigConstant.rulePath + app;
-        List<KeyValue> keyValues = configCenter.getPrefix(prefix);
+        List<KeyValue> keyValues = configCenter.getPrefix(ConfigConstant.rulePath);
         List<Rules> rules = new ArrayList<>();
         for (KeyValue kv : keyValues) {
             String v = kv.getValue().toStringUtf8();
@@ -124,7 +122,7 @@ public class RuleServiceImpl implements RuleService {
 //        }
         String to = JSON.toJSONString(rules);
 //        logMapper.insertSelective(new ChangeLog(app, 1, from, to,
-//                rules.getUpdateUser(), app, SystemClock.nowDate()));
+//        rules.getUpdateUser(), app, SystemClock.nowDate()));
         configCenter.put(ConfigConstant.rulePath + app, rules.getRules());
         return 1;
     }
