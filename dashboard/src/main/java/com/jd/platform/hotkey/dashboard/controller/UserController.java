@@ -78,12 +78,7 @@ public class UserController extends BaseController {
 		assert authHeader != null;
 		Claims claims = JwtTokenUtil.claims(authHeader.substring(2));
 		String role = claims.get("role",String.class);
-		String appName = claims.get("appName",String.class);
-		if(role.equals(Constant.ADMIN)){
-			List<String> apps =	userService.listApp();
-			return new User(role,apps);
-		}
-		return new User(role, Collections.singletonList(appName));
+		return new User(role, userService.listApp());
 	}
 
 
