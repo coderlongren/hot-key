@@ -1,5 +1,6 @@
 package com.jd.platform.hotkey.dashboard.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.jd.platform.hotkey.dashboard.common.base.BaseController;
 import com.jd.platform.hotkey.dashboard.common.domain.Constant;
@@ -7,6 +8,7 @@ import com.jd.platform.hotkey.dashboard.common.domain.Page;
 import com.jd.platform.hotkey.dashboard.common.domain.Result;
 import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
 import com.jd.platform.hotkey.dashboard.common.eunm.ResultEnum;
+import com.jd.platform.hotkey.dashboard.model.Rule;
 import com.jd.platform.hotkey.dashboard.model.Rules;
 import com.jd.platform.hotkey.dashboard.service.RuleService;
 import org.springframework.stereotype.Controller;
@@ -17,6 +19,9 @@ import javax.annotation.Resource;
 import java.util.List;
 
 
+/**
+ * @author liyunfeng31
+ */
 @Controller
 @RequestMapping("/rule")
 public class RuleController extends BaseController {
@@ -47,10 +52,14 @@ public class RuleController extends BaseController {
 		if(!checkApp(rules.getApp())){
 			return Result.error(ResultEnum.NO_PERMISSION);
 		}
+		if(!checkRule(rules.getRules())){
+			return Result.error(ResultEnum.PARAM_ERROR);
+		}
 		rules.setUpdateUser(userName());
 		int b = ruleService.save(rules);
 		return b == 0 ? Result.fail():Result.success();
 	}
+
 
 
 	@PostMapping("/remove")
@@ -98,6 +107,22 @@ public class RuleController extends BaseController {
 	public List<String> rules(){
 		return ruleService.listRules(null);
 	}
+
+
+	/**
+	 * 校验是否合法
+	 * @param rules rules
+	 * @return boolean
+	 */
+	private boolean checkRule(String rules) {
+		try {
+			JSON.parseArray(rules, Rule.class);
+		}catch(Exception e){
+			return false;
+		}
+		return true;
+	}
+
 
 }
 
