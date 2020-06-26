@@ -3,12 +3,13 @@ package com.jd.platform.hotkey.dashboard.util;
 import com.alibaba.fastjson.JSON;
 import com.jd.platform.hotkey.dashboard.common.domain.Constant;
 import com.jd.platform.hotkey.dashboard.common.domain.vo.HotKeyLineChartVo;
-import com.jd.platform.hotkey.dashboard.common.monitor.DataHandler;
+import com.jd.platform.hotkey.dashboard.common.domain.vo.LineChartVo;
 import com.jd.platform.hotkey.dashboard.model.Statistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -129,6 +130,58 @@ public class CommonUtil {
 		   return list.stream().collect(Collectors.groupingBy(Statistics::getRule));
 		}
 		return  list.stream().collect(Collectors.groupingBy(Statistics::getKeyName));
+	}
+
+	/**
+	 * 分组
+	 * @param list list
+	 * @return map
+	 */
+	private static Map<Integer, List<Statistics>> listGroupByTime(List<Statistics> list, boolean isMinute){
+		if(isMinute){
+			return  list.stream().collect(Collectors.groupingBy(Statistics::getMinutes));
+		}
+		return list.stream().collect(Collectors.groupingBy(Statistics::getHours));
+	}
+
+
+	/**
+	 * 处理数据
+	 * @param st 开始时间
+	 * @param et 结束时间
+	 * @param list 数据
+	 * @param isMinute 类型
+	 * @return vo
+	 */
+	public static HotKeyLineChartVo processData(LocalDateTime st, LocalDateTime et, List<Statistics> list, boolean isMinute){
+		Set<String> set = new TreeSet<>();
+		Duration duration = Duration.between(st,et);
+		long passTime = isMinute ? duration.toMinutes() : duration.toHours();
+		Map<Integer, Integer> timeCountMap =  new TreeMap<>();
+		String pattern = isMinute ? DateUtil.PATTERN_MINUS : DateUtil.PATTERN_HOUR;
+		for (int i = 0; i < passTime; i++) {
+			int time = DateUtil.reviseTime(st, i, isMinute ? 1:2);
+			set.add(DateUtil.formatTime(time, pattern));
+			timeCountMap.put(time,null);
+		}
+		Map<String, List<Statistics>> ruleStatsMap = listGroup(list);
+		Map<String, List<Integer>> ruleDataMap = new HashMap<>(ruleStatsMap.size());
+		ruleStatsMap.forEach((rule,statisticsList)->{
+			Map<Integer, List<Statistics>> timeStatsMap = listGroupByTime(statisticsList, isMinute);
+			timeCountMap.forEach((k,v)->{
+				if(timeStatsMap.get(k) == null){
+					timeCountMap.put(k,0);
+				}else{
+					timeCountMap.put(k,timeStatsMap.get(k).get(0).getCount());
+				}
+			});
+			ruleDataMap.put(rule, new ArrayList<>(timeCountMap.values()));
+		});
+
+		HotKeyLineChartVo vo = new HotKeyLineChartVo();
+		vo.setxAxis2(set);
+		vo.setSeries2(ruleDataMap);
+		return vo;
 	}
 
 

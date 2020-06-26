@@ -99,4 +99,9 @@ public class DateUtil {
     public static Date preDays(int days){
         return ldtToDate(LocalDateTime.now().minusDays(days));
     }
+
+    public static String formatTime(int time,String pattern){
+        return strToLdt(time+"", pattern).toString().replace("T", " ");
+    }
+
 }
