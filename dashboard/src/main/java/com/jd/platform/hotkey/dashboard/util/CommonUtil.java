@@ -1,6 +1,7 @@
 package com.jd.platform.hotkey.dashboard.util;
 
 import com.alibaba.fastjson.JSON;
+import com.jd.platform.hotkey.dashboard.common.domain.Constant;
 import com.jd.platform.hotkey.dashboard.common.domain.vo.HotKeyLineChartVo;
 import com.jd.platform.hotkey.dashboard.common.monitor.DataHandler;
 import com.jd.platform.hotkey.dashboard.model.Statistics;
@@ -124,6 +125,9 @@ public class CommonUtil {
 	 * @return map
 	 */
 	private static Map<String, List<Statistics>> listGroup(List<Statistics> list){
+		if(Constant.VERSION != 1){
+		   return list.stream().collect(Collectors.groupingBy(Statistics::getRule));
+		}
 		return  list.stream().collect(Collectors.groupingBy(Statistics::getKeyName));
 	}
 

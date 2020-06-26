@@ -31,7 +31,7 @@ var JSONFormat = (function(){
                 html_fragment = _format_array(object, indent_count);
                 break;
             case 'Object' :
-                console.log(object);
+                //console.log(object);
                 if(object instanceof BigNumber){
                   html_fragment = _format_number(object.toFixed());
                 }else{

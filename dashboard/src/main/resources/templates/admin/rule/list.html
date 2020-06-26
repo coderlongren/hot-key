@@ -140,14 +140,20 @@
                 "Authorization":getCookie("token")
             },
             async : false,
-            error : function(request) {
-                $.modal.alertError("系统错误");
+            error : function(XMLHttpRequest){
+                $.modal.alertError(XMLHttpRequest.responseJSON.msg);
             },
             success : function(data) {
                 console.log(data)
                 let apps = data.appNames;
-                for (var i = 0; i < apps.length; i++) {
-                    $("#apps").append("<option>" + apps[i] + "</option>");
+                let appName = data.appName;
+                for (let i = 0; i < apps.length; i++) {
+                    let app = apps[i];
+                    if(app === appName){
+                        $("#apps").append("<option selected = selected>" + apps[i] + "</option>");
+                    }else{
+                        $("#apps").append("<option>" + apps[i] + "</option>");
+                    }
                 }
             }
         });

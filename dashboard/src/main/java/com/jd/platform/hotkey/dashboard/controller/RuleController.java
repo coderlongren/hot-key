@@ -8,6 +8,7 @@ import com.jd.platform.hotkey.dashboard.common.domain.Page;
 import com.jd.platform.hotkey.dashboard.common.domain.Result;
 import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
 import com.jd.platform.hotkey.dashboard.common.eunm.ResultEnum;
+import com.jd.platform.hotkey.dashboard.common.ex.BizException;
 import com.jd.platform.hotkey.dashboard.model.Rule;
 import com.jd.platform.hotkey.dashboard.model.Rules;
 import com.jd.platform.hotkey.dashboard.service.RuleService;
@@ -49,12 +50,8 @@ public class RuleController extends BaseController {
 	@PostMapping("/save")
 	@ResponseBody
 	public Result save(Rules rules){
-		if(!checkApp(rules.getApp())){
-			return Result.error(ResultEnum.NO_PERMISSION);
-		}
-		if(!checkRule(rules.getRules())){
-			return Result.error(ResultEnum.PARAM_ERROR);
-		}
+		checkApp(rules.getApp());
+		checkRule(rules.getRules());
 		rules.setUpdateUser(userName());
 		int b = ruleService.save(rules);
 		return b == 0 ? Result.fail():Result.success();
@@ -65,9 +62,7 @@ public class RuleController extends BaseController {
 	@PostMapping("/remove")
 	@ResponseBody
 	public Result remove(String key){
-		if(!checkApp(key)){
-			return Result.error(ResultEnum.NO_PERMISSION);
-		}
+		checkApp(key);
 		int b = ruleService.delRule(key, userName());
 		return b == 0 ? Result.fail():Result.success();
 	}
@@ -81,9 +76,9 @@ public class RuleController extends BaseController {
 
 	@PostMapping("/list")
 	@ResponseBody
-	public Page<Rules> list(PageReq page, String searchText){
+	public Page<Rules> list(PageReq page, String appName){
 		page.setPageSize(30);
-		PageInfo<Rules> info = ruleService.pageKeyRule(page, param(searchText));
+		PageInfo<Rules> info = ruleService.pageKeyRule(page, appName);
 		return new Page<>(info.getPageNum(),(int)info.getTotal(),info.getList());
 	}
 
@@ -114,13 +109,12 @@ public class RuleController extends BaseController {
 	 * @param rules rules
 	 * @return boolean
 	 */
-	private boolean checkRule(String rules) {
+	private void checkRule(String rules) {
 		try {
 			JSON.parseArray(rules, Rule.class);
 		}catch(Exception e){
-			return false;
+			throw new BizException(ResultEnum.ILLEGAL_JSON_ARR);
 		}
-		return true;
 	}
 
 

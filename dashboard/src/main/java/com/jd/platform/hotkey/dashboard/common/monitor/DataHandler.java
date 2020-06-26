@@ -159,6 +159,7 @@ public class DataHandler {
             if (statistics.size() != 0) {
                 statistics.forEach(x -> {
                     x.setBizType(6);
+                    x.setRule(x.getRule());
                     x.setCreateTime(nowTime);
                     x.setDays(day);
                     x.setHours(hour);
@@ -193,6 +194,7 @@ public class DataHandler {
             }
             records.forEach(x -> {
                 x.setBizType(5);
+                x.setRule(x.getRule());
                 x.setCreateTime(nowTime);
                 x.setDays(day);
                 x.setHours(hour);

@@ -119,9 +119,7 @@ public class KeyController extends BaseController {
 	@PostMapping("/add")
 	@ResponseBody
 	public Result add(KeyTimely key){
-		if(!checkApp(key.getAppName())){
-			return Result.error(ResultEnum.NO_PERMISSION);
-		}
+		checkApp(key.getAppName());
 		key.setType(0);
 		key.setSource(userName());
 		int b = keyService.insertKeyByUser(key);
@@ -132,9 +130,7 @@ public class KeyController extends BaseController {
 	@ResponseBody
 	public Result remove(String key){
 		String[] arr = key.split("/");
-		if(!checkApp(arr[0])){
-			return Result.error(ResultEnum.NO_PERMISSION);
-		}
+		checkApp(arr[0]);
 		int b = keyService.delKeyByUser(new KeyTimely(key,userName()));
 		return b == 0 ? Result.fail():Result.success();
 	}
@@ -150,9 +146,7 @@ public class KeyController extends BaseController {
     @PostMapping("/edit")
     @ResponseBody
     public Result editSave(KeyTimely key) {
-		if(!checkApp(key.getAppName())){
-			return Result.error(ResultEnum.NO_PERMISSION);
-		}
+		checkApp(key.getAppName());
 		return Result.success(keyService.updateKeyByUser(key));
     }
 

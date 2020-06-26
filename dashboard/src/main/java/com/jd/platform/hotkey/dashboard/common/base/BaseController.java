@@ -6,6 +6,8 @@ import java.util.Date;
 import com.alibaba.fastjson.JSON;
 import com.jd.platform.hotkey.dashboard.common.domain.Constant;
 import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
+import com.jd.platform.hotkey.dashboard.common.eunm.ResultEnum;
+import com.jd.platform.hotkey.dashboard.common.ex.BizException;
 import com.jd.platform.hotkey.dashboard.util.JwtTokenUtil;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -29,16 +31,17 @@ public class BaseController {
         binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
     }
 
-    public boolean checkApp(String app){
+    public void checkApp(String app){
         String authHeader = JwtTokenUtil.getAuthHeader(request);
         assert authHeader != null;
         Claims claims = JwtTokenUtil.claims(authHeader.substring(2));
         String role = claims.get("role",String.class);
-        if(role.equals(Constant.ADMIN)){
-            return true;
+        if(!role.equals(Constant.ADMIN)){
+            String appName = claims.get("appName",String.class);
+            if(!appName.equals(app)){
+                throw new BizException(ResultEnum.NO_PERMISSION);
+            }
         }
-        String appName = claims.get("appName",String.class);
-        return appName.equals(app);
     }
 
 
@@ -54,7 +57,7 @@ public class BaseController {
         String authHeader = JwtTokenUtil.getAuthHeader(request);
         SearchReq dto = JSON.parseObject(text, SearchReq.class);
         if(dto == null){ dto = new SearchReq(); }
-        dto.setAppName(JwtTokenUtil.getAppName(authHeader.substring(2)));
+       // dto.setAppName(JwtTokenUtil.getAppName(authHeader.substring(2)));
         return dto;
     }
 

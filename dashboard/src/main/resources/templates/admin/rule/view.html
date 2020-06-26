@@ -72,17 +72,26 @@
             "Authorization":getCookie("token")
         },
         async : false,
-        error : function(request) {
-            $.modal.alertError("系统错误");
+        error : function(XMLHttpRequest){
+            $.modal.alertError(XMLHttpRequest.responseJSON.msg);
         },
         success : function(data) {
-            console.log(data)
             let apps = data.appNames;
-            for (var i = 0; i < apps.length; i++) {
-                if(apps[i] == initApp){
-                    $("#jnApp").append("<option selected = 'selected'>" + apps[i] + "</option>");
+            let appName = data.appName;
+            for (let i = 0; i < apps.length; i++) {
+                let app = apps[i];
+                if(initApp === 1){
+                    if(app === appName){
+                        $("#jnApp").append("<option selected = selected>" + apps[i] + "</option>");
+                    }else{
+                        $("#jnApp").append("<option>" + apps[i] + "</option>");
+                    }
                 }else{
-                    $("#jnApp").append("<option>" + apps[i] + "</option>");
+                    if(apps[i] === initApp){
+                        $("#jnApp").append("<option selected = 'selected'>" + apps[i] + "</option>");
+                    }else{
+                        $("#jnApp").append("<option>" + apps[i] + "</option>");
+                    }
                 }
             }
         }
@@ -110,7 +119,6 @@
                 $.modal.alertError("系统错误");
             },
             success : function(data) {
-                console.log(data)
                 layer.alert(data.msg)
             }
         });
@@ -127,11 +135,10 @@
             },
             data:{"app":app,"rules":rules},
             async : false,
-            error : function(request) {
-                $.modal.alertError("系统错误");
+            error : function(XMLHttpRequest){
+                $.modal.alertError(XMLHttpRequest.responseJSON.msg);
             },
             success : function(data) {
-                console.log(data)
                 layer.alert(data.msg)
                 $("#recordSearch", parent.document.body).trigger("click");
                 parent.layer.closeAll()
