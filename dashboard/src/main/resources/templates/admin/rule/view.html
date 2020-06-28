@@ -76,6 +76,10 @@
             $.modal.alertError(XMLHttpRequest.responseJSON.msg);
         },
         success : function(data) {
+            let role = data.role;
+            if(role === "ADMIN"){
+                $("#apps").append("<option></option>");
+            }
             let apps = data.appNames;
             let appName = data.appName;
             for (let i = 0; i < apps.length; i++) {
@@ -126,6 +130,12 @@
     function save(){
         let app = $("#jnApp").val();
         let rules =  window.frames["jn"].document.getElementById("myWord").value;
+        let target =  window.frames["jn"].document.getElementById("json-target").innerText;
+
+        if(target.indexOf("解析错误") != -1 ){
+            $.modal.alertError("非法的json数组");
+            return false;
+        }
         $.ajax({
             cache : true,
             type : "POST",
@@ -140,7 +150,7 @@
             },
             success : function(data) {
                 layer.alert(data.msg)
-                $("#recordSearch", parent.document.body).trigger("click");
+                parent.location.reload();
                 parent.layer.closeAll()
             }
         });
