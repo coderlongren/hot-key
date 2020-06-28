@@ -98,6 +98,7 @@ public class ClientStarter {
         EtcdConfigFactory.buildConfigCenter(etcdServer);
         //开始定时推送
         PushSchedulerStarter.startPusher(pushPeriod);
+        PushSchedulerStarter.startCountPusher(10);
         //开启worker重连器
         WorkerRetryConnector.retryConnectWorkers();
 
