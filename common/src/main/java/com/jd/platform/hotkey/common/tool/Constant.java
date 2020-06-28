@@ -14,7 +14,14 @@ public class Constant {
     public static int Default_Threads = 4;
 
     public static int MAGIC_NUMBER = 0x12fcf76;
+    /**
+     * netty的分隔符
+     */
     public static String DELIMITER = "$(* *)$";
+    /**
+     * 数量统计时，rule+时间 组成key用的分隔符
+     */
+    public static String COUNT_DELIMITER = "#**#";
 
     //单次包最大2M
     public static int MAX_LENGTH = 2 * 1024 * 1024;

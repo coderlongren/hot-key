@@ -8,6 +8,7 @@ public enum MessageType {
     APP_NAME((byte) 1),
     REQUEST_NEW_KEY((byte) 2),
     RESPONSE_NEW_KEY((byte) 3),
+    REQUEST_HIT_COUNT((byte) 7),
     PING((byte) 4), PONG((byte) 5),
     EMPTY((byte) 6);
 

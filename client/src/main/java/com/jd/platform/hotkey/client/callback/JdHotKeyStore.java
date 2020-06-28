@@ -3,6 +3,8 @@ package com.jd.platform.hotkey.client.callback;
 import com.jd.platform.hotkey.client.cache.CacheFactory;
 import com.jd.platform.hotkey.client.cache.LocalCache;
 import com.jd.platform.hotkey.client.core.key.HotKeyPusher;
+import com.jd.platform.hotkey.client.core.key.KeyHandlerFactory;
+import com.jd.platform.hotkey.client.core.key.KeyHotModel;
 import com.jd.platform.hotkey.common.model.typeenum.KeyType;
 import com.jd.platform.hotkey.common.tool.Constant;
 
@@ -20,11 +22,13 @@ public class JdHotKeyStore {
         if (!inRule(key)) {
             return false;
         }
-        Object value = getValueSimple(key);
-        if (value == null) {
+        boolean isHot = isHot(key);
+        if (!isHot) {
             HotKeyPusher.push(key, null);
         }
-        return value != null;
+        //统计计数
+        KeyHandlerFactory.getCounter().collect(new KeyHotModel(key, isHot));
+        return isHot;
     }
 
     /**
@@ -43,7 +47,9 @@ public class JdHotKeyStore {
      * 判断是否是热key，如果是热key，则给value赋值
      */
     public static void smartSet(String key, Object value) {
-        setValue(key, value);
+        if (isHot(key)) {
+            setValueDirectly(key, value);
+        }
     }
 
     /**
@@ -58,6 +64,8 @@ public class JdHotKeyStore {
         if (value == null) {
             HotKeyPusher.push(key, keyType);
         }
+        //统计计数
+        KeyHandlerFactory.getCounter().collect(new KeyHotModel(key, value != null));
         //如果是默认值，也返回null
         if(value instanceof Integer && Constant.MAGIC_NUMBER == (int) value) {
             return null;
@@ -76,16 +84,10 @@ public class JdHotKeyStore {
         return getCache(key).get(key);
     }
 
-    public static void setValue(String key, Object value) {
-        if (isHot(key)) {
-            setValueDirectly(key, value);
-        }
-    }
-
     /**
      * 纯粹的本地缓存，无需该key是热key
      */
-    public static void setValueDirectly(String key, Object value) {
+    static void setValueDirectly(String key, Object value) {
         getCache(key).set(key, value);
     }
 
@@ -98,28 +100,28 @@ public class JdHotKeyStore {
     /**
      * 判断是否是热key。适用于只需要判断key，而不需要value的场景
      */
-    public static boolean isHot(String key) {
+    static boolean isHot(String key) {
         return getValueSimple(key) != null;
     }
 
     /**
      * 判断是否已经缓存过了。
      */
-    public static boolean isValueCached(String key, KeyType keyType) {
-        Object value = getValue(key, keyType);
-        //如果value不为null且不为默认值
-        if (value == null) {
-            return false;
-        }
-        return !(value instanceof Integer) || Constant.MAGIC_NUMBER != (int) value;
-    }
+//    private static boolean isValueCached(String key, KeyType keyType) {
+//        Object value = getValue(key, keyType);
+//        //如果value不为null且不为默认值
+//        if (value == null) {
+//            return false;
+//        }
+//        return !(value instanceof Integer) || Constant.MAGIC_NUMBER != (int) value;
+//    }
 
     /**
      * 判断某key的value是否已经缓存过了
      */
-    public static boolean isValueCached(String key) {
-        return isValueCached(key, KeyType.REDIS_KEY);
-    }
+//    public static boolean isValueCached(String key) {
+//        return isValueCached(key, KeyType.REDIS_KEY);
+//    }
 
     private static LocalCache getCache(String key) {
         return CacheFactory.getNonNullCache(key);

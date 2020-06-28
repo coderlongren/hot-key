@@ -61,10 +61,11 @@ public class Cache {
     //        }
 
     public String get(String key) {
+        Object object = JdHotKeyStore.getValue(key);
         //如果已经缓存过了
-        if (JdHotKeyStore.getValue(key) != null) {
-            System.out.println("1");
-            return JdHotKeyStore.getValue(key).toString();
+        if (object != null) {
+            System.out.println("is hot key");
+            return object.toString();
         } else {
             String value = getFromRedis(key);
             JdHotKeyStore.smartSet(key, value);
