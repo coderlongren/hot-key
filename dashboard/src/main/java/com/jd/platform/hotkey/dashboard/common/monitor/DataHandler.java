@@ -70,7 +70,7 @@ public class DataHandler {
                     twoTuple = handHotKey(queue.take());
                 } catch (Exception e) {
                     e.printStackTrace();
-                    log.error("handHotKey error ," + e.getMessage());
+                    log.error("handHotKey error ," + e.getCause());
                     continue;
                 }
                 KeyRecord keyRecord = twoTuple.getSecond();
@@ -203,7 +203,7 @@ public class DataHandler {
                 x.setUuid(5 + "_" + x.getKeyName() + "_" + minus);
             });
             int row = statisticsMapper.batchInsert(records);
-            log.info("每分钟统计规则，时间：{}, 影响行数：{}, data list:{}", now.toString(), row, JSON.toJSONString(records));
+//            log.info("每分钟统计规则，时间：{}, 影响行数：{}, data list:{}", now.toString(), row, JSON.toJSONString(records));
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,9 +1,7 @@
 package com.jd.platform.hotkey.dashboard.util;
 
-import com.alibaba.fastjson.JSON;
 import com.jd.platform.hotkey.dashboard.common.domain.Constant;
 import com.jd.platform.hotkey.dashboard.common.domain.vo.HotKeyLineChartVo;
-import com.jd.platform.hotkey.dashboard.common.domain.vo.LineChartVo;
 import com.jd.platform.hotkey.dashboard.model.Statistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,7 +90,7 @@ public class CommonUtil {
 		String pattern = isHour ? DateUtil.PATTERN_MINUS : DateUtil.PATTERN_HOUR;
 		Map<String, int[]> map = new HashMap<>(10);
 		Map<String, List<Statistics>> listMap = listGroup(list);
-		log.info("按照rule分组以后的listMap--> {}", JSON.toJSONString(listMap));
+//		log.info("按照rule分组以后的listMap--> {}", JSON.toJSONString(listMap));
 		for (Map.Entry<String, List<Statistics>> m : listMap.entrySet()) {
 			int start = DateUtil.reviseTime(startTime, 0, type);
 			map.put(m.getKey(), new int[size]);
@@ -103,7 +101,7 @@ public class CommonUtil {
 					LocalDateTime tmpTime = DateUtil.strToLdt((start - 1) + "", pattern);
 					start = DateUtil.reviseTime(tmpTime, 1, type);
 				}
-				log.info("start--> {},  tmp---> {} ", start, tmp);
+//				log.info("start--> {},  tmp---> {} ", start, tmp);
 				set.add(DateUtil.strToLdt(start + "", pattern).toString().replace("T", " "));
 				Statistics st = m.getValue().get(tmp);
 				int val = isHour ? st.getMinutes() : st.getHours();
