@@ -48,7 +48,7 @@
 ### 界面效果
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/0622/163805_0aa68d4b_303698.png "屏幕截图.png")
 ### 微信群
-![输入图片说明](https://images.gitee.com/uploads/images/2020/0622/100431_29c817c1_303698.jpeg "WechatIMG153.jpeg")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0629/095135_4d6846df_303698.jpeg "WechatIMG157.jpeg")
 
 
 #### 安装教程
