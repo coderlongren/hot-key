@@ -154,7 +154,7 @@ public class KeyController extends BaseController {
 
 	@RequestMapping(value = "/export", method = RequestMethod.GET)
 	@ResponseBody
-	public void export(HttpServletResponse resp,String startTime,String endTime,String appName,String key){
+	public void export(HttpServletResponse resp,String startTime,String endTime,String app,String key){
 		SearchReq req = new SearchReq();
 		if(StringUtil.isNotEmpty(startTime)){
 			req.setStartTime(DateUtil.strToDate(startTime));
@@ -162,7 +162,7 @@ public class KeyController extends BaseController {
 		if(StringUtil.isNotEmpty(endTime)){
 			req.setEndTime(DateUtil.strToDate(endTime));
 		}
-		req.setAppName(appName);
+		req.setApp(app);
 		req.setKey(key);
 		List<Statistics> records = keyService.listMaxHot(req);
 		List<List<String>> rows = transform(records);

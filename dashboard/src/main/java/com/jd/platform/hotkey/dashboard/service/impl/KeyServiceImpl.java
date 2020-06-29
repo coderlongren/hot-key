@@ -21,6 +21,7 @@ import com.jd.platform.hotkey.dashboard.model.KeyTimely;
 import com.jd.platform.hotkey.dashboard.model.ReceiveCount;
 import com.jd.platform.hotkey.dashboard.model.Statistics;
 import com.jd.platform.hotkey.dashboard.service.KeyService;
+import com.jd.platform.hotkey.dashboard.service.RuleService;
 import com.jd.platform.hotkey.dashboard.util.CommonUtil;
 import com.jd.platform.hotkey.dashboard.util.DateUtil;
 import com.jd.platform.hotkey.dashboard.util.RuleUtil;
@@ -53,7 +54,8 @@ public class KeyServiceImpl implements KeyService {
     private ReceiveCountMapper countMapper;
     @Resource
     private StatisticsMapper statisticsMapper;
-
+    @Resource
+    private RuleService ruleService;
 
     /**
      * 折线图
@@ -65,6 +67,8 @@ public class KeyServiceImpl implements KeyService {
         int type = req.getType();
         LocalDateTime now = LocalDateTime.now();
         req.setEndTime(req.getEndTime() == null ? DateUtil.ldtToDate(now) : req.getEndTime());
+
+       // List<String> rules = ruleService.listRules(null);
         if(type == 5){
             LocalDateTime startTime = now.minusMinutes(31);
             req.setStartTime(DateUtil.ldtToDate(startTime));

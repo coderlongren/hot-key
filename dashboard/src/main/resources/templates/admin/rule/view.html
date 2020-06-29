@@ -22,7 +22,7 @@
                 <form role="form" class="form-inline">
                     <div class="form-group" style="width: 16%">
                         <label class="control-label timeBut2" style="float: left;padding-top: 10px">所属APP：</label>
-                        <select name="appName"  class="form-control" style="width: 90px" id="jnApp">
+                        <select name="app"  class="form-control" style="width: 90px" id="apps">
                         </select>
                     </div>
                     <button onclick="save()" class="btn btn-success" type="button" style="margin-left: 75%"><i class="fa fa-edit"></i>&nbsp;保存</button>
@@ -39,7 +39,7 @@
 
             </div>
             <div class="body-nest" id="Blank_Page_Content" style="height: 1000px;">
-                <iframe  width="100%"  height="90%"  id="jn" name="jn"  src="/rule/viewDetail" frameborder="0" marginheight="0" marginwidth="0" border="false"></iframe>
+                <iframe  width="100%"  height="90%"  id="json" name="json"  src="/rule/viewDetail" frameborder="0" marginheight="0" marginwidth="0" border="false"></iframe>
             </div>
         </div>
     </div>
@@ -86,30 +86,30 @@
                 let app = apps[i];
                 if(initApp === 1){
                     if(app === appName){
-                        $("#jnApp").append("<option selected = selected>" + apps[i] + "</option>");
+                        $("#apps").append("<option selected = selected>" + apps[i] + "</option>");
                     }else{
-                        $("#jnApp").append("<option>" + apps[i] + "</option>");
+                        $("#apps").append("<option>" + apps[i] + "</option>");
                     }
                 }else{
                     if(apps[i] === initApp){
-                        $("#jnApp").append("<option selected = 'selected'>" + apps[i] + "</option>");
+                        $("#apps").append("<option selected = 'selected'>" + apps[i] + "</option>");
                     }else{
-                        $("#jnApp").append("<option>" + apps[i] + "</option>");
+                        $("#apps").append("<option>" + apps[i] + "</option>");
                     }
                 }
             }
         }
     });
 
-    $("#jnApp").change(function () {
+    $("#apps").change(function () {
         let app = this.options[this.selectedIndex].value;
-        let childWindow = $("#jn")[0].contentWindow;
+        let childWindow = $("#json")[0].contentWindow;
         childWindow.getRules(app);
     });
 
     function add(){
-        let app = $("#jnApp").val();
-        let rules =  window.frames["jn"].document.getElementById("myWord").value;
+        let app = $("#apps").val();
+        let rules =  window.frames["json"].document.getElementById("myWord").value;
         $.ajax({
             cache : true,
             type : "POST",
@@ -128,9 +128,9 @@
         });
     }
     function save(){
-        let app = $("#jnApp").val();
-        let rules =  window.frames["jn"].document.getElementById("myWord").value;
-        let target =  window.frames["jn"].document.getElementById("json-target").innerText;
+        let app = $("#apps").val();
+        let rules =  window.frames["json"].document.getElementById("myWord").value;
+        let target =  window.frames["json"].document.getElementById("json-target").innerText;
 
         if(target.indexOf("解析错误") != -1 ){
             $.modal.alertError("非法的json数组");
@@ -156,7 +156,7 @@
         });
     }
     function del(){
-        let app = $("#jnApp").val();
+        let app = $("#apps").val();
         $.ajax({
             cache : true,
             type : "POST",
@@ -172,7 +172,7 @@
             success : function(data) {
                 console.log(data)
                 layer.alert(data.msg)
-                let childWindow = $("#jn")[0].contentWindow;
+                let childWindow = $("#json")[0].contentWindow;
                 childWindow.getRules(app);
             }
         });

@@ -166,16 +166,16 @@
             success : function(result) {
                 if (result) {
                     //初始化option.xAxis[0]中的data
-                    option.xAxis.data = result.xAxis;
+                    option.xAxis.data = result.xAxis2;
                     //初始化option.series[0]中的data
                     option.series = [];
                     let i = 0;
                     if(result.xAxis == 0){
                         myChart.clear();
                     }else{
-                        for(let key in result.series){
+                        for(let key in result.series2){
                             i++;
-                            let seriesData = {"name":key, "data": result.series[key],"type":"line"};
+                            let seriesData = {"name":key, "data": result.series2[key],"type":"line"};
                             option.series.push(seriesData);
                         }
                     }

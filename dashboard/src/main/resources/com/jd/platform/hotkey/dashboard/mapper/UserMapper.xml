@@ -139,8 +139,8 @@
     <include refid="Base_Column_List" />
     from hk_user
     where 1=1
-    <if test="appName !=null and appName !=''">
-      and app_name = #{appName}
+    <if test="app !=null and app !=''">
+      and app_name = #{app}
     </if >
     order by id desc
   </select>

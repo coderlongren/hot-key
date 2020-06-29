@@ -149,8 +149,8 @@
     <include refid="Base_Column_List" />
     from hk_key_rule
     where state=1
-    <if test="appName !=null and appName !=''">
-      and app_name = #{appName}
+    <if test="app !=null and app !=''">
+      and app_name = #{app}
     </if >
     <if test="startTime != null">
       <![CDATA[ and create_time >= #{startTime} and create_time < #{endTime}]]>
@@ -173,8 +173,8 @@
     update_user,
     update_time)
     VALUES
-    <foreach collection="list" item="k" separator=",">
-      (#{k.key},
+    <foreach collection="list" index="k" item="item" open="(" separator="," close=")">
+      #{k.key},
       #{k.prefix},
       #{k.interval},
       #{k.threshold},
@@ -182,7 +182,7 @@
       #{k.appName},
       #{k.state},
       #{k.updateUser},
-      #{k.updateTime})
+      #{k.updateTime}
     </foreach>
   </insert>
 

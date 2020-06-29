@@ -4,7 +4,6 @@
 			_option: {},
 			oTableInit:function(parms){//初始化表单
 				$.table._option=parms;
-				console.log("option"+JSON.stringify($.table._option));
 			    var oTableInit = {};
 			    //初始化Table
 			    oTableInit.Init = function () {
@@ -67,7 +66,10 @@
 				 var search = {};
 				 search.pageSize= params.pageSize;
 				 search.pageNum=params.pageNumber;
-				 search.searchText=params.searchText;
+				 let app = $("#apps").val();
+                if(app!==undefined && app != null && app!==""){
+                    search.app = app;
+                }
 				 return search;
 				 
 			},

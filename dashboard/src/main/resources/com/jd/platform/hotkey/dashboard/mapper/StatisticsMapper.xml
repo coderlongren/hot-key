@@ -47,8 +47,8 @@
     <if test="key !=null and key !=''">
       and key_name LIKE CONCAT(CONCAT('%', #{key}), '%')
     </if >
-    <if test="appName !=null and appName !=''">
-      and app = #{appName}
+    <if test="app !=null and app !=''">
+      and app = #{app}
     </if >
     <if test="startTime != null">
       <![CDATA[ and create_time >= #{startTime} and create_time < #{endTime}]]>
@@ -64,10 +64,10 @@
     days,hours, minutes,
     biz_type,create_time,uuid)
     VALUES
-    <foreach collection="list" item="k" separator=",">
-    ( #{k.keyName},#{k.count},#{k.app},#{k.rule},
+    <foreach collection="list" index="k" item="item" open="(" separator="," close=")">
+     #{k.keyName},#{k.count},#{k.app},#{k.rule},
       #{k.days}, #{k.hours},#{k.minutes},
-      #{k.bizType},#{k.createTime},#{k.uuid} )
+      #{k.bizType},#{k.createTime},#{k.uuid}
     </foreach>
   </insert>
 

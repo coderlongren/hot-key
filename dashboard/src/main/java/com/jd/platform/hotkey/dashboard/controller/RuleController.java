@@ -1,5 +1,8 @@
 package com.jd.platform.hotkey.dashboard.controller;
 
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONTokener;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.jd.platform.hotkey.dashboard.common.base.BaseController;
@@ -36,7 +39,7 @@ public class RuleController extends BaseController {
 	@GetMapping("/viewDetail")
 	public String viewDetail(ModelMap modelMap){
 		modelMap.put("title", Constant.RULE_CONFIG_VIEW);
-		return "admin/rule/jn";
+		return "admin/rule/json";
 	}
 
 	@PostMapping("/getRule")
@@ -76,9 +79,9 @@ public class RuleController extends BaseController {
 
 	@PostMapping("/list")
 	@ResponseBody
-	public Page<Rules> list(PageReq page, String appName){
+	public Page<Rules> list(PageReq page, String app){
 		page.setPageSize(30);
-		PageInfo<Rules> info = ruleService.pageKeyRule(page, appName);
+		PageInfo<Rules> info = ruleService.pageKeyRule(page, app);
 		return new Page<>(info.getPageNum(),(int)info.getTotal(),info.getList());
 	}
 
@@ -111,7 +114,13 @@ public class RuleController extends BaseController {
 	 */
 	private void checkRule(String rules) {
 		try {
-			JSON.parseArray(rules, Rule.class);
+			Object json = new JSONTokener(rules).nextValue();
+			if (json instanceof JSONObject) {
+				// JSONObject jsonObject = (JSONObject) json;
+				throw new BizException(ResultEnum.ILLEGAL_JSON_ARR);
+			} else if (json instanceof JSONArray) {
+				// JSONArray jsonArray = (JSONArray) json;
+			}
 		}catch(Exception e){
 			throw new BizException(ResultEnum.ILLEGAL_JSON_ARR);
 		}

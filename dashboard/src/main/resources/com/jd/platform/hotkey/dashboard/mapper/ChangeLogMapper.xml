@@ -95,8 +95,8 @@
     <if test="bizType != null">
       and biz_type = #{bizType}
     </if >
-    <if test="appName !=null and appName !=''">
-      and app_name = #{appName}
+    <if test="app !=null and app !=''">
+      and app_name = #{app}
     </if >
     order by id desc
   </select>
