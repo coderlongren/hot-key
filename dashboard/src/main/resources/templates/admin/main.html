@@ -122,7 +122,7 @@
         ]
     };
     //加载数据
-    initLegend(option);
+    //initLegend(option);
     loadData(option, "", {"type":5});
     // 使用刚指定的配置项和数据显示图表。
     myChart.setOption(option);
@@ -167,6 +167,7 @@
                 if (result) {
                     //初始化option.xAxis[0]中的data
                     option.xAxis.data = result.xAxis2;
+                    option.legend.data = result.legend;
                     //初始化option.series[0]中的data
                     option.series = [];
                     let i = 0;

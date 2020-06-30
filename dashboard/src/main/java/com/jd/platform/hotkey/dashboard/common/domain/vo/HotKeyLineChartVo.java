@@ -34,6 +34,8 @@ public class HotKeyLineChartVo {
 
     private Map<String,List<Integer>> series2;
 
+    private Set<String> legend;
+
     public Set<String> getxAxis2() {
         return xAxis2;
     }
@@ -48,5 +50,13 @@ public class HotKeyLineChartVo {
 
     public void setSeries2(Map<String, List<Integer>> series2) {
         this.series2 = series2;
+    }
+
+    public Set<String> getLegend() {
+        return legend;
+    }
+
+    public void setLegend(Set<String> legend) {
+        this.legend = legend;
     }
 }
