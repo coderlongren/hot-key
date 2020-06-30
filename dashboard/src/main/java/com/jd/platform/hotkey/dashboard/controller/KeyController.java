@@ -11,7 +11,6 @@ import com.jd.platform.hotkey.dashboard.common.domain.req.ChartReq;
 import com.jd.platform.hotkey.dashboard.common.domain.req.PageReq;
 import com.jd.platform.hotkey.dashboard.common.domain.req.SearchReq;
 import com.jd.platform.hotkey.dashboard.common.domain.vo.HotKeyLineChartVo;
-import com.jd.platform.hotkey.dashboard.common.eunm.ResultEnum;
 import com.jd.platform.hotkey.dashboard.model.KeyRecord;
 import com.jd.platform.hotkey.dashboard.model.KeyTimely;
 import com.jd.platform.hotkey.dashboard.model.Statistics;
@@ -25,8 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -120,8 +117,6 @@ public class KeyController extends BaseController {
 	@ResponseBody
 	public Result add(KeyTimely key){
 		checkApp(key.getAppName());
-		key.setType(0);
-		key.setSource(userName());
 		int b = keyService.insertKeyByUser(key);
 		return b == 0 ? Result.fail():Result.success();
 	}
@@ -131,7 +126,7 @@ public class KeyController extends BaseController {
 	public Result remove(String key){
 		String[] arr = key.split("/");
 		checkApp(arr[0]);
-		int b = keyService.delKeyByUser(new KeyTimely(key,userName()));
+		int b = keyService.delKeyByUser(new KeyTimely(key));
 		return b == 0 ? Result.fail():Result.success();
 	}
 

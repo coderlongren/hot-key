@@ -144,8 +144,8 @@
     <include refid="Base_Column_List" />
     from hk_key_timely
     where 1=1
-    <if test="appName !=null and appName !=''">
-       and app_name = #{appName}
+    <if test="app !=null and app !=''">
+       and app_name = #{app}
     </if >
     <if test="key !=null and key !=''">
       and key_name LIKE CONCAT(CONCAT('%', #{key}), '%')

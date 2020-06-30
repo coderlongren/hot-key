@@ -1,6 +1,5 @@
 package com.jd.platform.hotkey.dashboard.util;
 
-import com.jd.platform.hotkey.dashboard.model.User;
 import io.jsonwebtoken.*;
 import org.apache.logging.log4j.util.Base64Util;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -12,7 +11,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.DatatypeConverter;
 import java.security.Key;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
@@ -76,9 +74,6 @@ public class JwtTokenUtil {
             if (TTLMillis >= 0) {
                 long expMillis = nowMillis + TTLMillis;
                 Date exp = new Date(expMillis);
-                System.out.println("当前时间： "+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-
-                System.out.println("过期时间： "+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(exp));
                 builder.setExpiration(exp); // 是一个时间戳，代表这个JWT的过期时间；
                       //  .setNotBefore(now); // 是一个时间戳，代表这个JWT生效的开始时间，意味着在这个时间之前验证JWT是会失败的
             }

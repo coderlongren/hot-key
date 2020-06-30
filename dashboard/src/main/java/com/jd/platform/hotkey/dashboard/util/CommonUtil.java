@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.jd.platform.hotkey.dashboard.common.domain.Constant;
 import com.jd.platform.hotkey.dashboard.common.domain.vo.HotKeyLineChartVo;
 import com.jd.platform.hotkey.dashboard.model.Statistics;
-import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -154,7 +153,6 @@ public class CommonUtil {
 	 * @return vo
 	 */
 	public static HotKeyLineChartVo processData(LocalDateTime st, LocalDateTime et, List<Statistics> list, boolean isMinute){
-		log.info("processData list:{}",JSON.toJSONString(list));
 		Set<String> set = new TreeSet<>();
 		Duration duration = Duration.between(st,et);
 		long passTime = isMinute ? duration.toMinutes() : duration.toHours();
