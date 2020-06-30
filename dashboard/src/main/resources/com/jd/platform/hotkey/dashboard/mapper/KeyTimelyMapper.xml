@@ -54,13 +54,13 @@
         duration,
         create_time)
     VALUES
-    <foreach collection="list" index="k" item="item" open="(" separator="," close=")">
-      #{k.key},
+    <foreach collection="list" item="k" separator=",">
+     (#{k.key},
       #{k.val},
       #{k.appName},
       #{k.uuid},
       #{k.duration},
-      #{k.createTime}
+      #{k.createTime})
     </foreach>
   </insert>
 
