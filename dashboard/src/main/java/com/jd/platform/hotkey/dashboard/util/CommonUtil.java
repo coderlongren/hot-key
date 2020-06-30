@@ -152,7 +152,8 @@ public class CommonUtil {
 	 * @param isMinute 类型
 	 * @return vo
 	 */
-	public static HotKeyLineChartVo processData(LocalDateTime st, LocalDateTime et, List<Statistics> list, boolean isMinute){
+	public static HotKeyLineChartVo processData(LocalDateTime st, LocalDateTime et, List<Statistics> list,
+												boolean isMinute, List<String> rules){
 		Set<String> set = new TreeSet<>();
 		Duration duration = Duration.between(st,et);
 		long passTime = isMinute ? duration.toMinutes() : duration.toHours();
@@ -163,21 +164,37 @@ public class CommonUtil {
 			set.add(DateUtil.formatTime(time, pattern));
 			timeCountMap.put(time,null);
 		}
+
 		Map<String, List<Statistics>> ruleStatsMap = listGroup(list);
+		Map<String, String> appRuleMap = new HashMap<>(rules.size());
+		for (String appRule : rules) {
+			String[] arr = appRule.split("-");
+			ruleStatsMap.putIfAbsent(arr[1], null);
+			appRuleMap.put(arr[1],arr[0]);
+		}
 		Map<String, List<Integer>> ruleDataMap = new HashMap<>(ruleStatsMap.size());
 		ruleStatsMap.forEach((rule,statistics)->{
-			String app = statistics.get(0).getApp();
-			rule = app + "-" + rule;
-			Map<Integer, List<Statistics>> timeStatsMap = listGroupByTime(statistics, isMinute);
-			timeCountMap.forEach((k,v)->{
-				if(timeStatsMap.get(k) == null){
-					timeCountMap.put(k,0);
-				}else{
-					timeCountMap.put(k,timeStatsMap.get(k).get(0).getCount());
+			if(statistics == null){
+				String app = appRuleMap.get(rule);
+				rule = app + "-" + rule;
+				List<Integer> dataList = new ArrayList<>();
+				for (int i = 0; i < timeCountMap.size(); i++) {
+					dataList.add(0);
 				}
-			});
-			ruleDataMap.put(rule, new ArrayList<>(timeCountMap.values()));
-
+				ruleDataMap.put(rule, dataList);
+			}else{
+				String app = statistics.get(0).getApp();
+				rule = app + "-" + rule;
+				Map<Integer, List<Statistics>> timeStatsMap = listGroupByTime(statistics, isMinute);
+				timeCountMap.forEach((k,v)->{
+					if(timeStatsMap.get(k) == null){
+						timeCountMap.put(k,0);
+					}else{
+						timeCountMap.put(k,timeStatsMap.get(k).get(0).getCount());
+					}
+				});
+				ruleDataMap.put(rule, new ArrayList<>(timeCountMap.values()));
+			}
 		});
 		HotKeyLineChartVo vo = new HotKeyLineChartVo();
 		vo.setxAxis2(set);
@@ -191,6 +208,6 @@ public class CommonUtil {
 		List<Statistics> list = JSON.parseArray(str, Statistics.class);
 		LocalDateTime st = LocalDateTime.now().minusMinutes(31);
 		LocalDateTime et = LocalDateTime.now();
-		processData(st,  et, list, true);
+		processData(st,  et, list, true,new ArrayList<>());
 	}
 }

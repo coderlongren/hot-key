@@ -68,13 +68,13 @@ public class KeyServiceImpl implements KeyService {
         LocalDateTime now = LocalDateTime.now();
         req.setEndTime(req.getEndTime() == null ? DateUtil.ldtToDate(now) : req.getEndTime());
 
-       // List<String> rules = ruleService.listRules(null);
+        List<String> rules = ruleService.listRules(null);
         if(type == 5){
             LocalDateTime startTime = now.minusMinutes(31);
             req.setStartTime(DateUtil.ldtToDate(startTime));
             List<Statistics> list = statisticsMapper.listOrderByTime(req);
             try {
-                return CommonUtil.processData(startTime,now,list,true);
+                return CommonUtil.processData(startTime,now,list,true,rules);
             }catch (Exception e){
                 return CommonUtil.assembleData(list, startTime, 30,1);
             }
@@ -83,7 +83,7 @@ public class KeyServiceImpl implements KeyService {
             req.setStartTime(DateUtil.ldtToDate(startTime2));
             List<Statistics> list2 = statisticsMapper.listOrderByTime(req);
             try {
-                return CommonUtil.processData(startTime2,now,list2,false);
+                return CommonUtil.processData(startTime2,now,list2,false,rules);
             }catch (Exception e){
                 return CommonUtil.assembleData(list2, startTime2, 24,2);
             }
@@ -93,7 +93,7 @@ public class KeyServiceImpl implements KeyService {
             req.setType(6);
             List<Statistics> list3 = statisticsMapper.listOrderByTime(req);
             try {
-                return CommonUtil.processData(startTime3,now,list3,false);
+                return CommonUtil.processData(startTime3,now,list3,false,rules);
             }catch (Exception e){
                 return CommonUtil.assembleData(list3, startTime3, 7*24,2);
             }
