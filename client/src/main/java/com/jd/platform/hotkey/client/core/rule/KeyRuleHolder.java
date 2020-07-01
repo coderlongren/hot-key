@@ -102,6 +102,19 @@ public class KeyRuleHolder {
     }
 
     /**
+     * 判断该key命中了哪个rule
+     */
+    public static String rule(String key) {
+        String rule = "";
+        for (KeyRule keyRule : KEY_RULES) {
+            if (key.equals(keyRule.getKey()) || (keyRule.isPrefix() && key.startsWith(keyRule.getKey())) || "*".equals(keyRule.getKey())) {
+                return keyRule.getKey();
+            }
+        }
+        return rule;
+    }
+
+    /**
      * 判断key是否在配置的要探测的规则内
      */
     public static boolean isKeyInRule(String key) {
@@ -121,7 +134,7 @@ public class KeyRuleHolder {
 
     @Subscribe
     public void ruleChange(KeyRuleInfoChangeEvent event) {
-        JdLogger.info(getClass(),"new rules info is :" + event.getKeyRules());
+        JdLogger.info(getClass(), "new rules info is :" + event.getKeyRules());
         List<KeyRule> ruleList = event.getKeyRules();
         if (ruleList == null) {
             return;

@@ -4,6 +4,7 @@ import com.jd.platform.hotkey.client.core.worker.WorkerInfoHolder;
 import com.jd.platform.hotkey.client.log.JdLogger;
 import com.jd.platform.hotkey.common.model.HotKeyModel;
 import com.jd.platform.hotkey.common.model.HotKeyMsg;
+import com.jd.platform.hotkey.common.model.KeyCountModel;
 import com.jd.platform.hotkey.common.model.MsgBuilder;
 import com.jd.platform.hotkey.common.model.typeenum.MessageType;
 import com.jd.platform.hotkey.common.tool.FastJsonUtils;
@@ -35,8 +36,8 @@ public class NettyKeyPusher implements IKeyPusher {
                 continue;
             }
 
-            map.computeIfAbsent(channel, k -> new ArrayList<>());
-            map.get(channel).add(model);
+            List<HotKeyModel> newList = map.computeIfAbsent(channel, k -> new ArrayList<>());
+            newList.add(model);
         }
 
         for (Channel channel : map.keySet()) {
@@ -54,6 +55,38 @@ public class NettyKeyPusher implements IKeyPusher {
             }
         }
 
+    }
+
+    @Override
+    public void sendCount(String appName, List<KeyCountModel> list) {
+        //积攒了10秒的数量，按照hash分发到不同的worker
+        long now = System.currentTimeMillis();
+        Map<Channel, List<KeyCountModel>> map = new HashMap<>();
+        for(KeyCountModel model : list) {
+            model.setCreateTime(now);
+            Channel channel = WorkerInfoHolder.chooseChannel(model.getRuleKey());
+            if (channel == null) {
+                continue;
+            }
+
+            List<KeyCountModel> newList = map.computeIfAbsent(channel, k -> new ArrayList<>());
+            newList.add(model);
+        }
+
+        for (Channel channel : map.keySet()) {
+            try {
+                List<KeyCountModel> batch = map.get(channel);
+                channel.writeAndFlush(MsgBuilder.buildByteBuf(new HotKeyMsg(MessageType.REQUEST_HIT_COUNT, FastJsonUtils.convertObjectToJSON(batch))));
+            } catch (Exception e) {
+                try {
+                    InetSocketAddress insocket = (InetSocketAddress) channel.remoteAddress();
+                    JdLogger.error(getClass(),"flush error " + insocket.getAddress().getHostAddress());
+                } catch (Exception ex) {
+                    JdLogger.error(getClass(),"flush error");
+                }
+
+            }
+        }
     }
 
 }
