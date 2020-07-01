@@ -73,30 +73,19 @@ public class KeyServiceImpl implements KeyService {
             LocalDateTime startTime = now.minusMinutes(31);
             req.setStartTime(DateUtil.ldtToDate(startTime));
             List<Statistics> list = statisticsMapper.listOrderByTime(req);
-            try {
-                return CommonUtil.processData(startTime,now,list,true,rules);
-            }catch (Exception e){
-                return CommonUtil.assembleData(list, startTime, 30,1);
-            }
+            return CommonUtil.processData(startTime,now,list,true,rules);
         }else if(type == 6){
             LocalDateTime startTime2 = now.minusHours(25);
             req.setStartTime(DateUtil.ldtToDate(startTime2));
             List<Statistics> list2 = statisticsMapper.listOrderByTime(req);
-            try {
-                return CommonUtil.processData(startTime2,now,list2,false,rules);
-            }catch (Exception e){
-                return CommonUtil.assembleData(list2, startTime2, 24,2);
-            }
+            return CommonUtil.processData(startTime2,now,list2,false,rules);
         }else{
             LocalDateTime startTime3 = now.minusDays(7).minusHours(1);
             req.setStartTime(DateUtil.ldtToDate(startTime3));
             req.setType(6);
             List<Statistics> list3 = statisticsMapper.listOrderByTime(req);
-            try {
-                return CommonUtil.processData(startTime3,now,list3,false,rules);
-            }catch (Exception e){
-                return CommonUtil.assembleData(list3, startTime3, 7*24,2);
-            }
+            return CommonUtil.processData(startTime3,now,list3,false,rules);
+
         }
     }
 

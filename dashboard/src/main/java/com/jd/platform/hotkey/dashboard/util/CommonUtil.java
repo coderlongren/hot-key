@@ -159,7 +159,7 @@ public class CommonUtil {
 		long passTime = isMinute ? duration.toMinutes() : duration.toHours();
 		Map<Integer, Integer> timeCountMap =  new TreeMap<>();
 		String pattern = isMinute ? DateUtil.PATTERN_MINUS : DateUtil.PATTERN_HOUR;
-		for (int i = 0; i < passTime; i++) {
+		for (int i = 1; i < passTime; i++) {
 			int time = DateUtil.reviseTime(st, i, isMinute ? 1:2);
 			xAxisSet.add(DateUtil.formatTime(time, pattern));
 			timeCountMap.put(time,null);
@@ -184,18 +184,25 @@ public class CommonUtil {
 		vo.setSeries2(ruleDataMap);
 		Set<String> ruleSet = ruleDataMap.keySet();
 		Set<String> etcdRuleSet = new HashSet<>(rules);
-		Set<String> legend = new HashSet<>(ruleSet);
-		legend.retainAll(etcdRuleSet);
+		Set<String> legend = new HashSet<>(etcdRuleSet);
+		legend.retainAll(ruleSet);
+		log.info("获取的数据list:{},  etcd获取规则：{},  ruleDataMap获取数据：{},",
+				JSON.toJSONString(list),
+				JSON.toJSONString(etcdRuleSet),
+				JSON.toJSONString(ruleDataMap));
 		vo.setLegend(legend);
 		return vo;
 	}
 
 
 	public static void main(String[] args) {
-		String str =" [{\"app\":\"app1\",\"bizType\":5,\"count\":9,\"createTime\":1593434160000,\"days\":200629,\"hours\":20062912,\"id\":76996,\"keyName\":\"rule1\",\"minutes\":2006291236,\"rule\":\"rule1\",\"uuid\":\"76996\"},{\"app\":\"app1\",\"bizType\":5,\"count\":184,\"createTime\":1593434220000,\"days\":200629,\"hours\":20062912,\"id\":76997,\"keyName\":\"rule1\",\"minutes\":2006291237,\"rule\":\"rule1\",\"uuid\":\"76997\"},{\"app\":\"app1\",\"bizType\":5,\"count\":238,\"createTime\":1593434280000,\"days\":200629,\"hours\":20062912,\"id\":76998,\"keyName\":\"rule1\",\"minutes\":2006291238,\"rule\":\"rule1\",\"uuid\":\"76998\"},{\"app\":\"app1\",\"bizType\":5,\"count\":139,\"createTime\":1593434340000,\"days\":200629,\"hours\":20062912,\"id\":76999,\"keyName\":\"rule1\",\"minutes\":2006291239,\"rule\":\"rule1\",\"uuid\":\"76999\"},{\"app\":\"app1\",\"bizType\":5,\"count\":15,\"createTime\":1593434400000,\"days\":200629,\"hours\":20062912,\"id\":77000,\"keyName\":\"rule1\",\"minutes\":2006291240,\"rule\":\"rule1\",\"uuid\":\"77000\"},{\"app\":\"app1\",\"bizType\":5,\"count\":211,\"createTime\":1593434460000,\"days\":200629,\"hours\":20062912,\"id\":77001,\"keyName\":\"rule1\",\"minutes\":2006291241,\"rule\":\"rule1\",\"uuid\":\"77001\"},{\"app\":\"app1\",\"bizType\":5,\"count\":142,\"createTime\":1593434520000,\"days\":200629,\"hours\":20062912,\"id\":77002,\"keyName\":\"rule1\",\"minutes\":2006291242,\"rule\":\"rule1\",\"uuid\":\"77002\"},{\"app\":\"app1\",\"bizType\":5,\"count\":247,\"createTime\":1593434580000,\"days\":200629,\"hours\":20062912,\"id\":77003,\"keyName\":\"rule1\",\"minutes\":2006291243,\"rule\":\"rule1\",\"uuid\":\"77003\"},{\"app\":\"app1\",\"bizType\":5,\"count\":208,\"createTime\":1593434640000,\"days\":200629,\"hours\":20062912,\"id\":77004,\"keyName\":\"rule1\",\"minutes\":2006291244,\"rule\":\"rule1\",\"uuid\":\"77004\"},{\"app\":\"app1\",\"bizType\":5,\"count\":146,\"createTime\":1593434700000,\"days\":200629,\"hours\":20062912,\"id\":77005,\"keyName\":\"rule1\",\"minutes\":2006291245,\"rule\":\"rule1\",\"uuid\":\"77005\"},{\"app\":\"app1\",\"bizType\":5,\"count\":7,\"createTime\":1593434760000,\"days\":200629,\"hours\":20062912,\"id\":77006,\"keyName\":\"rule1\",\"minutes\":2006291246,\"rule\":\"rule1\",\"uuid\":\"77006\"},{\"app\":\"app1\",\"bizType\":5,\"count\":207,\"createTime\":1593434820000,\"days\":200629,\"hours\":20062912,\"id\":77007,\"keyName\":\"rule1\",\"minutes\":2006291247,\"rule\":\"rule1\",\"uuid\":\"77007\"},{\"app\":\"app1\",\"bizType\":5,\"count\":231,\"createTime\":1593434880000,\"days\":200629,\"hours\":20062912,\"id\":77008,\"keyName\":\"rule1\",\"minutes\":2006291248,\"rule\":\"rule1\",\"uuid\":\"77008\"},{\"app\":\"app1\",\"bizType\":5,\"count\":94,\"createTime\":1593434940000,\"days\":200629,\"hours\":20062912,\"id\":77009,\"keyName\":\"rule1\",\"minutes\":2006291249,\"rule\":\"rule1\",\"uuid\":\"77009\"},{\"app\":\"app1\",\"bizType\":5,\"count\":21,\"createTime\":1593435000000,\"days\":200629,\"hours\":20062912,\"id\":77010,\"keyName\":\"rule1\",\"minutes\":2006291250,\"rule\":\"rule1\",\"uuid\":\"77010\"},{\"app\":\"app1\",\"bizType\":5,\"count\":33,\"createTime\":1593435060000,\"days\":200629,\"hours\":20062912,\"id\":77011,\"keyName\":\"rule1\",\"minutes\":2006291251,\"rule\":\"rule1\",\"uuid\":\"77011\"},{\"app\":\"app1\",\"bizType\":5,\"count\":107,\"createTime\":1593435120000,\"days\":200629,\"hours\":20062912,\"id\":77012,\"keyName\":\"rule1\",\"minutes\":2006291252,\"rule\":\"rule1\",\"uuid\":\"77012\"},{\"app\":\"app1\",\"bizType\":5,\"count\":247,\"createTime\":1593435180000,\"days\":200629,\"hours\":20062912,\"id\":77013,\"keyName\":\"rule1\",\"minutes\":2006291253,\"rule\":\"rule1\",\"uuid\":\"77013\"},{\"app\":\"app1\",\"bizType\":5,\"count\":154,\"createTime\":1593435240000,\"days\":200629,\"hours\":20062912,\"id\":77014,\"keyName\":\"rule1\",\"minutes\":2006291254,\"rule\":\"rule1\",\"uuid\":\"77014\"},{\"app\":\"app1\",\"bizType\":5,\"count\":187,\"createTime\":1593435300000,\"days\":200629,\"hours\":20062912,\"id\":77015,\"keyName\":\"rule1\",\"minutes\":2006291255,\"rule\":\"rule1\",\"uuid\":\"77015\"},{\"app\":\"app1\",\"bizType\":5,\"count\":161,\"createTime\":1593435360000,\"days\":200629,\"hours\":20062912,\"id\":77016,\"keyName\":\"rule1\",\"minutes\":2006291256,\"rule\":\"rule1\",\"uuid\":\"77016\"},{\"app\":\"app1\",\"bizType\":5,\"count\":277,\"createTime\":1593435420000,\"days\":200629,\"hours\":20062912,\"id\":77017,\"keyName\":\"rule1\",\"minutes\":2006291257,\"rule\":\"rule1\",\"uuid\":\"77017\"},{\"app\":\"app1\",\"bizType\":5,\"count\":207,\"createTime\":1593435480000,\"days\":200629,\"hours\":20062912,\"id\":77018,\"keyName\":\"rule1\",\"minutes\":2006291258,\"rule\":\"rule1\",\"uuid\":\"77018\"},{\"app\":\"app1\",\"bizType\":5,\"count\":286,\"createTime\":1593435540000,\"days\":200629,\"hours\":20062912,\"id\":77019,\"keyName\":\"rule1\",\"minutes\":2006291259,\"rule\":\"rule1\",\"uuid\":\"77019\"},{\"app\":\"app1\",\"bizType\":5,\"count\":196,\"createTime\":1593435600000,\"days\":200629,\"hours\":20062913,\"id\":77020,\"keyName\":\"rule1\",\"minutes\":2006291300,\"rule\":\"rule1\",\"uuid\":\"77020\"},{\"app\":\"app1\",\"bizType\":5,\"count\":175,\"createTime\":1593435660000,\"days\":200629,\"hours\":20062913,\"id\":77021,\"keyName\":\"rule1\",\"minutes\":2006291301,\"rule\":\"rule1\",\"uuid\":\"77021\"},{\"app\":\"app1\",\"bizType\":5,\"count\":157,\"createTime\":1593435720000,\"days\":200629,\"hours\":20062913,\"id\":77022,\"keyName\":\"rule1\",\"minutes\":2006291302,\"rule\":\"rule1\",\"uuid\":\"77022\"},{\"app\":\"app1\",\"bizType\":5,\"count\":174,\"createTime\":1593435780000,\"days\":200629,\"hours\":20062913,\"id\":77023,\"keyName\":\"rule1\",\"minutes\":2006291303,\"rule\":\"rule1\",\"uuid\":\"77023\"},{\"app\":\"app1\",\"bizType\":5,\"count\":141,\"createTime\":1593435840000,\"days\":200629,\"hours\":20062913,\"id\":77024,\"keyName\":\"rule1\",\"minutes\":2006291304,\"rule\":\"rule1\",\"uuid\":\"77024\"},{\"app\":\"app1\",\"bizType\":5,\"count\":274,\"createTime\":1593435900000,\"days\":200629,\"hours\":20062913,\"id\":77025,\"keyName\":\"rule1\",\"minutes\":2006291305,\"rule\":\"rule1\",\"uuid\":\"77025\"},{\"app\":\"app1\",\"bizType\":5,\"count\":161,\"createTime\":1593435960000,\"days\":200629,\"hours\":20062913,\"id\":77026,\"keyName\":\"rule1\",\"minutes\":2006291306,\"rule\":\"rule1\",\"uuid\":\"77026\"}]";
-		List<Statistics> list = JSON.parseArray(str, Statistics.class);
-		LocalDateTime st = LocalDateTime.now().minusMinutes(31);
-		LocalDateTime et = LocalDateTime.now();
-		processData(st,  et, list, true,new ArrayList<>());
+		Set<String> etcdRuleSet = new HashSet<>();
+		Set<String> ruleSet = new HashSet<>();
+		ruleSet.add("111");
+		ruleSet.add("222");
+		etcdRuleSet.add("111");
+		Set<String> legend = new HashSet<>(etcdRuleSet);
+		legend.retainAll(ruleSet);
+		System.out.println(JSON.toJSONString(legend));
 	}
 }
