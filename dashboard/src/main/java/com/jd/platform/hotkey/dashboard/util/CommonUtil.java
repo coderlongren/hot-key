@@ -167,8 +167,6 @@ public class CommonUtil {
 		Map<String, List<Statistics>> ruleStatsMap = listGroup(list);
 		Map<String, List<Integer>> ruleDataMap = new HashMap<>(ruleStatsMap.size());
 		ruleStatsMap.forEach((rule,statistics)->{
-			String app = statistics.get(0).getApp();
-			rule = app + "-" + rule;
 			Map<Integer, List<Statistics>> timeStatsMap = listGroupByTime(statistics, isMinute);
 			timeCountMap.forEach((k,v)->{
 				if(timeStatsMap.get(k) == null){
@@ -186,23 +184,9 @@ public class CommonUtil {
 		Set<String> etcdRuleSet = new HashSet<>(rules);
 		Set<String> legend = new HashSet<>(etcdRuleSet);
 		legend.retainAll(ruleSet);
-		log.info("获取的数据list:{},  etcd获取规则：{},  ruleDataMap获取数据：{},",
-				JSON.toJSONString(list),
-				JSON.toJSONString(etcdRuleSet),
-				JSON.toJSONString(ruleDataMap));
 		vo.setLegend(legend);
 		return vo;
 	}
 
 
-	public static void main(String[] args) {
-		Set<String> etcdRuleSet = new HashSet<>();
-		Set<String> ruleSet = new HashSet<>();
-		ruleSet.add("111");
-		ruleSet.add("222");
-		etcdRuleSet.add("111");
-		Set<String> legend = new HashSet<>(etcdRuleSet);
-		legend.retainAll(ruleSet);
-		System.out.println(JSON.toJSONString(legend));
-	}
 }
