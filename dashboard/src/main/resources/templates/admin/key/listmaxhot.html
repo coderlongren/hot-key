@@ -53,7 +53,7 @@
                     <input type="text" name="key" placeholder="key"class="form-control" style="width: 34%;float: left;margin-left: 1%">
 
                     <label class="control-label timeBut2" style="margin-left: 9%">所属APP：</label>
-                    <select name="appName" id="apps" class="form-control" style="width: 32%">
+                    <select name="app" id="apps" class="form-control" style="width: 32%">
                     </select>
                 </div>
                 <button onclick="$.table.search(this)" class="btn btn-success" type="button"  style="margin-left: 64%"><i class="fa fa-search"></i>&nbsp;搜索</button>
@@ -105,18 +105,28 @@ $(function(){
             "Authorization":getCookie("token")
         },
         async : false,
-        error : function(request) {
-            $.modal.alertError("系统错误");
+        error : function(XMLHttpRequest){
+            $.modal.alertError(XMLHttpRequest.responseJSON.msg);
         },
         success : function(data) {
             console.log(data)
-            $("#apps").append("<option></option>");
+            let role = data.role;
+            if(role === "ADMIN"){
+                $("#apps").append("<option></option>");
+            }
             let apps = data.appNames;
-            for (var i = 0; i < apps.length; i++) {
-                $("#apps").append("<option>" + apps[i] + "</option>");
+            let appName = data.appName;
+            for (let i = 0; i < apps.length; i++) {
+                let app = apps[i];
+                if(app === appName){
+                    $("#apps").append("<option selected = selected>" + apps[i] + "</option>");
+                }else{
+                    $("#apps").append("<option>" + apps[i] + "</option>");
+                }
             }
         }
     });
+
 
     var oTab=$.table.oTableInit(options);
     oTab.Init();

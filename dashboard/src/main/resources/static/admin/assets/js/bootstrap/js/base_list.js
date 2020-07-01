@@ -4,7 +4,6 @@
 			_option: {},
 			oTableInit:function(parms){//初始化表单
 				$.table._option=parms;
-				console.log("option"+JSON.stringify($.table._option));
 			    var oTableInit = {};
 			    //初始化Table
 			    oTableInit.Init = function () {
@@ -67,7 +66,10 @@
 				 var search = {};
 				 search.pageSize= params.pageSize;
 				 search.pageNum=params.pageNumber;
-				 search.searchText=params.searchText;
+				 let app = $("#apps").val();
+                if(app!==undefined && app != null && app!==""){
+                    search.app = app;
+                }
 				 return search;
 				 
 			},
@@ -78,7 +80,6 @@
 					 search[field.name] = field.value;
                  });
 				 var params = $("#dataTable").bootstrapTable("getOptions");
-				 console.log(params.searchText);
 				 params.queryParams=function(params){
 						search.pageSize= params.pageSize;
 						search.pageNum=params.pageNumber;
@@ -494,9 +495,6 @@ modal_status = {
 
 function getCookie(cname){
     let token = window.localStorage.getItem('token');
-    let time = window.localStorage.getItem('time');
-    // console.log("token--->   "+token);
-    // console.log("存入的时间--->   "+time+"  当前的时间--->   "+Date.now());
     if(token != null && token !==""){
         let time = window.localStorage.getItem('time');
         if(Date.now()-time>7*24*360000){
@@ -509,7 +507,7 @@ function getCookie(cname){
     let ca = document.cookie.split(';');
     for(let i=0; i<ca.length; i++){
         let c = ca[i].trim();
-        if (c.indexOf(name)==0) return c.substring(name.length,c.length);
+        if (c.indexOf(name)===0) return c.substring(name.length,c.length);
     }
     return "";
 }

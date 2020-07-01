@@ -1,6 +1,7 @@
 package com.jd.platform.hotkey.dashboard.common.monitor;
 
 
+import com.alibaba.fastjson.JSON;
 import com.ibm.etcd.api.Event;
 import com.jd.platform.hotkey.dashboard.common.domain.Constant;
 import com.jd.platform.hotkey.dashboard.common.domain.EventWrapper;
@@ -39,8 +40,6 @@ public class DataHandler {
     @Resource
     private StatisticsMapper statisticsMapper;
 
-    private volatile boolean hasBegin = false;
-
     /**
      * 队列
      */
@@ -58,10 +57,6 @@ public class DataHandler {
     }
 
     public void insertRecords() {
-        if (hasBegin) {
-            return;
-        }
-        hasBegin = true;
         CompletableFuture.runAsync(() -> {
             while (true) {
                 TwoTuple<KeyTimely, KeyRecord> twoTuple;
@@ -69,7 +64,7 @@ public class DataHandler {
                     twoTuple = handHotKey(queue.take());
                 } catch (Exception e) {
                     e.printStackTrace();
-                    log.error("handHotKey error ," + e.getMessage());
+                    log.error("handHotKey error ," + e.getCause());
                     continue;
                 }
                 KeyRecord keyRecord = twoTuple.getSecond();
@@ -104,9 +99,11 @@ public class DataHandler {
         long ttl = eventWrapper.getTtl();
         Event.EventType eventType = eventWrapper.getEventType();
         String appKey = eventWrapper.getKey();
-        String v = eventWrapper.getValue();
+        String value = eventWrapper.getValue();
         //appName+"/"+"key"
         String[] arr = appKey.split("/");
+        String appName = arr[0];
+        String key = arr[1];
         String uuid = eventWrapper.getUuid();
         int type = eventType.getNumber();
 
@@ -114,17 +111,17 @@ public class DataHandler {
         TwoTuple<KeyTimely, KeyRecord> timelyKeyRecordTwoTuple = new TwoTuple<>();
         if (eventType.equals(Event.EventType.PUT)) {
             //手工添加的是时间戳13位，worker传过来的是uuid
-            String source = v.length() == 13 ? Constant.HAND : Constant.SYSTEM;
-            timelyKeyRecordTwoTuple.setFirst(new KeyTimely(arr[1], v, arr[0], ttl, uuid, date));
+            String source = value.length() == 13 ? Constant.HAND : Constant.SYSTEM;
+            timelyKeyRecordTwoTuple.setFirst(new KeyTimely(key, value, appName, ttl, uuid, date));
 
             // 这是一个骚操作 在线上不方便新增rule字段的时候 临时用下val
             String rule = RuleUtil.rule(appKey);
-            KeyRecord keyRecord = new KeyRecord(arr[1], rule, arr[0], ttl, source, type, uuid, date);
+            KeyRecord keyRecord = new KeyRecord(key, rule, appName, ttl, source, type, uuid, date);
             keyRecord.setRule(rule);
             timelyKeyRecordTwoTuple.setSecond(keyRecord);
             return timelyKeyRecordTwoTuple;
         } else if (eventType.equals(Event.EventType.DELETE)) {
-            timelyKeyRecordTwoTuple.setFirst(new KeyTimely(arr[1], null, arr[0], 0L, null, null));
+            timelyKeyRecordTwoTuple.setFirst(new KeyTimely(key, null, appName, 0L, null, null));
             return timelyKeyRecordTwoTuple;
         }
         return timelyKeyRecordTwoTuple;
@@ -153,19 +150,21 @@ public class DataHandler {
                     x.setUuid(1 + "_" + x.getKeyName() + "_" + hour);
                 });
             }
+            log.info("每小时统计最热点,时间：{}, 行数：{}", now.toString(), records.size());
             List<Statistics> statistics = keyRecordMapper.statisticsByRule(preHour);
             if (statistics.size() != 0) {
                 statistics.forEach(x -> {
                     x.setBizType(6);
+                    x.setRule(x.getRule());
                     x.setCreateTime(nowTime);
                     x.setDays(day);
                     x.setHours(hour);
                     x.setUuid(6 + "_" + x.getKeyName() + "_" + hour);
                 });
+                log.info("每小时统计规则,时间：{}, data list：{}", now.toString(), JSON.toJSONString(statistics));
                 records.addAll(statistics);
             }
             int row = statisticsMapper.batchInsert(records);
-            log.info("每小时统计最热点和规则，时间：{}, 影响行数：{}", now.toString(), row);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -191,6 +190,7 @@ public class DataHandler {
             }
             records.forEach(x -> {
                 x.setBizType(5);
+                x.setRule(x.getRule());
                 x.setCreateTime(nowTime);
                 x.setDays(day);
                 x.setHours(hour);
@@ -199,7 +199,7 @@ public class DataHandler {
                 x.setUuid(5 + "_" + x.getKeyName() + "_" + minus);
             });
             int row = statisticsMapper.batchInsert(records);
-            log.info("每分钟统计规则，时间：{}, 影响行数：{}", now.toString(), row);
+//            log.info("每分钟统计规则，时间：{}, 影响行数：{}, data list:{}", now.toString(), row, JSON.toJSONString(records));
         } catch (Exception e) {
             e.printStackTrace();
         }

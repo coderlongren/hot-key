@@ -2,6 +2,8 @@ package com.jd.platform.hotkey.dashboard.util;
 
 import cn.hutool.core.util.StrUtil;
 import com.jd.platform.hotkey.common.rule.KeyRule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,6 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class RuleUtil {
     private static final ConcurrentHashMap<String, List<KeyRule>> RULE_MAP = new ConcurrentHashMap<>();
+
+    private static Logger logger = LoggerFactory.getLogger("RuleUtil");
 
     public static void init() {
         synchronized (RULE_MAP) {
@@ -35,6 +39,8 @@ public class RuleUtil {
             String[] appKey = key.split("/");
             String appName = appKey[0];
             return appName + "-" + keyRule.getKey();
+        } else {
+            logger.info("rule is null，key is " + key);
         }
         return null;
     }

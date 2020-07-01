@@ -25,7 +25,7 @@ public interface RuleService {
 
     int delRule(String key, String updater);
 
-    PageInfo<Rules> pageKeyRule(PageReq page, SearchReq param);
+    PageInfo<Rules> pageKeyRule(PageReq page, String appName);
 
     int save(Rules rules);
 

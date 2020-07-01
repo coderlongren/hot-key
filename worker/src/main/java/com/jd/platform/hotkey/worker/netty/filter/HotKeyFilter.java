@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * 热key消息，包括从netty来的和mq来的。收到消息，都发到disruptor去
+ * 热key消息，包括从netty来的和mq来的。收到消息，都发到队列去
  *
  * @author wuweifeng wrote on 2019-12-11
  * @version 1.0

@@ -40,19 +40,4 @@ public class CaffeineBuilder {
                 .build();
     }
 
-    public static void main(String[] args) {
-//        Cache cache = buildAllKeyCache();
-//        //开启上传worker信息
-//        ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-//        scheduledExecutorService.scheduleAtFixedRate(() -> {
-//            System.out.println(cache.asMap().size());
-//
-//        }, 0, 5, TimeUnit.SECONDS);
-//
-//        long i = 0;
-//        while (true) {
-//            cache.put(i++ + "", i);
-//        }
-    }
-
 }

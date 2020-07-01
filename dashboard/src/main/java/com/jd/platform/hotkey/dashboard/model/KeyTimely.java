@@ -20,16 +20,6 @@ public class KeyTimely implements Serializable {
      */
     private Long duration;
 
-    /**
-     * 来源： SYSTEM 系统探测；USERNAME创建人
-     */
-    private String source;
-
-    /**
-     * 事件类型： 0 PUT； 1 删除
-     */
-    private Integer type;
-
     private Date createTime;
 
     private String uuid;
@@ -41,9 +31,8 @@ public class KeyTimely implements Serializable {
     public KeyTimely() {
     }
 
-    public KeyTimely(String key, String source) {
+    public KeyTimely(String key) {
         this.key = key;
-        this.source = source;
     }
 
 
@@ -102,22 +91,6 @@ public class KeyTimely implements Serializable {
 
     public void setDuration(Long duration) {
         this.duration = duration;
-    }
-
-    public String getSource() {
-        return source;
-    }
-
-    public void setSource(String source) {
-        this.source = source;
-    }
-
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
     }
 
     public Date getCreateTime() {

@@ -15,6 +15,7 @@ import com.jd.platform.hotkey.dashboard.model.ChangeLog;
 import com.jd.platform.hotkey.dashboard.model.Rule;
 import com.jd.platform.hotkey.dashboard.model.Rules;
 import com.jd.platform.hotkey.dashboard.service.RuleService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -94,10 +95,8 @@ public class RuleServiceImpl implements RuleService {
     }
 
     @Override
-    public PageInfo<Rules> pageKeyRule(PageReq page, SearchReq param) {
-        String app = param.getAppName();
-        String prefix = StringUtil.isEmpty(app) ? ConfigConstant.rulePath : ConfigConstant.rulePath + app;
-        List<KeyValue> keyValues = configCenter.getPrefix(prefix);
+    public PageInfo<Rules> pageKeyRule(PageReq page, String appName) {
+        List<KeyValue> keyValues = configCenter.getPrefix(ConfigConstant.rulePath);
         List<Rules> rules = new ArrayList<>();
         for (KeyValue kv : keyValues) {
             String v = kv.getValue().toStringUtf8();
@@ -106,7 +105,13 @@ public class RuleServiceImpl implements RuleService {
             }
             String key = kv.getKey().toStringUtf8();
             String k = key.replace(ConfigConstant.rulePath,"");
-            rules.add(new Rules(k, v));
+            if(StringUtils.isEmpty(appName)){
+                rules.add(new Rules(k, v));
+            }else{
+                if(k.equals(appName)){
+                    rules.add(new Rules(k, v));
+                }
+            }
         }
         return new PageInfo<>(rules);
     }
@@ -124,7 +129,7 @@ public class RuleServiceImpl implements RuleService {
 //        }
         String to = JSON.toJSONString(rules);
 //        logMapper.insertSelective(new ChangeLog(app, 1, from, to,
-//                rules.getUpdateUser(), app, SystemClock.nowDate()));
+//        rules.getUpdateUser(), app, SystemClock.nowDate()));
         configCenter.put(ConfigConstant.rulePath + app, rules.getRules());
         return 1;
     }

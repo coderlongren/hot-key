@@ -62,31 +62,15 @@ public class EtcdMonitor {
 //            } catch (InterruptedException e) {
 //                e.printStackTrace();
 //            }
-//            for (int i = 0; i < 20000; i++) {
+//            for (int i = 0; i < 200; i++) {
 //                configCenter.put(ConfigConstant.hotKeyRecordPath + "abc/" + i, UUID.randomUUID().toString());
 //            }
 //        });
-//    }
-//
-//    /**
-//     * 每隔60秒同步一下rule到本地db
-//     */
-//    @Scheduled(fixedRate = 60000)
-//    public void syncRuleToDb() {
-//        List<KeyValue> keyValues = configCenter.getPrefix(ConfigConstant.rulePath);
-//        logger.info("get rule from ETCD,  rules: {}", keyValues.size());
-//        for (KeyValue kv : keyValues) {
-//            String val = kv.getValue().toStringUtf8();
-//            if(StringUtil.isEmpty(val)) continue;
-//            String key = kv.getKey().toStringUtf8();
-//            rulesMapper.update(new Rules(key, val));
-//        }
 //    }
 
     /**
      * 监听新来的热key，该key的产生是来自于手工在控制台添加
      */
-    @PostConstruct
     public void watchHandOperationHotKey() {
         CompletableFuture.runAsync(() -> {
             KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.hotKeyPath);
@@ -104,7 +88,6 @@ public class EtcdMonitor {
     /**
      * 监听新来的热key，该key的产生是来自于worker集群推送过来的
      */
-    @PostConstruct
     public void watchHotKeyRecord() {
         CompletableFuture.runAsync(() -> {
             KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.hotKeyRecordPath);
@@ -136,12 +119,53 @@ public class EtcdMonitor {
     }
 
 
+    @PostConstruct
+    public void startWatch() {
+        //拉取rules
+        fetchRuleFromEtcd();
+
+        //规则拉取完毕后才能去开始入库
+        dataHandler.insertRecords();
+
+        //开始监听热key产生
+        watchHotKeyRecord();
+
+        watchHandOperationHotKey();
+
+        //监听rule变化
+        watchRule();
+
+        watchWorkers();
+    }
+
+    /**
+     * 异步监听rule规则变化
+     */
+
+    public void watchRule() {
+        CompletableFuture.runAsync(() -> {
+            try {
+                KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.rulePath);
+                //如果有新事件，即rule的变更，就重新拉取所有的信息
+                while (watchIterator.hasNext()) {
+                    //这句必须写，next会让他卡住，除非真的有新rule变更
+                    WatchUpdate watchUpdate = watchIterator.next();
+                    List<Event> eventList = watchUpdate.getEvents();
+
+                    //全量拉取rule信息
+                    fetchRuleFromEtcd();
+                }
+            } catch (Exception e) {
+                log.error("watch rule err");
+            }
+
+        });
+    }
 
     /**
      * 启动后从etcd拉取所有rule
      */
-    @PostConstruct
-    public void fetchRuleFromEtcd() {
+    private void fetchRuleFromEtcd() {
         RuleUtil.init();
         try {
             List<KeyRule> ruleList = new ArrayList<>();
@@ -165,8 +189,6 @@ public class EtcdMonitor {
 
             }
 
-            //规则拉取完毕后才能去开始入库
-            dataHandler.insertRecords();
         } catch (StatusRuntimeException ex) {
             //etcd连不上
             log.error("etcd connected fail. Check the etcd address!!!");
@@ -174,34 +196,7 @@ public class EtcdMonitor {
 
     }
 
-    /**
-     * 异步监听rule规则变化
-     */
-    @PostConstruct
-    public void startWatchRule() {
-        CompletableFuture.runAsync(() -> {
-            try {
-                KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.rulePath);
-                //如果有新事件，即rule的变更，就重新拉取所有的信息
-                while (watchIterator.hasNext()) {
-                    //这句必须写，next会让他卡住，除非真的有新rule变更
-                    WatchUpdate watchUpdate = watchIterator.next();
-                    List<Event> eventList = watchUpdate.getEvents();
-
-                    //全量拉取rule信息
-                    fetchRuleFromEtcd();
-                }
-            } catch (Exception e) {
-                log.error("watch rule err");
-            }
-
-        });
-    }
-
-
-
-    @PostConstruct
-    public void watchWorkers() {
+    private void watchWorkers() {
         CompletableFuture.runAsync(() -> {
             KvClient.WatchIterator watchIterator = configCenter.watchPrefix(ConfigConstant.workersPath);
             while (watchIterator.hasNext()) {
@@ -222,8 +217,6 @@ public class EtcdMonitor {
             }
         });
     }
-
-
 
     //@PostConstruct
     public void watchReceiveKeyCount() {

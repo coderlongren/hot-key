@@ -25,32 +25,32 @@
                             <button onclick="ruleSearch()" class="btn btn-success" type="button" style="margin-left: 15%"><i class="fa fa-search"></i>&nbsp;查询</button>
                         </div>
 
-                        <!-- <div class="form-group">
-                          <label class="control-label" style="float: left;padding-top: 15px">日期：</label>
-                          <span class='input-group date datetimepicker' style="width: 14%;float: left" id='datetimepicker1' data-date-format="yyyy-mm-dd hh:ii:ss">
-                             <input type='text' class="form-control" name="startTime"/>
-                             <span class="input-group-addon">
-                                 <span class="glyphicon glyphicon-calendar"></span>
-                             </span>
-                          </span>
-                          <label class="control-label" style="float: left;padding-top: 10px">~</label>
-                          <span class='input-group date datetimepicker'  style="width: 14%;float: left"  id='datetimepicker2' data-date-format="yyyy-mm-dd hh:ii:ss">
-                             <input type='text' class="form-control"  name="endTime"/>
-                             <span class="input-group-addon">
-                                 <span class="glyphicon glyphicon-calendar"></span>
-                             </span>
-                          </span>
+                       <!-- <div class="form-group">
+                         <label class="control-label" style="float: left;padding-top: 15px">日期：</label>
+                         <span class='input-group date datetimepicker' style="width: 14%;float: left" id='datetimepicker1' data-date-format="yyyy-mm-dd hh:ii:ss">
+                            <input type='text' class="form-control" name="startTime"/>
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                         </span>
+                         <label class="control-label" style="float: left;padding-top: 10px">~</label>
+                         <span class='input-group date datetimepicker'  style="width: 14%;float: left"  id='datetimepicker2' data-date-format="yyyy-mm-dd hh:ii:ss">
+                            <input type='text' class="form-control"  name="endTime"/>
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                         </span>
 
-                             <div class="form-group" style="margin-left: 3%; padding-top: 5px;width: 36%">
-                                 <label class="control-label" style="float: left;padding-top: 10px">固定时间查询：</label>
-                                 <select name="type"  class="form-control" style="width: 100px" id="type">
-                                     <option value="5">近30分</option>
-                                     <option value="6">近1天</option>
-                                     <option value="7">近7天</option>
-                                 </select>
-                                 <button onclick="ruleSearch()" class="btn btn-success" type="button" style="margin-left: 15%"><i class="fa fa-search"></i>&nbsp;查询</button>
-                             </div>
-                         </div>-->
+                            <div class="form-group" style="margin-left: 3%; padding-top: 5px;width: 36%">
+                                <label class="control-label" style="float: left;padding-top: 10px">固定时间查询：</label>
+                                <select name="type"  class="form-control" style="width: 100px" id="type">
+                                    <option value="5">近30分</option>
+                                    <option value="6">近1天</option>
+                                    <option value="7">近7天</option>
+                                </select>
+                                <button onclick="ruleSearch()" class="btn btn-success" type="button" style="margin-left: 15%"><i class="fa fa-search"></i>&nbsp;查询</button>
+                            </div>
+                        </div>-->
                     </form>
                 </div>
             </div>
@@ -74,13 +74,13 @@
 
     // 基于准备好的dom，初始化echarts实例
     var myChart = echarts.init(document.getElementById('ruleLineChart'));
-    // 指定图表的配置项和数据
+        // 指定图表的配置项和数据
     var option = {
         xAxis: {
             type: 'category',
             data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
         },
-        //  color:['#4472C5'],
+      //  color:['#4472C5'],
         legend: {
             data:['key21','key22'],
             itemWidth:80,
@@ -122,7 +122,7 @@
         ]
     };
     //加载数据
-    initLegend(option);
+    //initLegend(option);
     loadData(option, "", {"type":5});
     // 使用刚指定的配置项和数据显示图表。
     myChart.setOption(option);
@@ -142,11 +142,11 @@
             },
             success : function(data) {
                 console.log(data)
-                // let selected_item = {};
+               // let selected_item = {};
                 for (let i = 0; i < data.length; i++) {
-                    //  selected_item[data[i]] = i === 0;
+                  //  selected_item[data[i]] = i === 0;
                     option.legend.data.push(data[i]);
-                    //   option.legend.selected = selected_item;
+                 //   option.legend.selected = selected_item;
                 }
             }
         });
@@ -166,16 +166,17 @@
             success : function(result) {
                 if (result) {
                     //初始化option.xAxis[0]中的data
-                    option.xAxis.data = result.xAxis;
+                    option.xAxis.data = result.xAxis2;
+                    option.legend.data = result.legend;
                     //初始化option.series[0]中的data
                     option.series = [];
                     let i = 0;
                     if(result.xAxis == 0){
                         myChart.clear();
                     }else{
-                        for(let key in result.series){
+                        for(let key in result.series2){
                             i++;
-                            let seriesData = {"name":key, "data": result.series[key],"type":"line"};
+                            let seriesData = {"name":key, "data": result.series2[key],"type":"line"};
                             option.series.push(seriesData);
                         }
                     }

@@ -1,6 +1,7 @@
 package com.jd.platform.hotkey.dashboard.service.impl;
 
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ibm.etcd.api.Event;
@@ -20,12 +21,14 @@ import com.jd.platform.hotkey.dashboard.model.KeyTimely;
 import com.jd.platform.hotkey.dashboard.model.ReceiveCount;
 import com.jd.platform.hotkey.dashboard.model.Statistics;
 import com.jd.platform.hotkey.dashboard.service.KeyService;
+import com.jd.platform.hotkey.dashboard.service.RuleService;
 import com.jd.platform.hotkey.dashboard.util.CommonUtil;
 import com.jd.platform.hotkey.dashboard.util.DateUtil;
 import com.jd.platform.hotkey.dashboard.util.RuleUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -51,7 +54,8 @@ public class KeyServiceImpl implements KeyService {
     private ReceiveCountMapper countMapper;
     @Resource
     private StatisticsMapper statisticsMapper;
-
+    @Resource
+    private RuleService ruleService;
 
     /**
      * 折线图
@@ -63,22 +67,25 @@ public class KeyServiceImpl implements KeyService {
         int type = req.getType();
         LocalDateTime now = LocalDateTime.now();
         req.setEndTime(req.getEndTime() == null ? DateUtil.ldtToDate(now) : req.getEndTime());
+
+        List<String> rules = ruleService.listRules(null);
         if(type == 5){
             LocalDateTime startTime = now.minusMinutes(31);
             req.setStartTime(DateUtil.ldtToDate(startTime));
             List<Statistics> list = statisticsMapper.listOrderByTime(req);
-            return CommonUtil.assembleData(list, startTime, 30,1);
+            return CommonUtil.processData(startTime,now,list,true,rules);
         }else if(type == 6){
             LocalDateTime startTime2 = now.minusHours(25);
             req.setStartTime(DateUtil.ldtToDate(startTime2));
             List<Statistics> list2 = statisticsMapper.listOrderByTime(req);
-            return CommonUtil.assembleData(list2, startTime2, 24,2);
+            return CommonUtil.processData(startTime2,now,list2,false,rules);
         }else{
             LocalDateTime startTime3 = now.minusDays(7).minusHours(1);
             req.setStartTime(DateUtil.ldtToDate(startTime3));
             req.setType(6);
             List<Statistics> list3 = statisticsMapper.listOrderByTime(req);
-            return CommonUtil.assembleData(list3, startTime3, 7*24,2);
+            return CommonUtil.processData(startTime3,now,list3,false,rules);
+
         }
     }
 
@@ -265,11 +272,14 @@ public class KeyServiceImpl implements KeyService {
     }
 
 
-    private  List<Statistics> statisticsList(){
+    private static  List<Statistics> statisticsList(){
         Random rd = new Random();
         List<Statistics> records = new ArrayList<>();
-        statisticsMapper.clear(1);
+     //   statisticsMapper.clear(1);
         for (int i = 0; i < 35; i++) {
+            if(i== 2||i== 3||i== 4||i== 25||i== 12||i== 13||i== 14||i== 30||i==32||i==33||i== 34){
+                continue;
+            }
             // 每分钟小时 统计一次record 表 结果记录到统计表
             LocalDateTime now = LocalDateTime.now().minusMinutes(35-i);
             Date nowTime = DateUtil.ldtToDate(now);
@@ -301,7 +311,11 @@ public class KeyServiceImpl implements KeyService {
             s11.setUuid(2 + "_" + s1.getKeyName() + "_" + hour+ UUID.randomUUID().toString());
             records.add(s11);
         }
-        statisticsMapper.batchInsert(records);
+
+        if(1==1){
+            return records;
+        }
+      //  statisticsMapper.batchInsert(records);
         List<Statistics> list = new ArrayList<>();
         for (int i = 0; i < 30 ; i++) {
             if(i == 12 || i ==13){
@@ -316,7 +330,7 @@ public class KeyServiceImpl implements KeyService {
                 int time = DateUtil.reviseTime(DateUtil.strToLdt("2006082355",DateUtil.PATTERN_MINUS), i, 1);
                 //    System.out.println(time);
                 st.setMinutes(time);
-                list.add(st);
+               // list.add(st);
             }
         }
         List<Statistics> list2 = new ArrayList<>();
@@ -333,7 +347,7 @@ public class KeyServiceImpl implements KeyService {
                 list2.add(st2);
             }
         }
-        list.addAll(list2);
+      //  list.addAll(list2);
         return list;
 
     }
@@ -378,7 +392,7 @@ public class KeyServiceImpl implements KeyService {
                     Statistics s33 = new Statistics();
                     s33.setKeyName("k33");
                     s33.setApp("key33APP");
-                    s33.setBizType(6 );
+                    s33.setBizType(6);
                     s33.setCreateTime(nowTime);
                     s33.setDays(day);
                     s33.setCount(rd.nextInt(300));
@@ -423,7 +437,6 @@ public class KeyServiceImpl implements KeyService {
         statisticsMapper.batchInsert(records);
         return records;
     }
-
 
 }
 

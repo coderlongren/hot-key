@@ -37,6 +37,22 @@ public class Constant {
 
     public static final int VERSION = 1;
 
+    public static final String ADMIN = "ADMIN";
+
+    public static final String APP_UER = "APPUER";
+
+    public static final String POST = "POST";
+
+
+    public static final String VIEW = "view";
+
+
+    public static final String LIST = "list";
+
+
+    public static final String INFO = "info";
+
+
     public static final List<String> HEAD = new ArrayList<>();
 
     static { HEAD.add("热点key");  HEAD.add("次数");  HEAD.add("所属APP");}

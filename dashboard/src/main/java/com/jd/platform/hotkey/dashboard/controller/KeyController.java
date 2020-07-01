@@ -24,8 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -76,7 +74,7 @@ public class KeyController extends BaseController {
 	@PostMapping("/list")
 	@ResponseBody
 	public Page<KeyRecord> list(PageReq page, SearchReq searchReq){
-		PageInfo<KeyRecord> info = keyService.pageKeyRecord(page, param2(searchReq));
+		PageInfo<KeyRecord> info = keyService.pageKeyRecord(page, searchReq);
 		return new Page<>(info.getPageNum(),(int)info.getTotal(),info.getList());
 	}
 
@@ -90,7 +88,7 @@ public class KeyController extends BaseController {
 	@PostMapping("/listTimely")
 	@ResponseBody
 	public Page<KeyTimely> listTimely(PageReq page, SearchReq searchReq){
-		PageInfo<KeyTimely> info = keyService.pageKeyTimely(page, param2(searchReq));
+		PageInfo<KeyTimely> info = keyService.pageKeyTimely(page, searchReq);
 		return new Page<>(info.getPageNum(),(int)info.getTotal(),info.getList());
 	}
 
@@ -118,8 +116,7 @@ public class KeyController extends BaseController {
 	@PostMapping("/add")
 	@ResponseBody
 	public Result add(KeyTimely key){
-		key.setType(0);
-		key.setSource(userName());
+		checkApp(key.getAppName());
 		int b = keyService.insertKeyByUser(key);
 		return b == 0 ? Result.fail():Result.success();
 	}
@@ -127,7 +124,9 @@ public class KeyController extends BaseController {
 	@PostMapping("/remove")
 	@ResponseBody
 	public Result remove(String key){
-		int b = keyService.delKeyByUser(new KeyTimely(key,userName()));
+		String[] arr = key.split("/");
+		checkApp(arr[0]);
+		int b = keyService.delKeyByUser(new KeyTimely(key));
 		return b == 0 ? Result.fail():Result.success();
 	}
 
@@ -141,15 +140,16 @@ public class KeyController extends BaseController {
 
     @PostMapping("/edit")
     @ResponseBody
-    public Result editSave(KeyTimely keyTimely) {
-		return Result.success(keyService.updateKeyByUser(keyTimely));
+    public Result editSave(KeyTimely key) {
+		checkApp(key.getAppName());
+		return Result.success(keyService.updateKeyByUser(key));
     }
 
 
 
 	@RequestMapping(value = "/export", method = RequestMethod.GET)
 	@ResponseBody
-	public void export(HttpServletResponse resp,String startTime,String endTime,String appName,String key){
+	public void export(HttpServletResponse resp,String startTime,String endTime,String app,String key){
 		SearchReq req = new SearchReq();
 		if(StringUtil.isNotEmpty(startTime)){
 			req.setStartTime(DateUtil.strToDate(startTime));
@@ -157,7 +157,7 @@ public class KeyController extends BaseController {
 		if(StringUtil.isNotEmpty(endTime)){
 			req.setEndTime(DateUtil.strToDate(endTime));
 		}
-		req.setAppName(appName);
+		req.setApp(app);
 		req.setKey(key);
 		List<Statistics> records = keyService.listMaxHot(req);
 		List<List<String>> rows = transform(records);
