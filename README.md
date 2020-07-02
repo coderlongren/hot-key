@@ -5,6 +5,10 @@
 
 该框架历经多次压测，8核单机worker端每秒可接收处理16万个key探测任务，16核单机至少每秒平稳处理20万以上，实际压测达到30万以上，CPU平稳支撑，框架无异常。在真实业务场景中，可用1：1000的比例，即1台worker支撑1000台服务端Tomcat的key探测任务，即可带来极大的数据存储资源节省（如对redis集群的扩充）。测试详情可去我[CSDN博客](https://blog.csdn.net/tianyaleixiaowu)查看。
 
+#### 架构设计
+见京东零售公众号
+https://mp.weixin.qq.com/s/xOzEj5HtCeh_ezHDPHw6Jw
+
 #### 介绍
 对任意突发性的无法预先感知的热点请求，包括并不限于热点数据（如突发大量请求同一个商品）、热用户（如爬虫、刷子）、热接口（突发海量请求同一个接口）等，进行毫秒级精准探测到。
 然后对这些热数据、热用户等，推送到该应用部署的所有机器JVM内存中，以大幅减轻对后端数据存储层的冲击，并可以由客户端决定如何使用这些热key（譬如对热商品做本地缓存、对热用户进行拒绝访问、对热接口进行熔断或返回默认值）。
@@ -160,20 +164,3 @@ Object JdHotKeyStore.getValue(String key)
 
 
 
-
-#### 参与贡献
-
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
-
-
-#### 码云特技
-
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  码云官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解码云上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是码云最有价值开源项目，是码云综合评定出的优秀开源项目
-5.  码云官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  码云封面人物是一档用来展示码云会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
