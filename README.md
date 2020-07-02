@@ -105,7 +105,7 @@ public void initHotkey() {
     starter.startPipeline();
 }
 ```
-其中还可以setCaffeineSize(int size)设置本地缓存最大数量，默认5万，setPushPeriod(Long period)设置批量推送key的间隔时间，默认500ms，该值越小，上报热key越频繁，相应越准确，但消耗资源越多。
+其中还可以setCaffeineSize(int size)设置本地缓存最大数量，默认5万，setPushPeriod(Long period)设置批量推送key的间隔时间，默认500ms，该值越小，上报热key越频繁，相应越及时，建议根据实际情况调整，如单机每秒qps10个，那么0.5秒上报一次即可，否则是空跑。该值最小为1，即1ms上报一次。
 
 主要有如下4个方法可供使用
 
