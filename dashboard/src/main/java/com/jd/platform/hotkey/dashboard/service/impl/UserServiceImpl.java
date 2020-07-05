@@ -34,8 +34,6 @@ import java.util.Set;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Value("${erp.defaultPwd}")
-    private String defaultPwd;
     @Resource
     private UserMapper userMapper;
     @Resource
@@ -68,46 +66,6 @@ public class UserServiceImpl implements UserService {
         return userMapper.insertSelective(user);
     }
 
-    @Override
-    public int insertUserByErp(User user) {
-        User userParam = new User();
-        userParam.setUserName(user.getUserName());
-        List<User> users = userMapper.selectHkUserList(userParam);
-        if(users.size() == 0){
-            user.setCreateTime(new Date());
-            user.setPwd(DigestUtils.md5DigestAsHex(defaultPwd.getBytes()));
-            int ret = userMapper.insertSelective(user);
-            System.out.println(user.getId());
-            return ret;
-        }
-        return 0;
-    }
-
-    @Override
-    public Cookie loginErpUser(User user){
-        User userParam = new User();
-        userParam.setUserName(user.getUserName());
-        List<User> users = userMapper.selectHkUserList(userParam);
-        if(users.size() == 0){
-            user.setCreateTime(new Date());
-            user.setPwd(DigestUtils.md5DigestAsHex(defaultPwd.getBytes()));
-            userMapper.insertSelective(user);
-            String token = JwtTokenUtil.createJWT(user.getId(), user.getUserName(), "", user.getAppName(), user.getNickName());
-            Cookie cookie = new Cookie("token", JwtTokenUtil.TOKEN_PREFIX + token);
-            cookie.setMaxAge(3600*24*7);
-            //cookie.setDomain("localhost");
-            cookie.setPath("/");
-            return cookie;
-        }else{
-            user =users.get(0);
-            String token = JwtTokenUtil.createJWT(user.getId(), user.getUserName(), "", user.getAppName(), user.getNickName());
-            Cookie cookie = new Cookie("token", JwtTokenUtil.TOKEN_PREFIX + token);
-            cookie.setMaxAge(3600*24*7);
-            //cookie.setDomain("localhost");
-            cookie.setPath("/");
-            return cookie;
-        }
-    }
 
     @Override
     public int deleteByPrimaryKey(int id) {

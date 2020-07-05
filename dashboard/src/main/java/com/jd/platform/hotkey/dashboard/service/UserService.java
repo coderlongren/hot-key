@@ -23,10 +23,6 @@ public interface UserService {
 
     int insertUser(User user);
 
-    int insertUserByErp(User user);
-
-    Cookie loginErpUser(User user);
-
     int deleteByPrimaryKey(int id);
 
     User selectByPrimaryKey(int id);
