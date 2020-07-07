@@ -1,6 +1,7 @@
 package com.jd.platform.hotkey.worker.mapper;
 
 import com.jd.platform.hotkey.worker.model.AppInfo;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 
